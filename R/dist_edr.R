@@ -34,6 +34,9 @@ dist_edr <- function(dtraj, edr, symmetrization, distance.type = "DDR"){
       if(distance.type == "minDist"){
         dreg[iR1, iR2] <- min(minD_T1R2)
       }
+      if(distance.type == "maxDist"){
+        dreg[iR1, iR2] <- max(minD_T1R2)
+      }
     }
   }
 
