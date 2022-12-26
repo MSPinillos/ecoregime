@@ -97,3 +97,24 @@ test_that("attributes change for a selection of states", {
 
 })
 
+test_that("the function works for some specific states", {
+  d = as.matrix(EDR_data$EDR2$state_dissim)
+  trajectories = EDR_data$EDR2$abundance$traj
+  states = EDR_data$EDR2$abundance$state
+  data <- data.frame(RT = rep("A", 6),
+                     RT_traj = c(1, 1, 1, 2, 3, 3),
+                     RT_states = as.integer(c(1, 2, 3, 3, 4, 5)))
+  expected_segments <- c("1[1-2]", "1[2-3]", "2[3-3]", "3[4-5]")
+  expected_size <- 6
+  expected_length <- sum(c(d[1, 2], d[2, 3], d[3, 8],
+                           d[8, 8], d[8, 14], d[14, 15]))
+  expected_links <- c(0, d[3, 8], d[8, 14])
+
+  new_retra <- define_retra(data = data, d = d,
+                            trajectories = trajectories, states = states)
+
+  expect_equal(new_retra$A$Segments, expected_segments)
+  expect_equal(new_retra$A$Size, expected_size)
+  expect_equal(new_retra$A$Link_distance$Distance, expected_links)
+
+})
