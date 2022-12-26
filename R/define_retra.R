@@ -247,8 +247,8 @@ define_retra <- function(data, d = NULL, trajectories = NULL, states = NULL, ret
     # Length
     if (!is.null(d)) {
       Length <- traj_length(traj_segs = Segments, dState = d,
-                            trajectories = data$RT_traj[ind_traj],
-                            states = data$RT_states[ind_traj])
+                            trajectories = trajectories,
+                            states = states)
     } else if (is.null(d)) {
       Length <-  NA
     }
