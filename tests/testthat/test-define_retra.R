@@ -1,3 +1,16 @@
+test_that("returns an object of class 'RETRA'", {
+  d = as.matrix(EDR_data$EDR2$state_dissim)
+  trajectories = EDR_data$EDR2$abundance$traj
+  states = EDR_data$EDR2$abundance$state
+  data <- data.frame(RT = rep("A", 6),
+                     RT_traj = c(1, 1, 1, 2, 3, 3),
+                     RT_states = as.integer(c(1, 2, 3, 3, 4, 5)))
+  new_retra <- define_retra(data = data, d = d,
+                            trajectories = trajectories, states = states)
+
+  expect_s3_class(new_retra, "RETRA")
+})
+
 test_that("returns same results when data is defined from 'retra'", {
   d = EDR_data$EDR1$state_dissim
   trajectories = EDR_data$EDR1$abundance$traj
