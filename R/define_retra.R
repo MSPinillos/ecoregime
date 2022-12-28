@@ -217,6 +217,8 @@ define_retra <- function(data, d = NULL, trajectories = NULL, states = NULL, ret
     } else if (length(unique(data$RT_retra[ind_traj])) > 1) {
       warning("The column \"RT_retra\" in 'data' cannot refer to more than one trajectory in 'retra' for each trajectory specified in 'data$RT'.")
       id_retra <- NA
+    } else if (is.null(retra)) {
+      id_retra <- NA
     }
 
     # minSegs
@@ -267,9 +269,12 @@ define_retra <- function(data, d = NULL, trajectories = NULL, states = NULL, ret
           iSt2 <- which(paste0(trajectories, "_", states) == paste0(
             seg_components[[ilink+1]][1], "_", seg_components[[ilink+1]][2]
           ))
+          if (length(iSt1) == 1 & length(iSt2) == 1) {
+            distance <- as.matrix(d)[iSt1, iSt2]
+          }
           if (length(iSt1) == 0 | length(iSt2) == 0) {
             distance <- NA
-          } else {distance <- as.matrix(d)[iSt1, iSt2]}
+          }
 
           return(distance)
 
