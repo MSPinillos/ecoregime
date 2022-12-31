@@ -1,13 +1,12 @@
 #' Plot Ecological Dynamic Regimes and representative trajectories
 #'
 #' @description
-#' Plot individual trajectories belonging to an EDR in the state space and highlight
-#' a set of representative trajectories, distinguishing representative segments
-#' belonging to existent trajectories of the EDR and the links between consecutive
-#' segments.
+#' Plot individual trajectories belonging to an Ecological Dynamic regime (EDR)
+#' in the state space and highlight a set of representative trajectories,
+#' distinguishing representative segments belonging to existent trajectories of
+#' the EDR and the artificial links between segments.
 #'
-#' @param x Object of class `RETRA` returned from functions [`retra_edr()`] or
-#' [`define_retra()`].
+#' @param x Object of class `RETRA`.
 #' @param d Symmetric matrix or `dist` object containing the dissimilarities
 #' between each pair of states of all trajectories or data frame containing the
 #' coordinates of all trajectory states in an ordination space.
@@ -15,18 +14,19 @@
 #' state in `d` belongs.
 #' @param states Vector of integers indicating the order of the states in `d` for
 #' each trajectory.
-#' @param select_RT Optional string indicating the name of representative trajectories
-#' selected to be highlighted in the plot. Defaults NULL.
-#' @param traj.colors A specification for the color of individual trajectories
+#' @param select_RT Optional string indicating the name of a representative
+#' trajectory that must be highlighted in the plot. By default (`select_RT` = `NULL`),
+#' all representative trajectories are represented with the same color.
+#' @param traj.colors Specification for the color of all individual trajectories
 #' (defaults "grey") or a vector with length equal to the number of trajectories
-#' indicating the color for each one.
-#' @param RT.colors A specification for the color of representative trajectories
+#' indicating the color for each individual trajectory.
+#' @param RT.colors Specification for the color of representative trajectories
 #' (defaults "black").
-#' @param sel.color A specification for the color of the selected representative
-#' trajectory (defaults "red").
-#' @param link.color A specification for the color of the links between trajectory
-#' segments forming representative trajectories. Defaults the same color than
-#' `RT.colors`.
+#' @param sel.color Specification for the color of the selected representative
+#' trajectory (defaults "red"). Only if `!is.null(select_RT)`.
+#' @param link.color Specification for the color of the links between trajectory
+#' segments forming representative trajectories. By default, the same color than
+#' `RT.colors` is used.
 #' @param link.lty The line type of the links between trajectory segments forming
 #' representative trajectories. Defaults 2 = dashed (See [graphics::par]).
 #' @param axes An integer vector indicating the pair of axes in the ordination
@@ -34,7 +34,7 @@
 #' @param ... Arguments for function [shape::Arrows].
 #'
 #' @return
-#' The function `plot.RETRA()` plots a set of individual trajectories and the
+#' The function `plot()` plots a set of individual trajectories and the
 #' representative trajectories in an ordination space defined through `d` or
 #' calculated by applying metric multidimensional scaling (mMDS) to `d`.
 #'
@@ -49,16 +49,18 @@
 #' Monographs.
 #'
 #' @note
-#' This function uses a modified version of the trajectoryPlot() function in 'ecotraj'
-#' (v.0.0.3; De Cáceres et al. 2019). The modification was done the 2022-12-18 and
-#' allows using the function Arrows() in the 'shape' package to plot ecological
-#' trajectories instead the function arrows() in base.
+#' This function uses a modified version of the [`ecotraj::trajectoryPlot()`] function
+#' in 'ecotraj' (v.0.0.3; De Cáceres et al. 2019). The modification was done the
+#' 2022-12-18 and allows using the function [`shape::Arrows()`] in the 'shape'
+#' package to plot ecological trajectories instead of the function arrows() in base.
 #'
 #' @seealso
 #' [`retra_edr()`] for identifying representative trajectories in EDRs applying
 #' RETRA-EDR.
-#' [`define_retra()`] for generating an object of class `RETRA` from a sequence
-#' of trajectory states.
+#'
+#' [`define_retra()`] for defining representative trajectories from a subset of
+#' segments or trajectory features.
+#'
 #' [`summary()`] for summarizing representative trajectories in EDRs.
 #'
 #' @export
@@ -66,43 +68,42 @@
 #' @examples
 #' # Example 1 -----------------------------------------------------------------
 #'
-#' # `d` contains the dissimilarities between trajectory states
-#' d = EDR_data$EDR1$state_dissim
+#' # d contains the dissimilarities between trajectory states
+#' d <- EDR_data$EDR1$state_dissim
 #'
-#' # `trajectories` and ` states` are defined according to `d` entries.
-#' trajectories = EDR_data$EDR1$abundance$traj
-#' states = EDR_data$EDR1$abundance$state
+#' # trajectories and states are defined according to `d` entries.
+#' trajectories <- EDR_data$EDR1$abundance$traj
+#' states <- EDR_data$EDR1$abundance$state
 #'
-#' # `x` defined from `retra_edr()`. We obtain three representative trajectories.
-#' # We will select "T2" to be plotted in a different color.
+#' # x defined from retra_edr(). We obtain three representative trajectories.
 #' RT <- retra_edr(d = d, trajectories = trajectories, states = states, minSegs = 5)
 #' summary(RT)
 #'
 #' # Plot individual trajectories in blue and representative trajectories in orange,
-#' # except "T2", which will be displayed in green Artificial links will be displayed
-#' # with a dotted line.
+#' # "T2" will be displayed in green. Artificial links will be displayed with a
+#' # dotted line.
 #' plot(x = RT, d = d, trajectories = trajectories, states = states, select_RT = "T2",
 #'      traj.colors = "lightblue", RT.colors = "orange", sel.color = "darkgreen",
 #'      link.lty = 3, main = "Representative trajectories in EDR1")
 #'
 #' # Example 2 -----------------------------------------------------------------
 #'
-#' # `d` contains the coordinates in an ordination space. For example, we use
+#' # d contains the coordinates in an ordination space. For example, we use
 #' # the coordinates of the trajectory states after applying a principal component
 #' # analysis (PCA) to an abundance matrix.
 #' abun <- EDR_data$EDR1$abundance
 #' pca <- prcomp(abun[, -c(1:3)])
-#' coord = data.frame(pca$x)
+#' coord <- data.frame(pca$x)
 #'
-#' # `trajectories` and ` states` are defined according to the abundance matrix
+#' # trajectories and states are defined according to the abundance matrix
 #' # used in the PCA
-#' trajectories = EDR_data$EDR1$abundance$traj
-#' states = EDR_data$EDR1$abundance$state
+#' trajectories <- EDR_data$EDR1$abundance$traj
+#' states <- EDR_data$EDR1$abundance$state
 #'
 #' # Instead of using the representative trajectories obtained from `retra_edr()`,
-#' # we will define the set of "representative trajectories". For example, we can
-#' # select the trajectories whose initial and final states are in the extremes
-#' # of the first axis.
+#' # we will define the set of trajectories that we want to highlight. For example,
+#' # we can select the trajectories whose initial and final states are in the
+#' # extremes of the first axis.
 #' T1 <- trajectories[which.max(coord[, 1])]
 #' T2 <- trajectories[which.min(coord[, 1])]
 #' RT_traj <- c(trajectories[trajectories %in% T1],
