@@ -1,32 +1,37 @@
 #' Summarize representative trajectories
 #'
 #' @description
-#' Summary of the properties of each representative trajectory obtained
-#' with RETRA-EDR.
+#' Summarize the properties of the representative trajectories of an Ecological
+#' Dynamic Regime (EDR) returned by [`retra_edr()`] or [`define_retra()`]
 #'
-#' @param object Object of class `RETRA` returned from function [retra_edr()].
+#' @param object Object of class `RETRA`.
 #' @param ... (not used)
 #'
 #' @return
 #' Data frame with nine columns and one row for each representative trajectory
 #' in `object`. The columns in the returned data frame contain the following
 #' information:
-#' * `ID`: Identifier of the representative trajectories returned from [retra_edr()].
-#' * `Size`: Number of states forming each representative trajectory.
-#' * `Length`: Sum of the dissimilarities in `d` between every pair of consecutive
-#' states forming the representative trajectories.
-#' * `Avg_link`: Mean value of the dissimilarities between every pair of states
-#' linking two representative segments in the representative trajectories.
-#' * `Sum_link`: Sum of the dissimilarities between every pair of states linking
-#' two representative segments in the representative trajectories.
-#' * `Avg_density`: Mean value of the number of segments represented by each real
-#' segment of the representative trajectory (i.e., excluding links).
-#' * `Max_density`: Maximum number of segments represented by at least of the
-#' segments of the representative trajectory (excluding links).
-#' * `Avg_depth`: Mean value of the kd-tree depths, that is, the number of partitions
-#' of the ordination space until finding a region with `minSegs` segments or less.
-#' * `Max_depth`: Maximum depth in the kd-tree, that is, the number of partitions
-#' of the ordination space until finding a region with `minSegs` segments or less.
+#' \describe{
+#' \item{`ID`}{Identifier of the representative trajectory.}
+#' \item{`Size`}{Number of states forming each representative trajectory.}
+#' \item{`Length`}{Sum of the dissimilarities in `d` between every pair of
+#' consecutive states forming the representative trajectories.}
+#' \item{`Avg_link`}{Mean value of the dissimilarities between consecutive states
+#' of the representative trajectories that do not belong to the same ecological
+#' trajectory or site (i.e., artificial links).}
+#' \item{`Sum_link`}{Sum of the dissimilarities between consecutive states of the
+#' representative trajectories that do not belong to the same ecological trajectory
+#' or site (i.e., artificial links).}
+#' \item{`Avg_density`}{Mean value of the number of segments represented by each
+#' segment of the representative trajectory (excluding artificial links).}
+#' \item{`Max_density`}{Maximum number of segments represented by at least one of
+#' the segments of the representative trajectory (excluding artificial links).}
+#' \item{`Avg_depth`}{Mean value of the kd-tree depths, that is, the number of
+#' partitions of the ordination space until finding a region with `minSegs` segments
+#' or less.}
+#' \item{`Max_depth`}{Maximum depth in the kd-tree, that is, the number of partitions
+#' of the ordination space until finding a region with `minSegs` segments or less.}
+#' }
 #'
 #' @note
 #' Note that the `density` of the dense regions identified in the EDR tend to `minSegs`.
@@ -34,15 +39,23 @@
 #' dense regions over sequential partitions of the ordination space.
 #'
 #' @seealso
-#' [retra_edr()] for identifying representative trajectories in EDRs.
+#' [retra_edr()] for identifying representative trajectories in EDRs applying
+#' RETRA-EDR.
+#'
+#' [`define_retra()`] for generating an object of class `RETRA` from trajectory
+#' features.
+#'
 #'
 #' @export
 #'
 #' @examples
+#' # Apply RETRA-EDR to identify representative trajectories
 #' d = EDR_data$EDR1$state_dissim
 #' trajectories = EDR_data$EDR1$abundance$traj
 #' states = EDR_data$EDR1$abundance$state
 #' RT <- retra_edr(d = d, trajectories = trajectories, states = states, minSegs = 5)
+#'
+#' # Summarize the properties of the representative trajectories in a data frame
 #' summary(RT)
 #'
 summary.RETRA <- function(object, ...) {
@@ -50,22 +63,34 @@ summary.RETRA <- function(object, ...) {
                    Size = vapply(object, function(x){x$Size}, numeric(1)),
                    Length = vapply(object, function(x){x$Length}, numeric(1)),
                    Avg_link = vapply(object, function(x) {
-                     mean(x$Link_distance$Distance)
+                     if (all(!is.na(x$Link_distance))) {
+                       mean(x$Link_distance$Distance)
+                     } else {NA}
                    }, numeric(1)),
                    Sum_link = vapply(object, function(x) {
-                     sum(x$Link_distance$Distance)
+                     if (all(!is.na(x$Link_distance))) {
+                       sum(x$Link_distance$Distance)
+                     } else {NA}
                    }, numeric(1)),
                    Avg_density = vapply(object, function(x) {
-                     mean(x$Seg_density$Density)
+                     if (all(!is.na(x$Seg_density))) {
+                       mean(x$Seg_density$Density)
+                     } else {NA}
                    }, numeric(1)),
                    Max_density = vapply(object, function(x) {
-                     max(x$Seg_density$Density)
+                     if (all(!is.na(x$Seg_density))) {
+                       max(x$Seg_density$Density)
+                     } else {NA}
                    }, numeric(1)),
                    Avg_depth = vapply(object, function(x) {
-                     mean(x$Seg_density$kdTree_depth)
+                     if (all(!is.na(x$Seg_density))) {
+                       mean(x$Seg_density$kdTree_depth)
+                     } else {NA}
                    }, numeric(1)),
                    Max_depth = vapply(object, function(x) {
-                     max(x$Seg_density$kdTree_depth)
+                     if (all(!is.na(x$Seg_density))) {
+                       max(x$Seg_density$kdTree_depth)
+                     } else {NA}
                    }, numeric(1)))
   return(df)
 }
