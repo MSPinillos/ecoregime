@@ -30,15 +30,24 @@ two EDRs.
 }
 \details{
 The implemented metrics are:
-\itemize{
-\item \code{"DDR"}: \eqn{
+
+\describe{
+\item{\code{"DDR"}}{
+\eqn{
 D_{DR}(R_1, R_2) = \frac{1}{n} \sum_{i=1}^{n} D_{TR}(T_{1i}, R_2)
 }
-\item \code{"minDist"}: \eqn{
+}
+
+\item{\code{"minDist"}}{
+\eqn{
 D_{DRmin}(R_1, R_2) = \min_{i=1}^{n} \{ D_{TR}(T_{1i}, R_2) \}
 }
-\item \code{"maxDist"}: \eqn{
+}
+
+\item{\code{"maxDist"}}{
+\eqn{
 D_{DRmax}(R_1, R_2) = \max_{i=1}^{n} \{ D_{TR}(T_{1i}, R_2) \}
+}
 }
 }
 
@@ -54,18 +63,34 @@ D_{TR}(T_{1i}, R_2) = \min\{D_T(T_{1i}, T_{21}), ... , D_T(T_{1i}, T_{2m})\}
 The metrics calculated are not necessarily symmetric. That is, \eqn{D_{DR}(R_1, R_2)}
 is not necessarily equal to \eqn{D_{DR}(R_2, R_1)}. It is possible to symmetrize
 the returned matrix by indicating the name of the function to be used in \code{symmetrize}:
-\itemize{
-\item \code{"mean"}: \eqn{
+
+\describe{
+\item{\code{"mean"}}{
+\eqn{
 D_{DRsym} = \frac{D_{DR}(R_1, R_2) + D_{DR}(R_2, R_1)}{2}
 }
-\item \code{"min"}: \eqn{
+}
+
+\item{\code{"min"}}{
+\eqn{
 D_{DRsym} = \min\{D_{DR}(R_1, R_2), D_{DR}(R_2, R_1)\}
 }
-\item \code{"max"}: \eqn{
+}
+
+\item{\code{"max"}}{
+\eqn{
 D_{DRsym} = \max\{D_{DR}(R_1, R_2), D_{DR}(R_2, R_1)\}
 }
-\item \code{"lower"}: The lower triangular part of the dissimilarity matrix is used.
-\item \code{"upper"}: The upper triangular part of the dissimilarity matrix is used.
+}
+
+\item{\code{"lower"}}{
+The lower triangular part of the dissimilarity matrix is used.
+}
+
+\item{\code{"upper"}}{
+The upper triangular part of the dissimilarity matrix is used.
+}
+
 }
 }
 \examples{
@@ -105,23 +130,23 @@ id_edr <- vapply(strsplit(labels(dTraj), "_"), function(x){
                     paste0("EDR", x[1])
                 }, character(1))
 
-# Compute dissimilarities between EDRs
-# without symmetrizing the matrix
+# Compute dissimilarities between EDRs:
+# 1) without symmetrizing the matrix
 dEDR <- dist_edr(dTraj = dTraj,
                  edr = id_edr,
                  metric = "DDR",
                  symmetrize = NULL)
-# symmetrizing by averaging elements on and below the diagonal
+# 2) symmetrizing by averaging elements on and below the diagonal
 dEDR <- dist_edr(dTraj = dTraj,
                  edr = id_edr,
                  metric = "DDR",
                  symmetrize = "mean")
-# symmetrizing by using the minimum dissimilarity between two EDRs
+# 3) symmetrizing by using the minimum dissimilarity between two EDRs
 dEDR <- dist_edr(dTraj = dTraj,
                  edr = id_edr,
                  metric = "DDR",
                  symmetrize = "min")
-# symmetrizing by using the lower triangular part of the asymmetric matrix
+# 4) symmetrizing by using the lower triangular part of the asymmetric matrix
 dEDR <- dist_edr(dTraj = dTraj,
                  edr = id_edr,
                  metric = "DDR",
