@@ -43,6 +43,9 @@ test_that("dDis is smaller then the reference trajectory belongs to the EDR
 
 test_that("dDis decreases when the weight of trajectories close to the reference increases",{
   dTraj <- as.matrix(EDR_data$EDR1$traj_dissim)
+  dStates <- EDR_data$EDR1$state_dissim
+  trajectories <- EDR_data$EDR1$abundance$traj
+  states <- EDR_data$EDR1$abundance$state
 
   closest <- which(dTraj[-1, 1] <= mean(dTraj[-1, 1]))
   w_close <- rep(1, 29)
@@ -63,8 +66,19 @@ test_that("dDis decreases when the weight of trajectories close to the reference
                        reference = "1",
                        w.type = "precomputed", w.values = w_far)
 
+  dDis_wsize <- dDis_edr(d = dStates, d.type = "dStates",
+                         trajectories = trajectories, states = states,
+                      reference = "1", w.type = "size")
+  dDis_wlength <- dDis_edr(d = dStates, d.type = "dStates",
+                         trajectories = trajectories, states = states,
+                         reference = "1", w.type = "length")
+
   expect_lte(dDis_close, dDis_ew)
   expect_lte(dDis_ew, dDis_far)
+
+  expect_equal(dDis_ew, dDis_wsize)
+  expect_true(dDis_ew != dDis_wlength)
+
 
 })
 
@@ -120,7 +134,124 @@ test_that("dEve is smaller when trajectories of the same EDR have greater weight
                       states = abun$state,
                       w.type = "precomputed",
                       w.values = c(rep(1, 15), rep(10, 15)))
+  dEve_wsize <- dEve_edr(d = as.matrix(dStates),
+                      d.type = "dStates",
+                      trajectories = abun$traj,
+                      states = abun$state,
+                      w.type = "size")
+  dEve_wlength <- dEve_edr(d = as.matrix(dStates),
+                         d.type = "dStates",
+                         trajectories = abun$traj,
+                         states = abun$state,
+                         w.type = "length")
 
   expect_lte(dEve_gw, dEve_ew)
+  expect_equal(dEve_wsize, dEve_ew)
+  expect_true(dEve_ew != dEve_wlength)
+
+})
+
+test_that("dDis_edr returns errors", {
+  dStates <- EDR_data$EDR1$state_dissim
+  trajectories <- EDR_data$EDR1$abundance$traj
+  states <- EDR_data$EDR1$abundance$state
+  dTraj <- EDR_data$EDR1$traj_dissim
+  dDis <- dDis_edr(d = dTraj, d.type = "dTraj",
+                   trajectories = labels(dTraj),
+                   reference = "1")
+
+  expect_error(dDis_edr(d = data.frame(as.matrix(dTraj)), d.type = "dTraj",
+                        trajectories = labels(dTraj),
+                        reference = "1"),
+               regexp = "symmetric dissimilarity matrix")
+  expect_error(dDis_edr(d = dTraj, d.type = "dTraj",
+                        trajectories = labels(dTraj)[1:2],
+                        reference = "1"),
+               regexp = "length of 'trajectories'")
+  expect_error(dDis_edr(d = dStates, d.type = "dStates",
+                        trajectories = trajectories,
+                        reference = "1"),
+               regexp = "provide a value for 'states'")
+  expect_error(dDis_edr(d = dStates, d.type = "dStates",
+                        trajectories = trajectories,
+                        states = states[1:2],
+                        reference = "1"),
+               regexp = "The length of 'states'")
+  expect_error(dDis_edr(d = dStates, d.type = "dStates",
+                        trajectories = trajectories,
+                        states = states, reference = c("1", "2")),
+               regexp = "'reference' needs to have a length")
+  expect_error(dDis_edr(d = dStates, d.type = "dStates",
+                        trajectories = trajectories,
+                        states = states, reference = "A"),
+               regexp = "'reference' needs to be specified in 'trajectories'")
+
+  expect_error(dDis_edr(d = dStates, d.type = "dStates",
+                        trajectories = trajectories,
+                        states = states, reference = "1",
+                        w.type = "precomputed", w.values = 1:3),
+               regexp = "The length of 'w.values'")
+  expect_error(dDis_edr(d = dTraj, d.type = "dTraj",
+                        trajectories = labels(dTraj),
+                        reference = "1",
+                        w.type = "length"),
+               regexp = "If w.type = \"length\", 'd' needs to contain dissimilarities")
+
+})
+
+test_that("dBD returns errors", {
+  dStates <- EDR_data$EDR1$state_dissim
+  trajectories <- EDR_data$EDR1$abundance$traj
+  states <- EDR_data$EDR1$abundance$state
+  dTraj <- EDR_data$EDR1$traj_dissim
+  dBD <- dBD_edr(d = dTraj, d.type = "dTraj",
+                   trajectories = labels(dTraj))
+
+  expect_error(dBD_edr(d = data.frame(as.matrix(dTraj)), d.type = "dTraj",
+                        trajectories = labels(dTraj)),
+               regexp = "symmetric dissimilarity matrix")
+  expect_error(dBD_edr(d = dTraj, d.type = "dTraj",
+                        trajectories = labels(dTraj)[1:2]),
+               regexp = "length of 'trajectories'")
+  expect_error(dBD_edr(d = dStates, d.type = "dStates",
+                        trajectories = trajectories),
+               regexp = "provide a value for 'states'")
+  expect_error(dBD_edr(d = dStates, d.type = "dStates",
+                        trajectories = trajectories,
+                        states = states[1:2]),
+               regexp = "The length of 'states'")
+})
+
+test_that("dEve_edr returns errors", {
+  dStates <- EDR_data$EDR1$state_dissim
+  trajectories <- EDR_data$EDR1$abundance$traj
+  states <- EDR_data$EDR1$abundance$state
+  dTraj <- EDR_data$EDR1$traj_dissim
+  dEve <- dEve_edr(d = dTraj, d.type = "dTraj",
+                   trajectories = labels(dTraj))
+
+  expect_error(dEve_edr(d = data.frame(as.matrix(dTraj)), d.type = "dTraj",
+                        trajectories = labels(dTraj)),
+               regexp = "symmetric dissimilarity matrix")
+  expect_error(dEve_edr(d = dTraj, d.type = "dTraj",
+                        trajectories = labels(dTraj)[1:2]),
+               regexp = "length of 'trajectories'")
+  expect_error(dEve_edr(d = dStates, d.type = "dStates",
+                        trajectories = trajectories),
+               regexp = "provide a value for 'states'")
+  expect_error(dEve_edr(d = dStates, d.type = "dStates",
+                        trajectories = trajectories,
+                        states = states[1:2]),
+               regexp = "The length of 'states'")
+  expect_error(dEve_edr(d = dStates, d.type = "dStates",
+                        trajectories = trajectories,
+                        states = states,
+                        w.type = "precomputed", w.values = 1:3),
+               regexp = "The length of 'w.values'")
+  expect_error(dEve_edr(d = dTraj, d.type = "dTraj",
+                        trajectories = labels(dTraj),
+                        w.type = "size"),
+               regexp = "If w.type = \"size\", 'd' needs to contain dissimilarities")
+
 
 })
