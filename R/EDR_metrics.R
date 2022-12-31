@@ -2,21 +2,22 @@
 #'
 #' @description
 #' Set of metrics to analyze the distribution and variability of trajectories
-#' in Ecological Dynamic Regimes, including dynamic dispersion (dDis), dynamic
+#' in Ecological Dynamic Regimes (EDR), including dynamic dispersion (dDis), dynamic
 #' beta diversity (dBD), and dynamic evenness (dEve).
 #'
 #' @name EDR_metrics
 #' @aliases dDis_edr dBD_edr dEve_edr
 #'
-#' @param d Symmetric matrix or object of class `dist` containing the
+#' @param d Symmetric matrix or object of class [`dist`] containing the
 #' dissimilarities between each pair of states of all trajectories or the
 #' dissimilarities between each pair of trajectories. To compute dDis, `d` needs
-#' to include the states/trajectory of reference.
+#' to include the dissimilarities between all states/trajectories and the
+#' states/trajectory of reference.
 #' @param d.type One of `"dStates"` (if `d` contains state dissimilarities) or
 #' `"dTraj"` (if `d` contains trajectory dissimilarities).
 #' @param trajectories Vector indicating the trajectory or site corresponding to
 #' each entry in `d`.
-#' @param states Only if `d.type` = `"dStates`. Vector of integers indicating the
+#' @param states Only if `d.type` = `"dStates"`. Vector of integers indicating the
 #' order of the states in `d` for each trajectory.
 #' @param reference Vector of the same class as `trajectories` and length equal
 #' to one, indicating the reference trajectory to compute dDis.
@@ -24,9 +25,10 @@
 #' * `"none"`: All trajectories are considered equally relevant (default).
 #' * `"length"`: Trajectories are weighted by their length, calculated as the
 #' sum of the dissimilarities between every pair of consecutive states. `d` must
-#' be of type `d.type = "dStates"`.
+#' contain dissimilarities between trajectory states and `d.type` = `"dStates"`.
 #' * `"size"`: Trajectories are weighted by their size, calculated as the number
-#' of states forming the trajectory.
+#' of states forming the trajectory. `d` must contain dissimilarities between
+#' trajectory states and `d.type` = `"dStates"`.
 #' * `"precomputed"`: Trajectories weighted according to different criteria.
 #' @param w.values Only if `w.type` = `"precomputed"`. Numeric vector of length
 #' equal to the number of different trajectories containing the weight of each
@@ -35,50 +37,67 @@
 #' trajectory dissimilarities. See [ecotraj::trajectoryDistances()].
 #'
 #' @return
-#' * `dDis_edr` returns the value of dynamic dispersion for a given trajectory
+#' * `dDis_edr()` returns the value of dynamic dispersion for a given trajectory
 #' taken as a reference.
-#' * `dBD_edr` returns the value of dynamic beta diversity.
-#' * `dEve_edr` returns the value of dynamic evenness.
+#' * `dBD_edr()` returns the value of dynamic beta diversity.
+#' * `dEve_edr()` returns the value of dynamic evenness.
 #'
 #' @details
-#' Dynamic dispersion (`dDis`) is calculated as the average dissimilarity
-#' between each trajectory in an EDR and a target trajectory taken as reference
-#' (Sánchez-Pinillos et al.).
+#'
+#' \strong{Dynamic Dispersion (`dDis_edr()`)}
+#'
+#' dDis is calculated as the average dissimilarity between each trajectory in an
+#' EDR and a target trajectory taken as reference (Sánchez-Pinillos et al.).
+#'
 #' \eqn{
-#' dDis = \frac{\sum{i=1}^{m}d_{i\alpha}}{m}
+#' dDis = \frac{\sum_{i=1}^{m}d_{i\alpha}}{m}
 #' }
+#'
 #' where \eqn{d_{i\alpha}} is the dissimilarity between trajectory \eqn{i} and
 #' the trajectory of reference \eqn{\alpha}, and \eqn{m} is the number of trajectories.
 #'
 #' Alternatively, it is possible to calculate a weighted mean of the dissimilarities
 #' by assigning a weight to each trajectory.
-#' \eqn{
-#' dDis = \frac{\sum{i=1}^{m}w_{i}*d_{i\alpha}}{\sum{i=1}^{m}w_{i}}
-#' }
-#' with \eqn{w_{i}} is the weight assigned to trajectory \eqn{i}.
 #'
-#' Dynamic beta diversity (`dBD`) quantifies the overall variation of the trajectories
-#' in an EDR and is equivalent to the average distance to the centroid of the EDR
+#' \eqn{
+#' dDis = \frac{\sum_{i=1}^{m}w_{i}d_{i\alpha}}{\sum_{i=1}^{m}w_{i}}
+#' }
+#'
+#' where \eqn{w_{i}} is the weight assigned to trajectory \eqn{i}.
+#'
+#'
+#' \strong{Dynamic Beta Diversity (`dBD_edr()`)}
+#'
+#' dBD quantifies the overall variation of the trajectories in an EDR and is
+#' equivalent to the average distance to the centroid of the EDR
 #' (De Cáceres et al., 2019).
+#'
 #' \eqn{
-#' dBD = \frac{\sum{i=1}^{m-1}\sum{j=1+1}^{m}d_{ij}^{2}}{m(m-1)}
+#' dBD = \frac{\sum_{i=1}^{m-1}\sum_{j=i+1}^{m}d_{ij}^{2}}{m(m-1)}
 #' }
 #'
-#' Dynamic evenness (`dEve`) quantifies the regularity with which an EDR is filled
-#' by the individual trajectories (Sánchez-Pinillos et al.).
+#' \strong{Dynamic Evenness (`dEve_edr()`)}
+#'
+#' dEve quantifies the regularity with which an EDR is filled by the individual
+#' trajectories (Sánchez-Pinillos et al.).
+#'
 #' \eqn{
-#' dEve = \frac{\sum{l=1}^{m-1}\min(\frac{d_{ij}}{\sum{l=1}^{m-1}d_{ij}}, \frac{1}{m-1}) - \frac{1}{m-1}}{1-\frac{1}{1-1}}
+#' dEve = \frac{\sum_{l=1}^{m-1}\min(\frac{d_{ij}}{\sum_{l=1}^{m-1}d_{ij}}, \frac{1}{m-1}) - \frac{1}{m-1}}{1-\frac{1}{1-1}}
 #' }
+#'
 #' where \eqn{d_{ij}} is the dissimilarity between trajectories \eqn{i} and \eqn{j}
 #' linked in a minimum spanning tree by the link \eqn{l}.
 #'
 #' Optionally, it is possible to weight the trajectories of the EDR. In that case,
-#' `dEve` becomes analogous to the functional evenness index proposed by Villéger
+#' dEve becomes analogous to the functional evenness index proposed by Villéger
 #' et al. (2008).
+#'
 #' \eqn{
-#' dEve_{w} = \frac{\sum{l=1}^{m-1}\min(\frac{EW_{ij}}{\sum{l=1}^{m-1}EW_{ij}}, \frac{1}{m-1}) - \frac{1}{m-1}}{1-\frac{1}{1-1}}
+#' dEve_{w} = \frac{\sum_{l=1}^{m-1}\min(\frac{EW_{ij}}{\sum_{l=1}^{m-1}EW_{ij}}, \frac{1}{m-1}) - \frac{1}{m-1}}{1-\frac{1}{1-1}}
 #' }
+#'
 #' where \eqn{EW_{ij}} is the weighted evenness:
+#'
 #' \eqn{
 #' EW_{ij} = \frac{d_{ij}}{w_i + w_j}
 #' }
@@ -100,20 +119,32 @@
 #' @export
 #'
 #' @examples
-#' d = EDR_data$EDR1$state_dissim
-#' trajectories = EDR_data$EDR1$abundance$traj
-#' states = EDR_data$EDR1$abundance$state
+#' # Data to compute dDis, dBD, and dEve
+#' dStates <- EDR_data$EDR1$state_dissim
+#' dTraj <- EDR_data$EDR1$traj_dissim
+#' trajectories <- paste0("T", EDR_data$EDR1$abundance$traj)
+#' states <- EDR_data$EDR1$abundance$state
 #'
-#' # Dynamic dispersion
-#' dDis_edr(d = d, d.type = "dStates", trajectories = trajectories, states = states,
-#'          reference = 1, w.type = "precomputed",
-#'          w.values = 1:(length(unique(trajectories))-1))
+#' # Dynamic dispersion taking the first trajectory as reference
+#' dDis_edr(d = dTraj, d.type = "dTraj", trajectories = unique(trajectories),
+#'          reference = "T1")
 #'
-#' # Dynamic beta diversity
-#' dBD_edr(d = d, d.type = "dStates", trajectories = trajectories, states = states)
+#' # Dynamic dispersion weighting trajectories by their length
+#' dDis_edr(d = dStates, d.type = "dStates", trajectories = trajectories, states = states,
+#'          reference = "T1", w.type = "length")
+#'
+#' # Dynamic beta diversity using trajectory dissimilarities
+#' dBD_edr(d = dTraj, d.type = "dTraj", trajectories = unique(trajectories))
 #'
 #' # Dynamic evenness
-#' dEve_edr(d = d, d.type = "dStates", trajectories = trajectories, states = states)
+#' dEve_edr(d = dStates, d.type = "dStates", trajectories = trajectories, states = states)
+#'
+#' # Dynamic evenness considering that the 10 first trajectories are three times
+#' # more relevant than the rest
+#' w.values <- c(rep(3, 10), rep(1, length(unique(trajectories))-10))
+#' dEve_edr(d = dTraj, d.type = "dTraj", trajectories = unique(trajectories),
+#'          w.type = "precomputed", w.values = w.values)
+#'
 
 
 #### DYNAMIC DISPERSION (dDis) ####
@@ -140,7 +171,7 @@ dDis_edr <- function(d, d.type, trajectories, states = NULL, reference, w.type =
 
   if (d.type == "dStates") {
     if (is.null(states)) {
-      stop(cat("If 'd.type' = \"dStates\", you must provide a value for 'states'."))
+      stop("If 'd.type' = \"dStates\", you must provide a value for 'states'.")
     }
     if (length(states) != nrow(as.matrix(d))) {
       stop("The length of 'states' must be equal to both dimensions in 'd'.")
@@ -148,14 +179,14 @@ dDis_edr <- function(d, d.type, trajectories, states = NULL, reference, w.type =
   }
 
   if (length(reference) != 1) {
-    stop(cat("'reference' needs to have a length equal to one."))
+    stop("'reference' needs to have a length equal to one.")
   }
   if (sum(reference %in% trajectories) == 0) {
     if (d.type == "dStates") {
-      stop(cat("'reference' needs to be specified in 'trajectories' and 'd' must include dissimilarities between the observations of the reference trajectory and those of the other trajectories.", "\n"))
+      stop("'reference' needs to be specified in 'trajectories' and 'd' must include dissimilarities between the observations of the reference trajectory and those of the other trajectories.")
     }
     if (d.type == "dTraj") {
-      stop(cat("'reference' needs to be specified in 'trajectories' and 'd' must include dissimilarities between the reference trajectory and the other trajectories.", "\n"))
+      stop("'reference' needs to be specified in 'trajectories' and 'd' must include dissimilarities between the reference trajectory and the other trajectories.")
     }
   }
 
@@ -176,10 +207,10 @@ dDis_edr <- function(d, d.type, trajectories, states = NULL, reference, w.type =
   # Check the format for w.type and w.values
   if (w.type == "precomputed") {
     if (length(w.values) == 1) {
-      warning(cat("'w.values' has length 1. Equal weights will be assigned to all trajectories.", "\n"))
+      warning("'w.values' has length 1. Equal weights will be assigned to all trajectories.")
       w.type = "none"
     } else if (length(w.values) != Ntraj){
-      stop(cat("The length of 'w.values' needs to be equal to the number of trajectories to be evaluated (excluding the reference trajectory).", "\n"))
+      stop("The length of 'w.values' needs to be equal to the number of trajectories to be evaluated (excluding the reference trajectory).")
     }
     if(!is.numeric(w.values)){
       stop("'w.values' needs to be numeric")
@@ -192,7 +223,7 @@ dDis_edr <- function(d, d.type, trajectories, states = NULL, reference, w.type =
 
   if (w.type == "length") {
     if (d.type == "dTraj") {
-      stop(cat("If w.type = \"length\", 'd' needs to contain dissimilarities between trajectory states (i.e., d.type =\"dStates\").", "\n"))
+      stop("If w.type = \"length\", 'd' needs to contain dissimilarities between trajectory states (i.e., d.type =\"dStates\").")
     } else {
       trajL = ecotraj::trajectoryLengths(d = as.matrix(d)[trajectories %in% noRef, trajectories %in% noRef],
                                          sites = noRef, surveys = noRef_states)
@@ -202,7 +233,7 @@ dDis_edr <- function(d, d.type, trajectories, states = NULL, reference, w.type =
 
   if (w.type == "size") {
     if (d.type == "dTraj") {
-      stop(cat("If w.type = \"size\", 'd' needs to contain dissimilarities between trajectory states (i.e., d.type =\"dStates\").", "\n"))
+      stop("If w.type = \"size\", 'd' needs to contain dissimilarities between trajectory states (i.e., d.type =\"dStates\").")
     } else {
       w.values = table(noRef)
     }
@@ -216,6 +247,7 @@ dDis_edr <- function(d, d.type, trajectories, states = NULL, reference, w.type =
                                                        surveys = states,...))
   } else if (d.type == "dTraj") {
     trajD.Ref = as.matrix(d)
+    dimnames(trajD.Ref) <- list(trajectories, trajectories)
   }
 
   # Compute dDis
@@ -234,7 +266,7 @@ dDis_edr <- function(d, d.type, trajectories, states = NULL, reference, w.type =
 
 #### DYNAMIC BETA DIVERSITY (dBD) ####
 
-dBD_edr <- function(d, d.type = "states", trajectories, states = NULL, ...){
+dBD_edr <- function(d, d.type = "dStates", trajectories, states = NULL, ...){
 
   d.type <- match.arg(d.type, c("dStates", "dTraj"))
   if (d.type == "dTraj") {
@@ -255,7 +287,7 @@ dBD_edr <- function(d, d.type = "states", trajectories, states = NULL, ...){
 
   if (d.type == "dStates") {
     if (is.null(states)) {
-      stop(cat("If 'd.type' = \"dStates\", you must provide a value for 'states'."))
+      stop("If 'd.type' = \"dStates\", you must provide a value for 'states'.")
     }
     if (length(states) != nrow(as.matrix(d))) {
       stop("The length of 'states' must be equal to both dimensions in 'd'.")
@@ -316,7 +348,7 @@ dEve_edr <- function(d, d.type = "dStates", trajectories, states = NULL, w.type 
 
   if (d.type == "dStates") {
     if (is.null(states)) {
-      stop(cat("If 'd.type' = \"dStates\", you must provide a value for 'states'."))
+      stop("If 'd.type' = \"dStates\", you must provide a value for 'states'.")
     }
     if (length(states) != nrow(as.matrix(d))) {
       stop("The length of 'states' must be equal to both dimensions in 'd'.")
@@ -342,10 +374,10 @@ dEve_edr <- function(d, d.type = "dStates", trajectories, states = NULL, w.type 
   # Check the format for w.type and w.values
   if (w.type == "precomputed") {
     if (length(w.values) == 1) {
-      warning(cat("'w.values' has length 1. Equal weights will be assigned to all trajectories.", "\n"))
+      warning("'w.values' has length 1. Equal weights will be assigned to all trajectories.")
       w.type = "none"
     } else if (length(w.values) != Ntraj){
-      stop(cat("The length of 'w.values' needs to be equal to the number of trajectories to be evaluated (excluding the reference trajectory).", "\n"))
+      stop("The length of 'w.values' needs to be equal to the number of trajectories to be evaluated (excluding the reference trajectory).")
     }
     if(!is.numeric(w.values)){
       stop("'w.values' needs to be numeric")
@@ -358,16 +390,16 @@ dEve_edr <- function(d, d.type = "dStates", trajectories, states = NULL, w.type 
 
   if (w.type == "length") {
     if (d.type == "dTraj") {
-      stop(cat("If w.type = \"length\", 'd' needs to contain dissimilarities between trajectory states (i.e., d.type =\"dStates\").", "\n"))
+      stop("If w.type = \"length\", 'd' needs to contain dissimilarities between trajectory states (i.e., d.type =\"dStates\").")
     } else {
-      trajD = ecotraj::trajectoryLengths(d = d, sites = trajectories, surveys = states)
-      w.values = trajD$Trajectory
+      trajL = ecotraj::trajectoryLengths(d = d, sites = trajectories, surveys = states)
+      w.values = trajL$Trajectory
     }
   }
 
   if (w.type == "size") {
     if (d.type == "dTraj") {
-      stop(cat("If w.type = \"size\", 'd' needs to contain dissimilarities between trajectory states (i.e., d.type =\"dStates\").", "\n"))
+      stop("If w.type = \"size\", 'd' needs to contain dissimilarities between trajectory states (i.e., d.type =\"dStates\").")
     } else {
       w.values = table(trajectories)
     }
