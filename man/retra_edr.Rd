@@ -19,7 +19,7 @@ retra_edr(
 )
 }
 \arguments{
-\item{d}{Either symmetric matrix or object of class \code{"dist"} containing the
+\item{d}{Either a symmetric matrix or an object of class \code{\link{dist}} containing the
 dissimilarities between each pair of states of all trajectories.}
 
 \item{trajectories}{Vector indicating the trajectory or site to which each
@@ -31,22 +31,22 @@ each trajectory.}
 \item{minSegs}{Integer indicating the minimum number of segments in a region
 of the EDR to be represented by a segment of the representative trajectory.}
 
-\item{dSegs}{Either symmetric matrix or object of class \code{"dist"} containing
+\item{dSegs}{Either a symmetric matrix or an object of class \code{\link{dist}} containing
 the dissimilarities between every pair of trajectory segments (see Details).}
 
 \item{coordSegs}{Matrix containing the coordinates of trajectory segments (rows)
 in each axis (columns) of an ordination space (see Details).}
 
 \item{traj_Segs}{Vector indicating the trajectory to which each segment in \code{dSeg}
-and/or \code{coordSegs} belongs. Only required if \code{dSeg} or \code{coordSegs} are not \code{NULL}.}
+and/or \code{coordSegs} belongs. Only required if \code{dSegs} or \code{coordSegs} are not \code{NULL}.}
 
-\item{state1_Segs}{Vector indicating the initial state of each segment in \code{dSeg}
+\item{state1_Segs}{Vector indicating the initial state of each segment in \code{dSegs}
 and/or \code{coordSegs} according to the values given in \code{states}. Only required if
-\code{dSeg} or \code{coordSegs} are not \code{NULL}.}
+\code{dSegs} or \code{coordSegs} are not \code{NULL}.}
 
-\item{state2_Segs}{Vector indicating the final state of each segment in \code{dSeg}
+\item{state2_Segs}{Vector indicating the final state of each segment in \code{dSegs}
 and/or \code{coordSegs} according to the values given in \code{states}. Only required if
-\code{dSeg} or \code{coordSegs} are not \code{NULL}.}
+\code{dSegs} or \code{coordSegs} are not \code{NULL}.}
 
 \item{Dim}{Optional integer indicating the number of axes considered to
 partition the segment space and generate a kd-tree. By default (\code{Dim = NULL}),
@@ -60,41 +60,41 @@ partitions are made regardless of the size.}
 The function \code{retra_edr()} returns an object of class \code{RETRA}, which is a list
 of length equal to the number of representative trajectories identified. For
 each trajectory, the following information is returned:
-\itemize{
-\item \code{minSegs}: Value of the \code{minSegs} parameter.
-\item \code{Segments}: Vector of strings including the sequence of segments forming the
+\describe{
+\item{\code{minSegs}}{Value of the \code{minSegs} parameter.}
+\item{\code{Segments}}{Vector of strings including the sequence of segments forming the
 representative trajectory. Each segment is identified by a string of the form
 \code{traj[st1-st2]}, where \code{traj} is the identifier of the original trajectory to
 which the segment belongs and \code{st1} and \code{st2} are identifiers of the initial
-and final states defining the segment.
-\item \code{Size}: Numeric value indicating the number of states forming the representative
-trajectory.
-\item \code{Length}: Numeric value indicating the length of the representative trajectory,
+and final states defining the segment.}
+\item{\code{Size}}{Numeric value indicating the number of states forming the representative
+trajectory.}
+\item{\code{Length}}{Numeric value indicating the length of the representative trajectory,
 calculated as the sum of the dissimilarities in \code{d} between every pair of
-consecutive states.
-\item \code{Link_distance}: Data frame of two columns indicating the link between two
+consecutive states.}
+\item{\code{Link_distance}}{Data frame of two columns indicating artificial links between
 representative segments (\code{Link}) and the dissimilarity between the connected
-states (\code{Distance}).
-\item \code{Seg_density}: Data frame of two columns and one row for each representative
-segment.
-}
-\itemize{
-\item \code{Density} indicates the number of segments in the leaf of the kd-tree represented
-by each segment.
-\item \code{kdTree_depth} contains the depth of the kd-tree for each leaf represented
-by the corresponding segment. That is, the number of partitions of the ordination
-space until finding a region with \code{minSegs} segments or less.
+states (\code{Distance}). When two representative segments are linked by a common
+state or by two consecutive states of the same trajectory, the link distance
+is zero or equal to the length of a real segment, respectively. In both cases,
+the link is not considered in the returned data frame.}
+\item{\code{Seg_density}}{Data frame of two columns and one row for each representative
+segment. \code{Density} contains the number of segments in the leaf of the kd-tree
+represented by each segment. \code{kdTree_depth} contains the depth of the kd-tree
+for each leaf represented by the corresponding segment. That is, the number of
+partitions of the ordination space until finding a region with \code{minSegs} segments
+or less.}
 }
 }
 \description{
-\code{retra_edr} applies the algorithm RETRA-EDR (Sánchez-Pinillos et al.) to identify
+\code{retra_edr()} applies the algorithm RETRA-EDR (Sánchez-Pinillos et al.) to identify
 representative trajectories of the main dynamical patters of an Ecological
 Dynamic Regime (EDR).
 }
 \details{
 The algorithm RETRA-EDR is based on a partition-and-group approach by which it
 identifies regions densely crossed by ecological trajectories in an EDR, selects
-a representative segment in each dense region, and merges the representative
+a representative segment in each dense region, and joins the representative
 segments by a set of artificial \code{Links} to generate a network of representative
 trajectories. For that, RETRA-EDR splits the trajectories of the EDR into
 segments and uses an ordination space generated from a matrix compiling the
@@ -102,12 +102,12 @@ dissimilarities between trajectory segments. Dense regions are identified by
 applying a kd-tree to the ordination space.
 
 By default, RETRA-EDR calculates segment dissimilarities following the approach
-by De Caceres et al.(2019) and applies metric multidimensional scaling (MDS)
-to generate the ordination space. Depending on the number of trajectories and
-their size (i.e., the number of states per trajectory), this procedure can
-be long. However, it is possible to provide pre-defined values for the arguments
-\code{dSegs} and \code{coordSegs} to reduce the computational time or use other dissimilarity
-metrics or ordination methods.
+by De Caceres et al. (2019) and applies metric multidimensional scaling (MDS,
+Borg and Groenen, 2005) to generate the ordination space. It is possible to use
+other dissimilarity metrics and/or ordination methods and reduce the computational
+time by indicating the dissimilarity matrix and the segment coordinates in the
+ordination space of choice through the arguments \code{dSegs} and \code{coordSegs},
+respectively.
 \itemize{
 \item If \code{!is.null(dSegs)} and \code{is.null(coordSegs)}, RETRA-EDR is computed by
 applying MDS to \code{dSegs}.
@@ -117,23 +117,50 @@ identified using \code{dSegs}. Ideally, \code{coordSegs} should be calculated by
 from \code{dSegs}.
 \item If \code{is.null(dSegs)} and \code{!is.null(coordSegs)} (not recommended), RETRA-EDR
 is directly computed from the coordinates provided in \code{coordSegs}. As \code{dSegs}
-is not provided, \code{retra_edr} assumes that the ordination space is metric and
+is not provided, \code{retra_edr()} assumes that the ordination space is metric and
 identifies representative segments using the Euclidean distance.
 }
-
-Because RETRA-EDR is a density-based algorithm, the value assigned to \code{minSegs}
-may affect the number of representative trajectories obtained. In this sense,
-small values of \code{minSegs} can lead to a relatively high number of representative
-trajectories. In contrast, large values of \code{minSegs} lead to a smaller number
-of trajectories, only capturing the dynamical patterns of the densest regions
-in the EDR. In any case, the regions of the EDR with less than \code{minSegs} trajectory
-segments will not be represented by the representative trajectories.
 }
 \examples{
-d = EDR_data$EDR1$state_dissim
-trajectories = EDR_data$EDR1$abundance$traj
-states = EDR_data$EDR1$abundance$state
-RT <- retra_edr(d = d, trajectories = trajectories, states = states, minSegs = 5)
+# Example 1 -----------------------------------------------------------------
+# Identify representative trajectories from state dissimilarities
+
+library(vegan)
+
+# Calculate state dissimilarities (Bray-Curtis) from species abundances
+abundance <- data.frame(EDR_data$EDR1$abundance)
+row.names(abundance) <- paste0(abundance$traj, "_", abundance$state)
+d <- vegdist(abundance[, -c(1:3)], method = "bray")
+
+# Identify the trajectory (or site) and states in d
+traj_state <- strsplit(labels(d), "_")
+trajectories <- sapply(traj_state, "[", 1)
+states <- as.integer(sapply(traj_state, "[", 2))
+
+# Compute RETRA-EDR
+RT1 <- retra_edr(d = d, trajectories = trajectories, states = states, minSegs = 5)
+
+# Example 2 -----------------------------------------------------------------
+# Identify representative trajectories from segment dissimilarities
+
+library(ecotraj)
+
+# Calculate segment dissimilarities using the Hausdorff distance
+dSegs <- segmentDistances(d = d, sites = trajectories, surveys = states,
+                          distance.type = "Hausdorff")
+dSegs <- dSegs$Dseg
+
+# Identify the trajectory (or site) and states in dSegs:
+# Split the labels of dSegs (traj[st1-st2]) into traj, st1, and st2
+seg_components <- strsplit(gsub("\\\\]", "", gsub("\\\\[", "-", labels(dSegs))), "-")
+traj_Segs <- sapply(seg_components, "[", 1)
+state1_Segs <- as.integer(sapply(seg_components, "[", 2))
+state2_Segs <- as.integer(sapply(seg_components, "[", 3))
+
+# Compute RETRA-EDR
+RT2 <- retra_edr(d = d, trajectories = trajectories, states = states, minSegs = 5,
+                dSegs = dSegs, traj_Segs = traj_Segs,
+                state1_Segs = state1_Segs, state2_Segs = state2_Segs)
 
 
 }
@@ -144,12 +171,19 @@ Regimes: Identification, characterization, and comparison
 De Cáceres, M, Coll L, Legendre P, Allen RB, Wiser SK, Fortin MJ,
 Condit R & Hubbell S. (2019). Trajectory analysis in community ecology. Ecological
 Monographs.
+
+Borg, I., & Groenen, P. J. F. (2005). Modern Multidimensional Scaling (2nd ed.).
+Springer.
 }
 \seealso{
 \code{\link[=summary]{summary()}} for summarizing the characteristics of the set of representative
-trajectories
+trajectories.
+
 \code{\link[=plot]{plot()}} for plotting representative trajectories in an ordination space
 representing the state space of the EDR.
+
+\code{\link[=define_retra]{define_retra()}} for defining representative trajectories from a subset of
+segments or trajectory features.
 }
 \author{
 Martina Sánchez-Pinillos, CNRS, Univ. Montpellier

@@ -24,7 +24,7 @@ Matrix including the dissimilarities between every pair of EDRs.
 }
 \description{
 Generate a matrix compiling dissimilarities between one or more pairs of
-Ecological Dynamic Regimes (EDR). \code{dist_edr} computes different dissimilarity
+Ecological Dynamic Regimes (EDR). \code{dist_edr()} computes different dissimilarity
 indices, all of them based on the dissimilarities between the trajectories of
 two EDRs.
 }
