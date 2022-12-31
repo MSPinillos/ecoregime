@@ -18,7 +18,7 @@ dDis_edr(
   ...
 )
 
-dBD_edr(d, d.type = "states", trajectories, states = NULL, ...)
+dBD_edr(d, d.type = "dStates", trajectories, states = NULL, ...)
 
 dEve_edr(
   d,
@@ -31,10 +31,11 @@ dEve_edr(
 )
 }
 \arguments{
-\item{d}{Symmetric matrix or object of class \code{dist} containing the
+\item{d}{Symmetric matrix or object of class \code{\link{dist}} containing the
 dissimilarities between each pair of states of all trajectories or the
 dissimilarities between each pair of trajectories. To compute dDis, \code{d} needs
-to include the states/trajectory of reference.}
+to include the dissimilarities between all states/trajectories and the
+states/trajectory of reference.}
 
 \item{d.type}{One of \code{"dStates"} (if \code{d} contains state dissimilarities) or
 \code{"dTraj"} (if \code{d} contains trajectory dissimilarities).}
@@ -42,7 +43,7 @@ to include the states/trajectory of reference.}
 \item{trajectories}{Vector indicating the trajectory or site corresponding to
 each entry in \code{d}.}
 
-\item{states}{Only if \code{d.type} = \verb{"dStates}. Vector of integers indicating the
+\item{states}{Only if \code{d.type} = \code{"dStates"}. Vector of integers indicating the
 order of the states in \code{d} for each trajectory.}
 
 \item{reference}{Vector of the same class as \code{trajectories} and length equal
@@ -53,9 +54,10 @@ to one, indicating the reference trajectory to compute dDis.}
 \item \code{"none"}: All trajectories are considered equally relevant (default).
 \item \code{"length"}: Trajectories are weighted by their length, calculated as the
 sum of the dissimilarities between every pair of consecutive states. \code{d} must
-be of type \code{d.type = "dStates"}.
+contain dissimilarities between trajectory states and \code{d.type} = \code{"dStates"}.
 \item \code{"size"}: Trajectories are weighted by their size, calculated as the number
-of states forming the trajectory.
+of states forming the trajectory. \code{d} must contain dissimilarities between
+trajectory states and \code{d.type} = \code{"dStates"}.
 \item \code{"precomputed"}: Trajectories weighted according to different criteria.
 }}
 
@@ -68,75 +70,102 @@ trajectory dissimilarities. See \code{\link[ecotraj:trajectorymetrics]{ecotraj::
 }
 \value{
 \itemize{
-\item \code{dDis_edr} returns the value of dynamic dispersion for a given trajectory
+\item \code{dDis_edr()} returns the value of dynamic dispersion for a given trajectory
 taken as a reference.
-\item \code{dBD_edr} returns the value of dynamic beta diversity.
-\item \code{dEve_edr} returns the value of dynamic evenness.
+\item \code{dBD_edr()} returns the value of dynamic beta diversity.
+\item \code{dEve_edr()} returns the value of dynamic evenness.
 }
 }
 \description{
 Set of metrics to analyze the distribution and variability of trajectories
-in Ecological Dynamic Regimes, including dynamic dispersion (dDis), dynamic
+in Ecological Dynamic Regimes (EDR), including dynamic dispersion (dDis), dynamic
 beta diversity (dBD), and dynamic evenness (dEve).
 }
 \details{
-Dynamic dispersion (\code{dDis}) is calculated as the average dissimilarity
-between each trajectory in an EDR and a target trajectory taken as reference
-(Sánchez-Pinillos et al.).
+\strong{Dynamic Dispersion (\code{dDis_edr()})}
+
+dDis is calculated as the average dissimilarity between each trajectory in an
+EDR and a target trajectory taken as reference (Sánchez-Pinillos et al.).
+
 \eqn{
-dDis = \frac{\sum{i=1}^{m}d_{i\alpha}}{m}
+dDis = \frac{\sum_{i=1}^{m}d_{i\alpha}}{m}
 }
+
 where \eqn{d_{i\alpha}} is the dissimilarity between trajectory \eqn{i} and
 the trajectory of reference \eqn{\alpha}, and \eqn{m} is the number of trajectories.
 
 Alternatively, it is possible to calculate a weighted mean of the dissimilarities
 by assigning a weight to each trajectory.
-\eqn{
-dDis = \frac{\sum{i=1}^{m}w_{i}*d_{i\alpha}}{\sum{i=1}^{m}w_{i}}
-}
-with \eqn{w_{i}} is the weight assigned to trajectory \eqn{i}.
 
-Dynamic beta diversity (\code{dBD}) quantifies the overall variation of the trajectories
-in an EDR and is equivalent to the average distance to the centroid of the EDR
+\eqn{
+dDis = \frac{\sum_{i=1}^{m}w_{i}d_{i\alpha}}{\sum_{i=1}^{m}w_{i}}
+}
+
+where \eqn{w_{i}} is the weight assigned to trajectory \eqn{i}.
+
+\strong{Dynamic Beta Diversity (\code{dBD_edr()})}
+
+dBD quantifies the overall variation of the trajectories in an EDR and is
+equivalent to the average distance to the centroid of the EDR
 (De Cáceres et al., 2019).
+
 \eqn{
-dBD = \frac{\sum{i=1}^{m-1}\sum{j=1+1}^{m}d_{ij}^{2}}{m(m-1)}
+dBD = \frac{\sum_{i=1}^{m-1}\sum_{j=i+1}^{m}d_{ij}^{2}}{m(m-1)}
 }
 
-Dynamic evenness (\code{dEve}) quantifies the regularity with which an EDR is filled
-by the individual trajectories (Sánchez-Pinillos et al.).
+\strong{Dynamic Evenness (\code{dEve_edr()})}
+
+dEve quantifies the regularity with which an EDR is filled by the individual
+trajectories (Sánchez-Pinillos et al.).
+
 \eqn{
-dEve = \frac{\sum{l=1}^{m-1}\min(\frac{d_{ij}}{\sum{l=1}^{m-1}d_{ij}}, \frac{1}{m-1}) - \frac{1}{m-1}}{1-\frac{1}{1-1}}
+dEve = \frac{\sum_{l=1}^{m-1}\min(\frac{d_{ij}}{\sum_{l=1}^{m-1}d_{ij}}, \frac{1}{m-1}) - \frac{1}{m-1}}{1-\frac{1}{1-1}}
 }
+
 where \eqn{d_{ij}} is the dissimilarity between trajectories \eqn{i} and \eqn{j}
 linked in a minimum spanning tree by the link \eqn{l}.
 
 Optionally, it is possible to weight the trajectories of the EDR. In that case,
-\code{dEve} becomes analogous to the functional evenness index proposed by Villéger
+dEve becomes analogous to the functional evenness index proposed by Villéger
 et al. (2008).
+
 \eqn{
-dEve_{w} = \frac{\sum{l=1}^{m-1}\min(\frac{EW_{ij}}{\sum{l=1}^{m-1}EW_{ij}}, \frac{1}{m-1}) - \frac{1}{m-1}}{1-\frac{1}{1-1}}
+dEve_{w} = \frac{\sum_{l=1}^{m-1}\min(\frac{EW_{ij}}{\sum_{l=1}^{m-1}EW_{ij}}, \frac{1}{m-1}) - \frac{1}{m-1}}{1-\frac{1}{1-1}}
 }
+
 where \eqn{EW_{ij}} is the weighted evenness:
+
 \eqn{
 EW_{ij} = \frac{d_{ij}}{w_i + w_j}
 }
 }
 \examples{
-d = EDR_data$EDR1$state_dissim
-trajectories = EDR_data$EDR1$abundance$traj
-states = EDR_data$EDR1$abundance$state
+# Data to compute dDis, dBD, and dEve
+dStates <- EDR_data$EDR1$state_dissim
+dTraj <- EDR_data$EDR1$traj_dissim
+trajectories <- paste0("T", EDR_data$EDR1$abundance$traj)
+states <- EDR_data$EDR1$abundance$state
 
-# Dynamic dispersion
-dDis_edr(d = d, d.type = "dStates", trajectories = trajectories, states = states,
-         reference = 1, w.type = "precomputed",
-         w.values = 1:(length(unique(trajectories))-1))
+# Dynamic dispersion taking the first trajectory as reference
+dDis_edr(d = dTraj, d.type = "dTraj", trajectories = unique(trajectories),
+         reference = "T1")
 
-# Dynamic beta diversity
-dBD_edr(d = d, d.type = "dStates", trajectories = trajectories, states = states)
+# Dynamic dispersion weighting trajectories by their length
+dDis_edr(d = dStates, d.type = "dStates", trajectories = trajectories, states = states,
+         reference = "T1", w.type = "length")
+
+# Dynamic beta diversity using trajectory dissimilarities
+dBD_edr(d = dTraj, d.type = "dTraj", trajectories = unique(trajectories))
 
 # Dynamic evenness
-dEve_edr(d = d, d.type = "dStates", trajectories = trajectories, states = states)
+dEve_edr(d = dStates, d.type = "dStates", trajectories = trajectories, states = states)
+
+# Dynamic evenness considering that the 10 first trajectories are three times
+# more relevant than the rest
+w.values <- c(rep(3, 10), rep(1, length(unique(trajectories))-10))
+dEve_edr(d = dTraj, d.type = "dTraj", trajectories = unique(trajectories),
+         w.type = "precomputed", w.values = w.values)
+
 }
 \references{
 Sánchez-Pinillos, M., Kéfi, S., De Cáceres, M., Dakos, V. Ecological Dynamic
