@@ -1,120 +1,129 @@
-#' Define representative trajectories from trajectory states
+#' Define representative trajectories from trajectory features
 #'
 #' @description
 #' Generate an object of class `RETRA` from a data frame containing trajectory
-#' states to define representative trajectories.
+#' states to define representative trajectories in Ecological Dynamic Regimes (EDR).
 #'
 #' @param data A data frame indicating identifiers for the new representative
-#' trajectories, the individual trajectories to which their states belong, the
-#' order of the states in the individual trajectories, and if `!is.null(retra)`,
+#' trajectories, the individual trajectories or sites to which their states belong,
+#' the order of the states in the individual trajectories, and if `!is.null(retra)`,
 #' the identifier of the representative trajectory to which their states belong
 #' (see Details to define `data`).
-#' @param d Either symmetric matrix or object of class `dist` containing the
+#' @param d Either a symmetric matrix or an object of class [`dist`] containing the
 #' dissimilarities between each pair of states of all trajectories. If `NULL`
-#' (default), `Length` and `Link_distance` are not calculated.
+#' (default), the length (`Length`) of the representative trajectories and the
+#' distances between states of different trajectories or sites (`Link_distance`)
+#' are not calculated.
 #' @param trajectories Only needed if `!is.null(d)`. Vector indicating the
 #' trajectory or site to which each state in `d` belongs.
 #' @param states Only needed if `!is.null(d)`. Vector of integers indicating the
 #' order of the states in `d` for each trajectory.
-#' @param retra Object of class `RETRA` returned from function `retra_edr`.
+#' @param retra Object of class `RETRA` returned from function [retra_edr()].
 #' If `NULL` (default), `minSegs` and `Seg_density` are not provided.
 #'
 #' @details
-#' Each representative trajectory returned by the function [`retra_edr`] corresponds
+#' Each representative trajectory returned by the function [retra_edr()] corresponds
 #' to the longest sequence of representative segments that can be linked according
 #' to the criteria defined in the RETRA-EDR algorithm (Sánchez-Pinillos et al.).
 #' One could be interested in splitting the obtained trajectories, considering
-#' only a fraction, or even defining representative trajectories following different
-#' criteria than those in RETRA-EDR.
-#' The function `define_retra` allows generating an object of class `RETRA` that
-#' can be used in other functions of `ecoregime` (e.g., [`plot`]). For that, it is
+#' only a fraction of the returned trajectories, or defining representative
+#' trajectories following different criteria than those in RETRA-EDR.
+#' The function `define_retra()` allows generating an object of class `RETRA` that
+#' can be used in other functions of `ecoregime` (e.g., [plot()]). For that, it is
 #' necessary to provide a data frame (`data`) with as many rows as the number of
 #' states in all representative trajectories and the following columns:
-#' * `$RT` String indicating the identifier of the new representative trajectories.
+#' \describe{
+#' \item{`RT`}{String indicating the identifier of the new representative trajectories.
 #' Each identifier needs to appear as many times as the number of states forming
-#' each representative trajectory.
-#' * `$RT_traj` Vector indicating the individual trajectory in the EDR to which
-#' each state of the representative trajectory belongs.
-#' * `$RT_states` Vector of integers indicating the identifier of the states forming
-#' the representative trajectories according to the order of the states in the
-#' individual trajectories of the EDR to which they belong.
-#' * `$RT_retra` Only if the new trajectories are defined from the representative
-#' trajectories returned by `retra_edr` (i.e., `!is.null(retra)`). Vector of strings
-#' indicating the representative trajectory in `retra` to which each state belongs.
+#' each representative trajectory.}
+#' \item{`RT_traj`}{Vector indicating the individual trajectory in the EDR to which
+#' each state of the representative trajectory belongs.}
+#' \item{`RT_states`}{Vector of integers indicating the identifier of the states
+#' forming the representative trajectories. Each integer must refer to the order
+#' of the states in the individual trajectories of the EDR to which they belong.}
+#' \item{`RT_retra`}{Only if the new trajectories are defined from representative
+#' trajectories returned by [retra_edr()] (when `!is.null(retra)`). Vector of strings
+#' indicating the representative trajectory in `retra` to which each state belongs.}
+#' }
 #'
 #' @return
 #' An object of class `RETRA`, which is a list of length equal to the number of
 #' representative trajectories defined. For each trajectory, the following
 #' information is returned:
-#' * `minSegs`: Value of the `minSegs` parameter. Only if `!is.null(retra)`.
-#' * `Segments`: Vector of strings including the sequence of segments forming the
+#' \describe{
+#' \item{`minSegs`}{Value of the `minSegs` parameter used in [retra_edr()]. If `retra`
+#' is `NULL`, `minSegs` = `NA`.}
+#' \item{`Segments`}{Vector of strings including the sequence of segments forming the
 #' representative trajectory. Each segment is identified by a string of the form
 #' `traj[st1-st2]`, where `traj` is the identifier of the original trajectory to
 #' which the segment belongs and `st1` and `st2` are identifiers of the initial
 #' and final states defining the segment. The same format `traj[st1-st2]` is
-#' maintained when one state of an individual trajectory is considered (`st1 = st2`).
-#' `traj`, `st1`, and `st2` are recycled from `data`
-#' * `Size`: Numeric value indicating the number of states forming the representative
-#' trajectory.
-#' * `Length`: Numeric value indicating the length of the representative trajectory,
+#' maintained when one state of an individual trajectory is considered (`st1` = `st2`).
+#' `traj`, `st1`, and `st2` are recycled from `data`.}
+#' \item{`Size`}{Integer indicating the number of states forming the representative
+#' trajectory.}
+#' \item{`Length`}{Numeric value indicating the length of the representative trajectory,
 #' calculated as the sum of the dissimilarities in `d` between every pair of
-#' consecutive states. Only if `!is.null(d)`.
-#' * `Link_distance`: Data frame of two columns indicating the link between two
-#' segments (`Link`) and the dissimilarity between the connected states (`Distance`).
-#' Only if `!is.null(d)`.
-#' * `Seg_density`: Data frame of two columns and one row for each representative
-#' segment. Only if `!is.null(retra)`.
-#' + `Density` indicates the number of segments in the leaf of the kd-tree represented
-#' by each segment.
-#' + `kdTree_depth` contains the depth of the kd-tree for each leaf represented
-#' by the corresponding segment. That is, the number of partitions of the ordination
-#' space until finding a region with `minSegs` segments or less.
+#' consecutive states. If `d` is `NULL`, `Length` = `NA`.}
+#' \item{`Link_distance`}{Data frame of two columns indicating artificial links between
+#' two segments (`Link`) and the dissimilarity between the connected states
+#' (`Distance`). When two representative segments are linked by a common state or
+#' by two consecutive states of the same trajectory, the link distance is zero or
+#' equal to the length of a real segment, respectively. In both cases, the link
+#' is not considered in the returned data frame. If `d` is `NULL`, `Link_distance`
+#' = `NA`.}
+#' \item{`Seg_density`}{Data frame of two columns and one row for each representative
+#' segment. `Density` contains the number of segments in the leaf of the kd-tree
+#' represented by each segment. `kdTree_depth` contains the depth of the kd-tree
+#' for each leaf represented by the corresponding segment. That is, the number of
+#' partitions of the ordination space until finding a region with `minSegs` segments
+#' or less. If `retra` is `NULL`, `Seg_density` = `NA`.}
+#' }
 #'
 #' @author Martina Sánchez-Pinillos, CNRS, Univ. Montpellier
 #'
 #' @seealso
-#' [`retra_edr`] for identifying representative trajectories in EDRs applying
+#' [retra_edr()] for identifying representative trajectories in EDRs applying
 #' RETRA-EDR.
-#' [`plot`] for plotting representative trajectories in an ordination space
+#'
+#' [plot()] for plotting representative trajectories in an ordination space
 #' representing the state space of the EDR.
 #'
 #' @export
 #'
 #' @examples
 #' # Example 1 -----------------------------------------------------------------
-#' # Define representative trajectories from the outputs of `retra_edr`.
+#' # Define representative trajectories from the outputs of `retra_edr()`.
 #'
-#' # Identify representative trajectories using `retra_edr`
-#' d = EDR_data$EDR1$state_dissim
-#' trajectories = EDR_data$EDR1$abundance$traj
-#' states = EDR_data$EDR1$abundance$state
+#' # Identify representative trajectories using `retra_edr()`
+#' d <- EDR_data$EDR1$state_dissim
+#' trajectories <- EDR_data$EDR1$abundance$traj
+#' states <- EDR_data$EDR1$abundance$state
 #' old_retra <- retra_edr(d = d, trajectories = trajectories, states = states, minSegs = 5)
 #'
-#' # `retra_edr` returns three representative trajectories
+#' # `retra_edr()` returns three representative trajectories
 #' old_retra
 #'
 #' # Keep the last five segments of trajectories "T2" and "T3"
 #' selected_segs <- old_retra$T2$Segments[4:length(old_retra$T2$Segments)]
 #'
 #' # Identify the individual trajectories for each state...
-#' selected_segs   # each value represents traj[St1-St2]
-#' selected_traj <- rep(c(15, 4, 4, 1, 14), each = 2)  # This is "traj" in traj[St1-St2]
+#' selected_segs   # each value represents traj[st1-st2]
+#' selected_traj <- rep(c(15, 4, 4, 1, 14), each = 2) # This is "traj" in traj[st1-st2]
 #'
 #' # ...and the states (in the same order than the representative trajectory).
-#' # (the states appear in the [] of the representative segments)
-#' selected_segs   # each value represents traj[St1-St2]
-#' selected_states <- c(1, 2, 2, 3, 3, 4, 1, 2, 2, 3) # This is "St1, St2" in traj[St1-St2]
+#' selected_states <- c(1, 2, 2, 3, 3, 4, 1, 2, 2, 3) # This is "st1, st2" in traj[st1-st2]
 #'
 #' # Generate the data frame with the format indicated in the documentation
-#' df <- data.frame(RT = rep("A", length(selected_states)),        # name of the new trajectory as "A"
+#' df <- data.frame(RT = rep("A", length(selected_states)), # name of the new trajectory as "A"
 #'                  RT_traj = selected_traj,
 #'                  RT_states = as.integer(selected_states),
-#'                  RT_retra = rep("T2", length(selected_states)))  # it could be "T3" too
+#'                  RT_retra = rep("T2", length(selected_states))) # it could be "T3" too
 #'
 #' # Remove duplicates (trajectory 4, state 3)
 #' df <- unique(df)
 #'
-#' # Generate a RETRA object
+#' # Generate a RETRA object using define_retra()
 #' new_retra <- define_retra(data = df,
 #'                           d = d,
 #'                           trajectories = trajectories,
@@ -126,19 +135,19 @@
 #'
 #' # Define trajectory "A" from states in trajectories 3 and 4
 #' data_A <- data.frame(RT = rep("A", 4), # name of the new representative trajectory
-#'                      RT_traj = c(3, 3, 4, 4), # name of the original trajectories
+#'                      RT_traj = c(3, 3, 4, 4), # identifier of the original trajectories
 #'                      RT_states = c(1:2, 4:5)) # states in the original trajectories
 #'
 #' # Define trajectory "B" from states in trajectories 5, 6, and 7
 #' data_B <- data.frame(RT = rep("B", 5), # name of the new representative trajectory
-#'                      RT_traj = c(5, 5, 6, 7, 7), # name of the original trajectories
+#'                      RT_traj = c(5, 5, 6, 7, 7), # identifier of the original trajectories
 #'                      RT_states = c(1, 2, 4, 4, 5)) # states in the original trajectories
 #'
 #' # Compile data for both trajectories in a data frame
 #' df <- rbind(data_A, data_B)
 #' df$RT_states <- as.integer(df$RT_states)
 #'
-#' # Generate a RETRA object
+#' # Generate a RETRA object using define_retra()
 #' new_retra <- define_retra(data = df, d = EDR_data$EDR2$state_dissim,
 #'                           trajectories = EDR_data$EDR2$abundance$traj,
 #'                           states = EDR_data$EDR2$abundance$state)
@@ -174,6 +183,7 @@ define_retra <- function(data, d = NULL, trajectories = NULL, states = NULL, ret
     if (length(states) != nrow(as.matrix(d))) {
       stop("The length of 'states' must be equal to both dimensions in 'd'.")
     }
+
   }
 
   ## ATTRIBUTE DEFINITION ------------------------------------------------------
@@ -204,7 +214,7 @@ define_retra <- function(data, d = NULL, trajectories = NULL, states = NULL, ret
       }
       i <- i+1
     }
-    if (data$RT_traj[ind_traj][nStates] != data$RT_traj[ind_traj][nStates-1] ) {
+    if (data$RT_traj[ind_traj][nStates] != data$RT_traj[ind_traj][nStates-1]) {
       data <- rbind(data, data[ind_traj[nStates], ])
     }
     data <- data[sort(data$id), ]
@@ -257,22 +267,20 @@ define_retra <- function(data, d = NULL, trajectories = NULL, states = NULL, ret
 
     # Link distance
     if (!is.null(d) & length(Segments) > 1) {
+      traj_states <-paste0(trajectories, "_", states)
+      seg_components <- strsplit(gsub("\\]", "", gsub("\\[", "-", Segments)), "-")
       Link_distance = data.frame(
         Link = vapply(1:(length(Segments) - 1), function (ilink) {
           paste0(Segments[ilink:(ilink+1)], collapse = " - ")
         }, character(1)),
+
         Distance = vapply(1:(length(Segments) - 1), function (ilink) {
-          seg_components <- strsplit(gsub("\\]", "", gsub("\\[", "-", Segments)), "-")
-          iSt1 <- which(paste0(trajectories, "_", states) == paste0(
-            seg_components[[ilink]][1], "_", seg_components[[ilink]][3]
-          ))
-          iSt2 <- which(paste0(trajectories, "_", states) == paste0(
-            seg_components[[ilink+1]][1], "_", seg_components[[ilink+1]][2]
-          ))
-          if (length(iSt1) == 1 & length(iSt2) == 1) {
-            distance <- as.matrix(d)[iSt1, iSt2]
-          }
-          if (length(iSt1) == 0 | length(iSt2) == 0) {
+          iSt1 <- paste0(seg_components[[ilink]][1], "_", seg_components[[ilink]][3])
+          iSt2 <- paste0(seg_components[[ilink+1]][1], "_", seg_components[[ilink+1]][2])
+          if (iSt1 %in% traj_states & iSt2 %in% traj_states) {
+            distance <- as.matrix(d)[which(traj_states == iSt1),
+                                     which(traj_states == iSt2)]
+          } else {
             distance <- NA
           }
 
