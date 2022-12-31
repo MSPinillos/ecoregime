@@ -1,11 +1,11 @@
 #' Representative trajectories in Ecological Dynamic Regimes (RETRA-EDR)
 #'
 #' @description
-#' `retra_edr` applies the algorithm RETRA-EDR (Sánchez-Pinillos et al.) to identify
+#' `retra_edr()` applies the algorithm RETRA-EDR (Sánchez-Pinillos et al.) to identify
 #' representative trajectories of the main dynamical patters of an Ecological
 #' Dynamic Regime (EDR).
 #'
-#' @param d Either symmetric matrix or object of class `"dist"` containing the
+#' @param d Either a symmetric matrix or an object of class [`dist`] containing the
 #' dissimilarities between each pair of states of all trajectories.
 #' @param trajectories Vector indicating the trajectory or site to which each
 #' state in `d` belongs.
@@ -13,18 +13,18 @@
 #' each trajectory.
 #' @param minSegs Integer indicating the minimum number of segments in a region
 #' of the EDR to be represented by a segment of the representative trajectory.
-#' @param dSegs Either symmetric matrix or object of class `"dist"` containing
+#' @param dSegs Either a symmetric matrix or an object of class [`dist`] containing
 #' the dissimilarities between every pair of trajectory segments (see Details).
 #' @param coordSegs Matrix containing the coordinates of trajectory segments (rows)
 #' in each axis (columns) of an ordination space (see Details).
 #' @param traj_Segs Vector indicating the trajectory to which each segment in `dSeg`
-#' and/or `coordSegs` belongs. Only required if `dSeg` or `coordSegs` are not `NULL`.
-#' @param state1_Segs Vector indicating the initial state of each segment in `dSeg`
+#' and/or `coordSegs` belongs. Only required if `dSegs` or `coordSegs` are not `NULL`.
+#' @param state1_Segs Vector indicating the initial state of each segment in `dSegs`
 #' and/or `coordSegs` according to the values given in `states`. Only required if
-#' `dSeg` or `coordSegs` are not `NULL`.
-#' @param state2_Segs Vector indicating the final state of each segment in `dSeg`
+#' `dSegs` or `coordSegs` are not `NULL`.
+#' @param state2_Segs Vector indicating the final state of each segment in `dSegs`
 #' and/or `coordSegs` according to the values given in `states`. Only required if
-#' `dSeg` or `coordSegs` are not `NULL`.
+#' `dSegs` or `coordSegs` are not `NULL`.
 #' @param Dim Optional integer indicating the number of axes considered to
 #' partition the segment space and generate a kd-tree. By default (`Dim = NULL`),
 #' all axes are considered.
@@ -35,7 +35,7 @@
 #' @details
 #' The algorithm RETRA-EDR is based on a partition-and-group approach by which it
 #' identifies regions densely crossed by ecological trajectories in an EDR, selects
-#' a representative segment in each dense region, and merges the representative
+#' a representative segment in each dense region, and joins the representative
 #' segments by a set of artificial `Links` to generate a network of representative
 #' trajectories. For that, RETRA-EDR splits the trajectories of the EDR into
 #' segments and uses an ordination space generated from a matrix compiling the
@@ -43,12 +43,12 @@
 #' applying a kd-tree to the ordination space.
 #'
 #' By default, RETRA-EDR calculates segment dissimilarities following the approach
-#' by De Caceres et al.(2019) and applies metric multidimensional scaling (MDS)
-#' to generate the ordination space. Depending on the number of trajectories and
-#' their size (i.e., the number of states per trajectory), this procedure can
-#' be long. However, it is possible to provide pre-defined values for the arguments
-#' `dSegs` and `coordSegs` to reduce the computational time or use other dissimilarity
-#' metrics or ordination methods.
+#' by De Caceres et al. (2019) and applies metric multidimensional scaling (MDS,
+#' Borg and Groenen, 2005) to generate the ordination space. It is possible to use
+#' other dissimilarity metrics and/or ordination methods and reduce the computational
+#' time by indicating the dissimilarity matrix and the segment coordinates in the
+#' ordination space of choice through the arguments `dSegs` and `coordSegs`,
+#' respectively.
 #'
 #' * If `!is.null(dSegs)` and `is.null(coordSegs)`, RETRA-EDR is computed by
 #' applying MDS to `dSegs`.
@@ -58,43 +58,38 @@
 #' from `dSegs`.
 #' * If `is.null(dSegs)` and `!is.null(coordSegs)` (not recommended), RETRA-EDR
 #' is directly computed from the coordinates provided in `coordSegs`. As `dSegs`
-#' is not provided, `retra_edr` assumes that the ordination space is metric and
+#' is not provided, `retra_edr()` assumes that the ordination space is metric and
 #' identifies representative segments using the Euclidean distance.
-#'
-#' Because RETRA-EDR is a density-based algorithm, the value assigned to `minSegs`
-#' may affect the number of representative trajectories obtained. In this sense,
-#' small values of `minSegs` can lead to a relatively high number of representative
-#' trajectories. In contrast, large values of `minSegs` lead to a smaller number
-#' of trajectories, only capturing the dynamical patterns of the densest regions
-#' in the EDR. In any case, the regions of the EDR with less than `minSegs` trajectory
-#' segments will not be represented by the representative trajectories.
-#'
 #'
 #' @return
 #' The function `retra_edr()` returns an object of class `RETRA`, which is a list
 #' of length equal to the number of representative trajectories identified. For
 #' each trajectory, the following information is returned:
-#' * `minSegs`: Value of the `minSegs` parameter.
-#' * `Segments`: Vector of strings including the sequence of segments forming the
+#' \describe{
+#' \item{`minSegs`}{Value of the `minSegs` parameter.}
+#' \item{`Segments`}{Vector of strings including the sequence of segments forming the
 #' representative trajectory. Each segment is identified by a string of the form
 #' `traj[st1-st2]`, where `traj` is the identifier of the original trajectory to
 #' which the segment belongs and `st1` and `st2` are identifiers of the initial
-#' and final states defining the segment.
-#' * `Size`: Numeric value indicating the number of states forming the representative
-#' trajectory.
-#' * `Length`: Numeric value indicating the length of the representative trajectory,
+#' and final states defining the segment.}
+#'  \item{`Size`}{Numeric value indicating the number of states forming the representative
+#' trajectory.}
+#' \item{`Length`}{Numeric value indicating the length of the representative trajectory,
 #' calculated as the sum of the dissimilarities in `d` between every pair of
-#' consecutive states.
-#' * `Link_distance`: Data frame of two columns indicating the link between two
+#' consecutive states.}
+#' \item{`Link_distance`}{Data frame of two columns indicating artificial links between
 #' representative segments (`Link`) and the dissimilarity between the connected
-#' states (`Distance`).
-#' * `Seg_density`: Data frame of two columns and one row for each representative
-#' segment.
-#' + `Density` indicates the number of segments in the leaf of the kd-tree represented
-#' by each segment.
-#' + `kdTree_depth` contains the depth of the kd-tree for each leaf represented
-#' by the corresponding segment. That is, the number of partitions of the ordination
-#' space until finding a region with `minSegs` segments or less.
+#' states (`Distance`). When two representative segments are linked by a common
+#' state or by two consecutive states of the same trajectory, the link distance
+#' is zero or equal to the length of a real segment, respectively. In both cases,
+#' the link is not considered in the returned data frame.}
+#' \item{`Seg_density`}{Data frame of two columns and one row for each representative
+#' segment. `Density` contains the number of segments in the leaf of the kd-tree
+#' represented by each segment. `kdTree_depth` contains the depth of the kd-tree
+#' for each leaf represented by the corresponding segment. That is, the number of
+#' partitions of the ordination space until finding a region with `minSegs` segments
+#' or less.}
+#' }
 #'
 #' @author Martina Sánchez-Pinillos, CNRS, Univ. Montpellier
 #'
@@ -106,19 +101,61 @@
 #' Condit R & Hubbell S. (2019). Trajectory analysis in community ecology. Ecological
 #' Monographs.
 #'
+#' Borg, I., & Groenen, P. J. F. (2005). Modern Multidimensional Scaling (2nd ed.).
+#' Springer.
+#'
 #' @seealso
 #' [`summary()`] for summarizing the characteristics of the set of representative
-#' trajectories
+#' trajectories.
+#'
 #' [`plot()`] for plotting representative trajectories in an ordination space
 #' representing the state space of the EDR.
+#'
+#' [`define_retra()`] for defining representative trajectories from a subset of
+#' segments or trajectory features.
 #'
 #' @export
 #'
 #' @examples
-#' d = EDR_data$EDR1$state_dissim
-#' trajectories = EDR_data$EDR1$abundance$traj
-#' states = EDR_data$EDR1$abundance$state
-#' RT <- retra_edr(d = d, trajectories = trajectories, states = states, minSegs = 5)
+#' # Example 1 -----------------------------------------------------------------
+#' # Identify representative trajectories from state dissimilarities
+#'
+#' library(vegan)
+#'
+#' # Calculate state dissimilarities (Bray-Curtis) from species abundances
+#' abundance <- data.frame(EDR_data$EDR1$abundance)
+#' row.names(abundance) <- paste0(abundance$traj, "_", abundance$state)
+#' d <- vegdist(abundance[, -c(1:3)], method = "bray")
+#'
+#' # Identify the trajectory (or site) and states in d
+#' traj_state <- strsplit(labels(d), "_")
+#' trajectories <- sapply(traj_state, "[", 1)
+#' states <- as.integer(sapply(traj_state, "[", 2))
+#'
+#' # Compute RETRA-EDR
+#' RT1 <- retra_edr(d = d, trajectories = trajectories, states = states, minSegs = 5)
+#'
+#' # Example 2 -----------------------------------------------------------------
+#' # Identify representative trajectories from segment dissimilarities
+#'
+#' library(ecotraj)
+#'
+#' # Calculate segment dissimilarities using the Hausdorff distance
+#' dSegs <- segmentDistances(d = d, sites = trajectories, surveys = states,
+#'                           distance.type = "Hausdorff")
+#' dSegs <- dSegs$Dseg
+#'
+#' # Identify the trajectory (or site) and states in dSegs:
+#' # Split the labels of dSegs (traj[st1-st2]) into traj, st1, and st2
+#' seg_components <- strsplit(gsub("\\]", "", gsub("\\[", "-", labels(dSegs))), "-")
+#' traj_Segs <- sapply(seg_components, "[", 1)
+#' state1_Segs <- as.integer(sapply(seg_components, "[", 2))
+#' state2_Segs <- as.integer(sapply(seg_components, "[", 3))
+#'
+#' # Compute RETRA-EDR
+#' RT2 <- retra_edr(d = d, trajectories = trajectories, states = states, minSegs = 5,
+#'                 dSegs = dSegs, traj_Segs = traj_Segs,
+#'                 state1_Segs = state1_Segs, state2_Segs = state2_Segs)
 #'
 #'
 retra_edr <- function (d, trajectories, states, minSegs,
@@ -150,17 +187,17 @@ retra_edr <- function (d, trajectories, states, minSegs,
       stop("To use 'dSegs' or 'coordSegs', you must provide values for 'traj_Segs', 'state1_Segs', and 'state2_Segs'.")
     }
     if (!all(traj_Segs %in% trajectories)) {
-      stop(cat("Each value in 'traj_Segs' must be included in 'trajectories'."))
+      stop("Each value in 'traj_Segs' must be included in 'trajectories'.")
     }
     if (!all(trajectories %in% traj_Segs)) {
-      stop(cat("Each value in 'trajectories' must be included in 'traj_Segs'."))
+      stop("Each value in 'trajectories' must be included in 'traj_Segs'.")
     }
     if (!all(unique(c(paste0(traj_Segs, state1_Segs), paste0(traj_Segs, state2_Segs))) %in% paste0(trajectories, states)) &
         length(unique(c(paste0(traj_Segs, state1_Segs), paste0(traj_Segs, state2_Segs)))) != length(paste0(trajectories, states))) {
-      stop(cat("Each value in 'state1_Segs' and 'state2_Segs' must be included in 'states' for each corresponding site."))
+      stop("Each value in 'state1_Segs' and 'state2_Segs' must be included in 'states' for each corresponding site.")
     }
     if (!all(paste0(trajectories, states) %in% unique(c(paste0(traj_Segs, state1_Segs), paste0(traj_Segs, state2_Segs))))) {
-      stop(cat("Each value in 'states' must be included in at least one: 'state1_Segs' or 'state2_Segs', for each corresponding site."))
+      stop("Each value in 'states' must be included in at least one: 'state1_Segs' or 'state2_Segs', for each corresponding site.")
     }
   }
 
@@ -168,7 +205,7 @@ retra_edr <- function (d, trajectories, states, minSegs,
   if (!is.null(dSegs)) {
     if (all(!is.matrix(dSegs), !dendextend::is.dist(dSegs)) |
         dim(dSegs)[1] != dim(dSegs)[2]) {
-      stop(cat("'dSegs' must be a symmetric dissimilarity matrix or an object of class 'dist'."))
+      stop("'dSegs' must be a symmetric dissimilarity matrix or an object of class 'dist'.")
     }
     if (dim(dSegs)[1] != sum(table(trajectories) - 1)) {
       stop("The dimensions of 'dSegs' do not coincide with the total number of segments expected from 'trajectories'.")
@@ -176,7 +213,7 @@ retra_edr <- function (d, trajectories, states, minSegs,
     if (any(nrow(as.matrix(dSegs)) != length(traj_Segs),
             nrow(as.matrix(dSegs)) != length(state1_Segs),
             nrow(as.matrix(dSegs)) != length(state2_Segs))) {
-      stop(cat("The length of 'traj_Segs', 'state1_Segs', and 'state2_Segs' must be equal to both dimensions in 'dSegs'."))
+      stop("The length of 'traj_Segs', 'state1_Segs', and 'state2_Segs' must be equal to both dimensions in 'dSegs'.")
     }
 
     # Set names in dSegs
@@ -200,7 +237,7 @@ retra_edr <- function (d, trajectories, states, minSegs,
     if (any(nrow(coordSegs) != length(traj_Segs),
             nrow(coordSegs) != length(state1_Segs),
             nrow(coordSegs) != length(state2_Segs))) {
-      stop(cat("The length of 'traj_Segs', 'state1_Segs', and 'state2_Segs' must be equal to the number of rows in 'coordSegs'."))
+      stop("The length of 'traj_Segs', 'state1_Segs', and 'state2_Segs' must be equal to the number of rows in 'coordSegs'.")
     }
     rownames(coordSegs) <- paste0(traj_Segs, "[", state1_Segs, "-", state2_Segs, ']')
 
@@ -253,7 +290,7 @@ retra_edr <- function (d, trajectories, states, minSegs,
   data.table::setkey(seg_tree[[1]])
   nSegs = nrow(seg_tree[[1]])
   if(Dim > 1e5) {
-    warning(cat("Dim > 1e5, the first 1e5 dimensions will be used"))
+    warning("Dim > 1e5, the first 1e5 dimensions will be used")
   }
   Dim_col = rep(1:Dim, 1e5) + 1
 
@@ -387,7 +424,26 @@ retra_edr <- function (d, trajectories, states, minSegs,
   ## JOIN MEDOID SEGMENTS #---------------------------------------------------
 
   if (length(medoids_nms) <= 1) {
-    repr_traj <- medoids_nms
+    seg_components <- strsplit(gsub("\\]", "", gsub("\\[", "-", medoids_nms)), "-")
+    itraj_states <- unlist(lapply(seg_components, function(iseg){
+      c(paste0(iseg[1], "_", iseg[2]), paste0(iseg[1], "_", iseg[3]))
+    }))
+    repr_traj <- list(T1 = list(minSegs = minSegs,
+                      Segments = medoids_nms,
+                      Size = length(unique(itraj_states)),
+                      Length = traj_length(traj_segs = medoids_nms, dState = d,
+                                           trajectories = trajectories, states = states),
+                      Link_distance = NA,
+                      Seg_density = data.frame(
+                        Density = vapply(medoids_nms, function (iseg) {
+                          node = medoids[which(medoids$rn == iseg), ]$Node
+                          density = nrow(leaves[[node]])
+                        }, numeric(1)),
+                        kdTree_depth = vapply(medoids_nms, function (iseg) {
+                          node = medoids[which(medoids$rn == iseg), ]$Node
+                          depth = nchar(node)-1
+                        }, numeric(1)))
+    ))
   } else if (length(medoids_nms) > 1) {
 
     # State distances for medoids
@@ -470,18 +526,30 @@ retra_edr <- function (d, trajectories, states, minSegs,
       itraj_states <- unlist(lapply(seg_components, function(iseg){
         c(paste0(iseg[1], "_", iseg[2]), paste0(iseg[1], "_", iseg[3]))
       }))
+      Link_distance <-  data.frame(
+        Link = vapply(1:(length(itraj) - 1), function (ilink) {
+          paste0(itraj[ilink:(ilink+1)], collapse = " - ")
+        }, character(1)),
+        Distance = vapply(1:(length(itraj) - 1), function (ilink) {
+          linkD$dSegs[itraj[ilink], itraj[ilink + 1]]
+        }, numeric(1)))
+      Link_distance$real <- vapply(1:(length(itraj)-1), function(ilink){
+        if (seg_components[[ilink]][1] == seg_components[[(ilink+1)]][1] &&
+            as.numeric(seg_components[[(ilink+1)]][2]) - as.numeric(seg_components[[ilink]][3]) <= 1) {
+          TRUE
+        } else {
+          FALSE
+        }
+      }, logical(1))
+      Link_distance <- Link_distance[which(Link_distance$real == FALSE), ]
+
       traj_attr <- list(minSegs = minSegs,
                         Segments = itraj,
                         Size = length(unique(itraj_states)),
                         Length = traj_length(traj_segs = itraj, dState = d,
                                              trajectories = trajectories, states = states),
-                        Link_distance = data.frame(
-                          Link = vapply(1:(length(itraj) - 1), function (ilink) {
-                            paste0(itraj[ilink:(ilink+1)], collapse = " - ")
-                          }, character(1)),
-                          Distance = vapply(1:(length(itraj) - 1), function (ilink) {
-                            linkD$dSegs[itraj[ilink], itraj[ilink + 1]]
-                          }, numeric(1))),
+
+                        Link_distance = Link_distance[, c("Link", "Distance")],
                         Seg_density = data.frame(
                           Density = vapply(itraj, function (iseg) {
                             node = medoids[which(medoids$rn == iseg), ]$Node
@@ -548,4 +616,5 @@ traj_length <- function(traj_segs, dState, trajectories, states){
   return(length_RT)
 
 }
+
 
