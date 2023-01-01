@@ -1,0 +1,143 @@
+---
+title: "The Ecological Dynamic Regime Framework"
+author: "Martina Sánchez-Pinillos"
+date: "`r Sys.Date()`"
+output: 
+  rmarkdown::html_vignette:
+    toc: TRUE
+vignette: >
+  %\VignetteIndexEntry{The Ecological Dynamic Regime Framework}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+
+
+## 1. Introduction
+
+### 1.1. The Ecological Dynamic Regime framework
+
+**Ecological Dynamic Regimes (EDR)** are defined as the *"natural fluctuations of ecosystem states around some trend or average resulting from an intricate mix of internal processes and external forces that push the system towards specific domains of attraction"* (Sánchez-Pinillos et al.).
+
+EDRs are composed of a set of ecological trajectories showing similar processes in the development, interaction, and reorganization of some state variables over time for a set of ecological systems. Depending on the state variables, ecological trajectories are usually defined in multivariate spaces that make challenging the characterization and comparison of EDRs.
+
+The *EDR framework* is a set of algorithms and metrics useful to characterize and compare EDRs composed of ecological trajectories defined in multidimensional state spaces. The EDR framework is implemented in `ecoregime`. You can find all the methodological details of the EDR framework, as well as the formal definition of the EDR concept and illustrative examples with artificial and real data sets, in:
+
+- Sánchez-Pinillos M., Kéfi, S., De Cáceres, M., Dakos, V. Ecological Dynamic Regimes: Identification, characterization, and comparison.
+
+### 1.2. About this vignette
+
+The goal of this vignette is to give you an overview of the EDR framework and the main functions of `ecoregime` to characterize and compare EDRs. 
+
+You can install the current (development) version of `ecoregime` from my GitHub account:
+
+```{r install }
+# devtools::install_github(repo = "MSPinillos/ecoregime", dependencies = T, build_vignettes = T)
+```
+
+Once you have installed `ecoregime` you will have to load it
+
+```{r setup}
+library(ecoregime)
+```
+
+To cite `ecoregime` in publications use 
+
+```{r citation}
+# citation("ecoregime")
+```
+
+## 2. Basic usage of 'ecoregime'
+
+### 2.1. Trajectory data
+
+The essential unit of an EDR is the ecological trajectory. If you are familiar with ecological trajectories defined in multivariate spaces, you can probably skip this section. Otherwise, I recommend you to read on.
+
+Let's start with a simple case: we have 10 sampling units in which we are monitoring the temporal changes in some state variables. For example, those sampling units could be permanent plots or transects in which we have inventoried the abundance of two species in three sequential surveys.
+
+Let's generate some artificial data using the Lotka-Volterra model:
+
+```{r data}
+
+# Define initial species abundances
+set.seed(123)
+initial <- data.frame(sampling_units = LETTERS[1:10], 
+                   sp1 = round(runif(10), 2), 
+                   sp2 = round(runif(10), 2))
+
+# Define the parameters of the Lotka-Volterra model
+parms <- c(r1 = 1, r2 = 0.1, a11 = 0.2, a21 = 0.1, a22 = 0.02, a12 = 0.01)
+
+# We can use primer to run the simulations
+library(primer)
+simulated_abun <- lapply(1:nrow(initial), function(isampling){
+  # Initial abundnace in the sampling unit i
+  initialN <- c(initial$sp1[isampling], initial$sp2[isampling])
+  # Simulate community dynamics
+  simulated_abun <- data.frame(ode(y = initialN, times = 1:3, func = lvcomp2, parms = parms))
+  # Add the names of the sampling units
+  simulated_abun$sampling_unit <- LETTERS[isampling]
+  # Calculate relative abundances
+  simulated_abun$sp1 <- simulated_abun$X1/rowSums(simulated_abun[, 2:3])
+  simulated_abun$sp2 <- simulated_abun$X2/rowSums(simulated_abun[, 2:3])
+  
+  return(simulated_abun[, c("sampling_unit", "time", "sp1", "sp2")])
+})
+
+# Compile species abundances of all sampling units in the same data frame
+abundance <- do.call(rbind, simulated_abun)
+abundance
+
+# plot(x = abundance$time, y = abundance$sp1, )
+
+
+
+```
+
+
+
+
+
+
+
+### 2.2. Identifying EDRs
+
+Clustering ecological trajectories
+
+Defining EDRs based on ecological properties
+
+### 2.3. Representative trajectories
+
+RETRA-EDR
+
+summarize the outputs of RETRA-EDR
+
+Select portions of representative trajectories or pre-define representative trajectories
+
+Visualize representative trajectories in the state space
+
+### 2.4. Variability and heterogeneity of ecological trajectories in EDRs
+
+dDis
+
+dBD
+
+dEve
+
+### 2.5. Compare EDRs
+
+
+
+
+
+
+
+
+
