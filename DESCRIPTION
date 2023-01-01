@@ -2,15 +2,16 @@ Package: ecoregime
 Title: Analysis of Ecological Dynamic Regimes
 Version: 0.0.0.9000
 Authors@R: 
-    person("Martina", "Sánchez-Pinillos", "martina.sanchez.pinillos@gmail.com", 
+    person(given = "Martina", family = "Sánchez-Pinillos", 
+           email = "martina.sanchez.pinillos@gmail.com", 
            role = c("aut", "cre"), comment = c(ORCID = "0000-0002-1499-4507"))
-Description: A toolbox for implementating the EDR framework (Sánchez-Pinillos et 
-al.; DOI) to analyze groups of ecological trajectories in multidimensional spaces 
-defined by state variables. The package includes the RETRA-EDR algorithm to 
-identify representative trajectories, functions to generate, summarize, and 
-visualize representative trajectories, and several metrics to quantify the 
-variability and heterogeneity of trajectories in an ecological dynamic regime and
-quantify the dissimimilarity between two or more ecological dynamic regimes.
+Description: A toolbox for implementating the EDR framework (Sánchez-Pinillos et
+    al.; DOI) to analyze groups of ecological trajectories in multidimensional 
+    spaces defined by state variables. The package includes the RETRA-EDR algorithm 
+    to identify representative trajectories, functions to generate, summarize, and 
+    visualize representative trajectories, and several metrics to quantify the 
+    variability and heterogeneity of trajectories in an ecological dynamic regime
+    and quantify the dissimimilarity between two or more ecological dynamic regimes.
 License: GPL (>= 2)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
@@ -33,6 +34,9 @@ Imports:
     stats,
     stringr
 Suggests: 
+    knitr,
+    rmarkdown,
     testthat (>= 3.0.0),
     vegan
 Config/testthat/edition: 3
+VignetteBuilder: knitr
