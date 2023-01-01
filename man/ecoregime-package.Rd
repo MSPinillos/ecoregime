@@ -4,9 +4,9 @@
 \name{ecoregime-package}
 \alias{ecoregime}
 \alias{ecoregime-package}
-\title{ecoregime: What the Package Does (One Line, Title Case)}
+\title{ecoregime: Analysis of Ecological Dynamic Regimes}
 \description{
-Implementation of the EDR framework (one paragraph).
+A toolbox for implementating the EDR framework (Sánchez-Pinillos et al.; DOI) to analyze groups of ecological trajectories in multidimensional spaces defined by state variables. The package includes the RETRA-EDR algorithm to identify representative trajectories, functions to generate, summarize, and visualize representative trajectories, and several metrics to quantify the variability and heterogeneity of trajectories in an ecological dynamic regime and quantify the dissimimilarity between two or more ecological dynamic regimes.
 }
 \seealso{
 Useful links:
@@ -17,7 +17,7 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: First Last \email{first.last@example.com} (\href{https://orcid.org/YOUR-ORCID-ID}{ORCID})
+\strong{Maintainer}: Martina Sánchez-Pinillos \email{martina.sanchez.pinillos@gmail.com} (\href{https://orcid.org/0000-0002-1499-4507}{ORCID})
 
 }
 \keyword{internal}
