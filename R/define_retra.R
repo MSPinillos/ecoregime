@@ -140,7 +140,7 @@
 #'
 #' # Define trajectory "B" from states in trajectories 5, 6, and 7
 #' data_B <- data.frame(RT = rep("B", 5), # name of the new representative trajectory
-#'                      RT_traj = c(5, 5, 6, 7, 7), # identifier of the original trajectories
+#'                      RT_traj = c(5, 5, 7, 6, 6), # identifier of the original trajectories
 #'                      RT_states = c(1, 2, 4, 4, 5)) # states in the original trajectories
 #'
 #' # Compile data for both trajectories in a data frame
