@@ -179,6 +179,9 @@ retra_edr <- function (d, trajectories, states, minSegs,
   if (length(states) != nrow(as.matrix(d))) {
     stop("The length of 'states' must be equal to both dimensions in 'd'.")
   }
+  if (!is.integer(states)) {
+    stop("'states' needs to be of class integer.")
+  }
 
   # Check that traj_Segs and state_Segs are provided
   if (any(!is.null(dSegs), !is.null(coordSegs))) {
