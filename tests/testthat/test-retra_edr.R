@@ -136,7 +136,7 @@ test_that("returns errors", {
                          dSegs = dSegs, traj_Segs = traj_Segs,
                          state1_Segs = state1_Segs, state2_Segs = c(100, state2_Segs[2:length(state2_Segs)])),
                regexp = "Each value in 'state1_Segs' and 'state2_Segs' must be included in 'states' for each corresponding site.")
-  expect_error(retra_edr(d = d, trajectories = trajectories, states = c(100, states[2:length(states)]), minSegs = 5,
+  expect_error(retra_edr(d = d, trajectories = trajectories, states = as.integer(c(100, states[2:length(states)])), minSegs = 5,
                          dSegs = dSegs, traj_Segs = traj_Segs,
                          state1_Segs = state1_Segs, state2_Segs = state2_Segs),
                regexp = "Each value in 'states' must be included in at least one: 'state1_Segs' or 'state2_Segs', for each corresponding site.")
