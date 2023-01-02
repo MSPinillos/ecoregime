@@ -146,33 +146,35 @@ plot.RETRA <- function (x, d, trajectories, states, select_RT = NULL,
   if (length(states) != nrow(as.matrix(d))) {
     stop("The length of 'states' must be equal to both dimensions in 'd'.")
   }
+  if (!is.integer(states)) {
+    stop("'states' needs to be of class integer.")
+  }
 
   ## RETRESENTATIVE TRAJECTORIES -----------------------------------------------
 
-  if (is(x, "RETRA")) {
-    # Number of trajectories
-    nRT <- length(x)
+  # Number of trajectories
+  nRT <- length(x)
 
-    RT_names <- character(0)
-    RT_traj <- character(0)
-    RT_states <- integer(0)
-    for (iRT in seq_len(nRT)) {
-      # Representative segments
-      segs <- x[[iRT]]$Segments
-      seg_components <- strsplit(gsub("\\]", "", gsub("\\[", "-", segs)), "-")
+  RT_names <- character(0)
+  RT_traj <- character(0)
+  RT_states <- integer(0)
+  for (iRT in seq_len(nRT)) {
+    # Representative segments
+    segs <- x[[iRT]]$Segments
+    seg_components <- strsplit(gsub("\\]", "", gsub("\\[", "-", segs)), "-")
 
-      # Representative trajectories based on the number of states
-      RT_names <- c(RT_names, rep(names(x)[iRT], 2*length(segs)))
-      for (iseg in seg_components) {
-        RT_traj <- c(RT_traj, rep(iseg[1], 2))
-        RT_states <- c(RT_states, iseg[2:3])
-      }
-    }
-
-    if(sum(!paste0(RT_traj, RT_states) %in% paste0(trajectories, states)) > 0){
-      stop("The states in forming representative trajectories (identified through 'Segments' in x) need to be included in 'trajectories' and 'states'.")
+    # Representative trajectories based on the number of states
+    RT_names <- c(RT_names, rep(names(x)[iRT], 2*length(segs)))
+    for (iseg in seg_components) {
+      RT_traj <- c(RT_traj, rep(iseg[1], 2))
+      RT_states <- as.integer(c(RT_states, iseg[2:3]))
     }
   }
+
+  if(sum(!paste0(RT_traj, RT_states) %in% paste0(trajectories, states)) > 0){
+    stop("The states in forming representative trajectories (identified through 'Segments' in x) need to be included in 'trajectories' and 'states'.")
+  }
+
 
   if (!is.null(select_RT) && !(select_RT %in% RT_names)) {
     stop(cat("select_RT = \"", select_RT, "\"; \"", select_RT, "\" needs to be included in 'x' or 'x$RT_names'", sep = ""))
@@ -197,9 +199,9 @@ plot.RETRA <- function (x, d, trajectories, states, select_RT = NULL,
                         RT = RT_names, order_RT_states = unlist(lapply(unique(RT_names), function(iT){
                           seq_along(RT_names[RT_names == iT])
                         })))
+  ID_RT <- names(sort(table(RT_names)))
   if (nRT > 1) {
     # Place the selected RT to be displayed at the end
-    ID_RT <- names(sort(table(RT_names)))
     if (!is.null(select_RT)) {
       ID_RT <- c(ID_RT[-which(ID_RT == select_RT)], select_RT)
     }
@@ -213,34 +215,68 @@ plot.RETRA <- function (x, d, trajectories, states, select_RT = NULL,
   RT_coords <- RT_coords[match(paste0(RT_data$RT, "_", RT_data$order_RT_states),
                                paste0(RT_coords$RT, "_", RT_coords$order_RT_states)), ]
 
-  # Identify links
+
+  #------------------------
   links <- lapply(1:nRT, function(iT){
     ind_traj <- which(RT_data$RT == ID_RT[iT])
 
-    # False links
-    nlinks <- nrow(RT_data[ind_traj, ]) - 1
-    nlini <- RT_traj[ind_traj][seq(2, nlinks, by = 2)]
-    nlfin <- RT_traj[ind_traj][seq(3, nlinks, by = 2)]
-    ind_link <- which(nlini != nlfin)
+    nStates <- nrow(RT_data[ind_traj, ])
+    ind_links <- integer()
+    i <- 2
+    while (i <= nStates) {
+      if (!all(RT_data[ind_traj, ]$RT_traj[i] == RT_data[ind_traj, ]$RT_traj[(i-1)],
+               RT_data[ind_traj, ]$RT_states[i] - RT_data[ind_traj, ]$RT_states[(i-1)] <= 1)) {
+        ind_links <- c(ind_links, i-1, i)
+      }
+      i <- i+1
+    }
 
-    if (length(ind_link) > 0) {
-      links <- data.frame(ID = RT_data$ID[ind_traj][c(2*ind_link, 2*ind_link+1)],
-                          RT = ID_RT[iT],
-                          Link = seq_along(ind_link),
-                          Link_state = rep(1:2, each = length(ind_link)), row.names = NULL)
-      links <- links[order(links$Link, links$Link_state), ]
-    } else {links <- data.frame()}
+    links <- RT_data[ind_traj, ][ind_links, ]
 
-    return(links)
   })
   links <- data.frame(data.table::rbindlist(links))
 
-  # Coordinates of link states
   if (nrow(links) > 0) {
+    # Add and ID for the link and the order of the states
+    links$Link <- rep(1:(nrow(links)/2), each = 2)
+    links$Link_state <- rep(1:2, nrow(links)/2)
+    links <- links[, c("ID", "RT", "Link", "Link_state")]
+    # Coordinates of link states
     Lk_coords <- merge(links, statesMDS, by = "ID", all.d = T)
     Lk_coords <- Lk_coords[match(paste0(links$RT, "_", links$Link, "_", links$Link_state),
                                  paste0(Lk_coords$RT, "_", Lk_coords$Link, "_", Lk_coords$Link_state)), ]
   }
+
+
+  #------------------------
+  # # Identify links
+  # links <- lapply(1:nRT, function(iT){
+  #   ind_traj <- which(RT_data$RT == ID_RT[iT])
+  #
+  #   # False links
+  #   nlinks <- nrow(RT_data[ind_traj, ]) - 1
+  #   nlini <- RT_traj[ind_traj][seq(2, nlinks, by = 2)]
+  #   nlfin <- RT_traj[ind_traj][seq(3, nlinks, by = 2)]
+  #   ind_link <- which(nlini != nlfin)
+  #
+  #   if (length(ind_link) > 0) {
+  #     links <- data.frame(ID = RT_data$ID[ind_traj][c(2*ind_link, 2*ind_link+1)],
+  #                         RT = ID_RT[iT],
+  #                         Link = seq_along(ind_link),
+  #                         Link_state = rep(1:2, each = length(ind_link)), row.names = NULL)
+  #     links <- links[order(links$Link, links$Link_state), ]
+  #   } else {links <- data.frame()}
+  #
+  #   return(links)
+  # })
+  # links <- data.frame(data.table::rbindlist(links))
+  #
+  # # Coordinates of link states
+  # if (nrow(links) > 0) {
+  #   Lk_coords <- merge(links, statesMDS, by = "ID", all.d = T)
+  #   Lk_coords <- Lk_coords[match(paste0(links$RT, "_", links$Link, "_", links$Link_state),
+  #                                paste0(Lk_coords$RT, "_", Lk_coords$Link, "_", Lk_coords$Link_state)), ]
+  # }
 
   # PLOT TRAJECTORIES ----------------------------------------------------------
 
@@ -350,7 +386,8 @@ trajectoryPlot2 <- function (d, sites, surveys = NULL, selection = NULL, traj.co
   selIDs = siteIDs[selection]
   xp = d[sites %in% selIDs, axes[1]]
   yp <- d[sites %in% selIDs, axes[2]]
-  plot(xp, yp, type = "n", asp = 1, xlab = paste0("Axis ", axes[1]), ylab = paste0("Axis ", axes[2]), ...)
+  plot(xp, yp, type = "n", xlab = paste0("Axis ", axes[1]),
+       ylab = paste0("Axis ", axes[2]), ...)
   sitesred = sites[sites %in% selIDs]
   if (!is.null(surveys))
     surveysred = surveys[sites %in% selIDs]
@@ -375,15 +412,3 @@ trajectoryPlot2 <- function (d, sites, surveys = NULL, selection = NULL, traj.co
   }
 }
 
-# #' @export
-# to_RETRAdf <- function(x){
-#   if (!is.data.frame(x)) {
-#     stop("'x' needs to be a data frame.")
-#   }
-#   if (sum(names(x) %in% c("RT_names", "RT_traj", "RT_states")) != 3) {
-#     stop("'x' needs to include data for 'RT_names', 'RT_traj', 'RT_states'.")
-#   }
-#
-#   class(x) <- "RETRAdf"
-#   return(x)
-# }
