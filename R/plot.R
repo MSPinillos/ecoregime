@@ -329,12 +329,14 @@ plot.RETRA <- function (x, d, trajectories, states, select_RT = NULL,
     for (i in 1:length(ID_traj)) {
       ind_states = which(iT_traj == ID_traj[i])
       ind_states = ind_states[order(iT_states[iT_traj == ID_traj[i]])]
-      for (t in 1:(length(ind_states) - 1)) {
-        niini = ind_states[t]
-        nifin = ind_states[t + 1]
-        if (nifin - niini == 1) {
-          shape::Arrows(xp[niini], yp[niini], xp[nifin], yp[nifin],
-                        col = RT.colors[iT], arr.adj = 1)
+      if (length(ind_states) > 1) {
+        for (t in 1:(length(ind_states) - 1)) {
+          niini = ind_states[t]
+          nifin = ind_states[t + 1]
+          if (nifin - niini == 1) {
+            shape::Arrows(xp[niini], yp[niini], xp[nifin], yp[nifin],
+                          col = RT.colors[iT], arr.adj = 1)
+          }
         }
       }
     }
