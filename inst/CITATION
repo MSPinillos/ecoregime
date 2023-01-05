@@ -3,15 +3,16 @@ citHeader("To cite ecoregime in publications use:")
 citEntry(
   entry    = "Article",
   title    = "Ecological Dynamic Regimes: Identification, characterization, and comparison",
-  author   = "Martina Sánchez-Pinillos, Sonia Kéfi, Miquel De Cáceres & Vasilis Dakos",
-  journal  = "",
-  year     = "",
-  volume   = "",
-  number   = "",
-  pages    = "",
-  url      = "",
-  textVersion = paste("Sánchez-Pinillos, M., Kéfi, S., De Cáceres, M. & Dakos, V. ()",
-                      "Ecological Dynamic Regimes: Identification, characterization, and comparison"
-
+  author   = "Martina Sánchez-Pinillos, Sonia Kéfi, Miquel De Cáceres, Vasilis Dakos",
+  journal  = "?",
+  year     = "?",
+  volume   = "?",
+  number   = "?",
+  pages    = "?",
+  url      = "?",
+  textVersion = paste(
+  "Sánchez-Pinillos, M., Kéfi, S., De Cáceres, M., Dakos, V. ",
+  "Ecological Dynamic Regimes: Identification, characterization, and comparison",
+  sep = ""
   )
 )
