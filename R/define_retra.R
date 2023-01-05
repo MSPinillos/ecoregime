@@ -148,9 +148,9 @@
 #' df$RT_states <- as.integer(df$RT_states)
 #'
 #' # Generate a RETRA object using define_retra()
-#' new_retra <- define_retra(data = df, d = EDR_data$EDR2$state_dissim,
-#'                           trajectories = EDR_data$EDR2$abundance$traj,
-#'                           states = EDR_data$EDR2$abundance$state)
+#' new_retra <- define_retra(data = df, d = EDR_data$EDR1$state_dissim,
+#'                           trajectories = EDR_data$EDR1$abundance$traj,
+#'                           states = EDR_data$EDR1$abundance$state)
 #'
 define_retra <- function(data, d = NULL, trajectories = NULL, states = NULL, retra = NULL) {
 
@@ -200,23 +200,28 @@ define_retra <- function(data, d = NULL, trajectories = NULL, states = NULL, ret
   RT <- lapply(setNames(1:nRT, ID_RT), function(iT){
     ind_traj <- which(data$RT == ID_RT[iT])
     nStates <- length(ind_traj)
+    idata <- data[ind_traj, ]
 
     # Some states can be unique in one trajectory. The segment will be defined
     # as traj[St-St]
-    if (data$RT_traj[ind_traj][1] != data$RT_traj[ind_traj][2]) {
+    if (idata$RT_traj[1] != idata$RT_traj[2] |
+        (idata$RT_traj[1] == idata$RT_traj[2] & idata$RT_states[2] - idata$RT_states[1] > 1)) {
       data <- rbind(data, data[ind_traj[1], ])
     }
-    i = 2
-    while(i <= nStates-1) {
-      if (data$RT_traj[ind_traj][i] != data$RT_traj[ind_traj][i+1] &
-          data$RT_traj[ind_traj][i] != data$RT_traj[ind_traj][i-1]) {
-        data <- rbind(data, data[ind_traj[i], ])
-      }
-      i <- i+1
-    }
-    if (data$RT_traj[ind_traj][nStates] != data$RT_traj[ind_traj][nStates-1]) {
+    if (idata$RT_traj[nStates] != idata$RT_traj[nStates-1] |
+        (idata$RT_traj[nStates] == idata$RT_traj[nStates-1] & idata$RT_states[nStates] - idata$RT_states[nStates-1] > 1)) {
       data <- rbind(data, data[ind_traj[nStates], ])
     }
+    if (nStates > 2) {
+      for (i in 2:(nStates-1)) {
+        if (!(idata$RT_traj[i] %in% idata$RT_traj[c(i+1, i-1)]) |
+            ((idata$RT_traj[i] == idata$RT_traj[(i-1)] & diff(idata$RT_states[c(i-1, i)]) > 1) |
+             (idata$RT_traj[i] == idata$RT_traj[(i+1)] & diff(idata$RT_states[c(i, i+1)]) > 1))) {
+          data <- rbind(data, data[ind_traj[i], ])
+        }
+      }
+    }
+
     data <- data[sort(data$id), ]
     ind_traj <- which(data$RT == ID_RT[iT])
     nStates <- length(ind_traj)
@@ -283,11 +288,19 @@ define_retra <- function(data, d = NULL, trajectories = NULL, states = NULL, ret
           } else {
             distance <- NA
           }
-
           return(distance)
+        }, numeric(1)),
 
-        }, numeric(1))
+        Real = vapply(1:(length(Segments) - 1), function (ilink) {
+          iSt1 <- paste0(seg_components[[ilink]][1], "_", seg_components[[ilink]][3])
+          iSt2 <- paste0(seg_components[[ilink+1]][1], "_", seg_components[[ilink+1]][2])
+          if (iSt1 == iSt2) {T} else {F}
+        }, logical(1))
       )
+      Link_distance <- Link_distance[which(Link_distance$Real == F), c("Link", "Distance")]
+      if (nrow(Link_distance) == 0){
+        Link_distance <- NA
+      }
     } else {
       Link_distance <- NA
     }
