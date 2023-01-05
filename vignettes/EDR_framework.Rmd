@@ -28,7 +28,7 @@ An **Ecological Dynamic Regime (EDR)** is defined as the *"natural fluctuations 
 
 EDRs are composed of a set of ecological trajectories showing similar processes in the development, interaction, and reorganization of some state variables over time. Depending on the state variables, ecological trajectories are usually defined in multivariate spaces that make challenging the characterization and comparison of EDRs.
 
-The *EDR framework* is a set of algorithms and metrics aiming to characterize and compare EDRs composed of ecological trajectories defined in multidimensional state spaces. The EDR framework is implemented in `ecoregime`. You can find the formal definition of the EDR concept, all the methodological details of the framework, and some illustrative examples with artificial and real data sets in the following publication:
+The **EDR framework** is a set of algorithms and metrics aiming to characterize and compare EDRs composed of ecological trajectories defined in multidimensional state spaces. The EDR framework is implemented in `ecoregime`. You can find the formal definition of the EDR concept, all the methodological details of the framework, and some illustrative examples with artificial and real data sets in the following publication:
 
 - Sánchez-Pinillos M., Kéfi, S., De Cáceres, M., Dakos, V. Ecological Dynamic Regimes: Identification, characterization, and comparison.
 
@@ -139,7 +139,7 @@ To see how ecological trajectories are distributed in the state space, we just n
 ```{r traj_state_mds, fig = TRUE, fig.height = 5, fig.width = 5, fig.align = "center"}
 
 ## -->> This code shows you the process step by step, but you could directly use 
-## -->> the function trajectoryPlot()` in `ecotraj`
+## -->> the function trajectoryPlot() in ecotraj
 
 # Plot the distribution of the states in the state space
 plot(state_mds$D1, state_mds$D2,
@@ -277,15 +277,15 @@ repr_traj <- retra_edr(d = state_dissim, trajectories = rep(ID_sampling, each = 
 TIP! Have you calculated segment dissimilarities before? If so, you could save time.
 
 ```{R RETRA-EDR_segs}
-# Calculate segment dissimilarity: `retra_edr()` uses `segmentDistance()` in `ecotraj`
+# Calculate segment dissimilarity: retra_edr() uses segmentDistance() in ecotraj
 seg_dissim <- ecotraj::segmentDistances(d = state_dissim, 
                                         sites = rep(ID_sampling, each = 3),
                                         surveys = rep(ID_obs, 10))
 seg_dissim <- seg_dissim$Dseg
 
-# TIP! If you use `segmentDistance()`, you can use the labels of the returned 
-# distance object to define 'traj_Segs', 'state1_Segs', and 'state2_Segs'
-# in retra_edr()
+## --> TIP! If you use segmentDistance(), you can use the labels of the returned 
+## --> distance object to define 'traj_Segs', 'state1_Segs', and 'state2_Segs'
+## --> in retra_edr()
 head(labels(seg_dissim))
 
 # Apply retra_edr()
