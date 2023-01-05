@@ -120,12 +120,10 @@
 #' # Example 1 -----------------------------------------------------------------
 #' # Identify representative trajectories from state dissimilarities
 #'
-#' library(vegan)
-#'
 #' # Calculate state dissimilarities (Bray-Curtis) from species abundances
 #' abundance <- data.frame(EDR_data$EDR1$abundance)
 #' row.names(abundance) <- paste0(abundance$traj, "_", abundance$state)
-#' d <- vegdist(abundance[, -c(1:3)], method = "bray")
+#' d <- vegan::vegdist(abundance[, -c(1:3)], method = "bray")
 #'
 #' # Identify the trajectory (or site) and states in d
 #' traj_state <- strsplit(labels(d), "_")
@@ -387,8 +385,6 @@ retra_edr <- function (d, trajectories, states, minSegs,
     segtree_nms <- segtree_nms[-which(segtree_nms %in% c(redundant, segtree_nms[len_segtree]))]
   }
 
-  #---->>>> leaves contains dense groups of segments where we will find the medoids
-
   ## IDENTIFY MEDOIDS ----------------------------------------------------------
 
   leaf_dSegs <- list()
@@ -421,8 +417,6 @@ retra_edr <- function (d, trajectories, states, minSegs,
 
   medoids <- data.table::rbindlist(medoids)
   medoids_nms <- medoids[[1]]
-
-  #---->>>> medoids contains the coordinates of the segments defining the representative trajectory
 
   ## JOIN MEDOID SEGMENTS #---------------------------------------------------
 
@@ -535,16 +529,17 @@ retra_edr <- function (d, trajectories, states, minSegs,
         }, character(1)),
         Distance = vapply(1:(length(itraj) - 1), function (ilink) {
           linkD$dSegs[itraj[ilink], itraj[ilink + 1]]
-        }, numeric(1)))
-      Link_distance$real <- vapply(1:(length(itraj)-1), function(ilink){
-        if (seg_components[[ilink]][1] == seg_components[[(ilink+1)]][1] &&
-            as.numeric(seg_components[[(ilink+1)]][2]) - as.numeric(seg_components[[ilink]][3]) <= 1) {
-          TRUE
-        } else {
-          FALSE
-        }
-      }, logical(1))
-      Link_distance <- Link_distance[which(Link_distance$real == FALSE), ]
+        }, numeric(1)),
+        Real = vapply(1:(length(itraj) - 1), function (ilink) {
+          iSt1 <- paste0(seg_components[[ilink]][1], "_", seg_components[[ilink]][3])
+          iSt2 <- paste0(seg_components[[ilink+1]][1], "_", seg_components[[ilink+1]][2])
+          if (iSt1 == iSt2) {T} else {F}
+        }, logical(1))
+        )
+      Link_distance <- Link_distance[which(Link_distance$Real == F), c("Link", "Distance")]
+      if (nrow(Link_distance) == 0){
+        Link_distance <- NA
+      }
 
       traj_attr <- list(minSegs = minSegs,
                         Segments = itraj,
@@ -552,7 +547,7 @@ retra_edr <- function (d, trajectories, states, minSegs,
                         Length = traj_length(traj_segs = itraj, dState = d,
                                              trajectories = trajectories, states = states),
 
-                        Link_distance = Link_distance[, c("Link", "Distance")],
+                        Link_distance = Link_distance,
                         Seg_density = data.frame(
                           Density = vapply(itraj, function (iseg) {
                             node = medoids[which(medoids$rn == iseg), ]$Node
