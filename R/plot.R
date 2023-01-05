@@ -215,8 +215,6 @@ plot.RETRA <- function (x, d, trajectories, states, select_RT = NULL,
   RT_coords <- RT_coords[match(paste0(RT_data$RT, "_", RT_data$order_RT_states),
                                paste0(RT_coords$RT, "_", RT_coords$order_RT_states)), ]
 
-
-  #------------------------
   links <- lapply(1:nRT, function(iT){
     ind_traj <- which(RT_data$RT == ID_RT[iT])
 
@@ -246,37 +244,6 @@ plot.RETRA <- function (x, d, trajectories, states, select_RT = NULL,
     Lk_coords <- Lk_coords[match(paste0(links$RT, "_", links$Link, "_", links$Link_state),
                                  paste0(Lk_coords$RT, "_", Lk_coords$Link, "_", Lk_coords$Link_state)), ]
   }
-
-
-  #------------------------
-  # # Identify links
-  # links <- lapply(1:nRT, function(iT){
-  #   ind_traj <- which(RT_data$RT == ID_RT[iT])
-  #
-  #   # False links
-  #   nlinks <- nrow(RT_data[ind_traj, ]) - 1
-  #   nlini <- RT_traj[ind_traj][seq(2, nlinks, by = 2)]
-  #   nlfin <- RT_traj[ind_traj][seq(3, nlinks, by = 2)]
-  #   ind_link <- which(nlini != nlfin)
-  #
-  #   if (length(ind_link) > 0) {
-  #     links <- data.frame(ID = RT_data$ID[ind_traj][c(2*ind_link, 2*ind_link+1)],
-  #                         RT = ID_RT[iT],
-  #                         Link = seq_along(ind_link),
-  #                         Link_state = rep(1:2, each = length(ind_link)), row.names = NULL)
-  #     links <- links[order(links$Link, links$Link_state), ]
-  #   } else {links <- data.frame()}
-  #
-  #   return(links)
-  # })
-  # links <- data.frame(data.table::rbindlist(links))
-  #
-  # # Coordinates of link states
-  # if (nrow(links) > 0) {
-  #   Lk_coords <- merge(links, statesMDS, by = "ID", all.d = T)
-  #   Lk_coords <- Lk_coords[match(paste0(links$RT, "_", links$Link, "_", links$Link_state),
-  #                                paste0(Lk_coords$RT, "_", Lk_coords$Link, "_", Lk_coords$Link_state)), ]
-  # }
 
   # PLOT TRAJECTORIES ----------------------------------------------------------
 
