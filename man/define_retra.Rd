@@ -148,9 +148,9 @@ df <- rbind(data_A, data_B)
 df$RT_states <- as.integer(df$RT_states)
 
 # Generate a RETRA object using define_retra()
-new_retra <- define_retra(data = df, d = EDR_data$EDR2$state_dissim,
-                          trajectories = EDR_data$EDR2$abundance$traj,
-                          states = EDR_data$EDR2$abundance$state)
+new_retra <- define_retra(data = df, d = EDR_data$EDR1$state_dissim,
+                          trajectories = EDR_data$EDR1$abundance$traj,
+                          states = EDR_data$EDR1$abundance$state)
 
 }
 \seealso{
