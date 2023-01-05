@@ -15,9 +15,11 @@ test_that("returns an object of class 'RETRA'", {
   expect_type(retra$T1$Segments, "character")
   expect_type(retra$T1$Size, "integer")
   expect_type(retra$T1$Length, "double")
-  expect_s3_class(retra$T1$Link_distance, "data.frame")
-  expect_type(retra$T1$Link_distance$Link, "character")
-  expect_type(retra$T1$Link_distance$Distance, "double")
+
+  expect_true(is.na(retra$T1$Link_distance))
+  expect_s3_class(retra$T2$Link_distance, "data.frame")
+  expect_type(retra$T2$Link_distance$Link, "character")
+  expect_type(retra$T2$Link_distance$Distance, "double")
   expect_s3_class(retra$T1$Seg_density, "data.frame")
   expect_type(retra$T1$Seg_density$Density, "double")
   expect_type(retra$T1$Seg_density$kdTree_depth, "double")
@@ -76,15 +78,37 @@ test_that("minSegs and eps works", {
   trajectories <- EDR_data$EDR1$abundance$traj
   states <- EDR_data$EDR1$abundance$state
   nSegs <- sum(table(trajectories) - 1)
+  # Reference
   retra_minSegs5_eps0 <- retra_edr(d = d, trajectories = trajectories, states = states,
                                    minSegs = 5)
+  # minSegs is maximum (returns a segment as representative trajectory)
   retra_minSegsMAX <- retra_edr(d = d, trajectories = trajectories, states = states,
                                minSegs = nSegs-1)
+  # Large eps (returns two segments)
   retra_eps5 <- retra_edr(d = d, trajectories = trajectories, states = states,
                            minSegs = 5, eps = 5)
 
+  # Less trajectories when minSegs is maximum and eps is large
   expect_lte(length(retra_minSegsMAX), length(retra_minSegs5_eps0))
   expect_lte(length(retra_eps5), length(retra_minSegs5_eps0))
+
+})
+
+test_that("attributes are correct when there is only a segment", {
+  d <- EDR_data$EDR1$state_dissim
+  trajectories <- EDR_data$EDR1$abundance$traj
+  states <- EDR_data$EDR1$abundance$state
+  nSegs <- sum(table(trajectories) - 1)
+
+  # minSegs is maximum (returns a segment as representative trajectory)
+  retra_minSegsMAX <- retra_edr(d = d, trajectories = trajectories, states = states,
+                                minSegs = nSegs-1)
+
+  expect_equal(length(retra_minSegsMAX$T1$Segments), 1)
+  expect_equal(retra_minSegsMAX$T1$Size, 2)
+  expect_equal(retra_minSegsMAX$T1$Link_distance, NA)
+  expect_equal(retra_minSegsMAX$T1$Seg_density$Density, nSegs)
+  expect_equal(retra_minSegsMAX$T1$Seg_density$kdTree_depth, 0)
 
 })
 
