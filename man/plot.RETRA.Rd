@@ -56,7 +56,7 @@ representative trajectories. Defaults 2 = dashed (See \link[graphics:par]{graphi
 \item{axes}{An integer vector indicating the pair of axes in the ordination
 space to be plotted.}
 
-\item{...}{Arguments for function \link[shape:Arrows]{shape::Arrows}.}
+\item{...}{Arguments for generic plot().}
 }
 \value{
 The function \code{plot()} plots a set of individual trajectories and the

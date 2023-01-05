@@ -31,7 +31,7 @@
 #' representative trajectories. Defaults 2 = dashed (See [graphics::par]).
 #' @param axes An integer vector indicating the pair of axes in the ordination
 #' space to be plotted.
-#' @param ... Arguments for function [shape::Arrows].
+#' @param ... Arguments for generic plot().
 #'
 #' @return
 #' The function `plot()` plots a set of individual trajectories and the
