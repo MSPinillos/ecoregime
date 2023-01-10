@@ -22,6 +22,37 @@ test_that("returns an object of class 'RETRA'", {
 
 })
 
+test_that("returns an object of class 'RETRA' (data is a list)", {
+  d <- as.matrix(EDR_data$EDR1$state_dissim)
+  trajectories <- EDR_data$EDR1$abundance$traj
+  states <- EDR_data$EDR1$abundance$state
+  data <- data.frame(RT = c(rep("newT.1", 6), rep("newT.2", 2)),
+                     RT_traj = c(1, 1, 1, 2, 3, 3, 4, 4),
+                     RT_states = as.integer(c(1, 2, 3, 3, 4, 5, 1, 2)))
+  new_retra <- define_retra(data = data, d = d,
+                            trajectories = trajectories, states = states)
+
+  data2 <- list(c("1[1-2]", "1[2-3]", "2[3-3]", "3[4-5]"),
+               c("4[1-2]"))
+  new_retra2 <- define_retra(data = data, d = d,
+                            trajectories = trajectories, states = states)
+
+  expect_s3_class(new_retra2, "RETRA")
+  expect_equal(attributes(new_retra2$newT.1)$names,
+               c("minSegs", "Segments", "Size", "Length", "Link_distance", "Seg_density"))
+
+  expect_type(new_retra2$newT.1$Segments, "character")
+  expect_type(new_retra2$newT.1$Size, "integer")
+  expect_type(new_retra2$newT.1$Length, "double")
+  expect_s3_class(new_retra2$newT.1$Link_distance, "data.frame")
+  expect_equal(new_retra2$newT.2$Link_distance, NA)
+  expect_type(new_retra2$newT.1$Link_distance$Link, "character")
+  expect_type(new_retra2$newT.1$Link_distance$Distance, "double")
+
+  expect_equal(new_retra, new_retra2)
+
+})
+
 test_that("returns same results when data is defined from 'retra'", {
   d <- EDR_data$EDR1$state_dissim
   trajectories <- EDR_data$EDR1$abundance$traj
@@ -41,20 +72,26 @@ test_that("returns same results when data is defined from 'retra'", {
     }, integer(2))
     RT_states <- c(RT_states)
 
-    data <- data.frame(RT_traj = RT_traj, RT_states)
+    data <- data.frame(RT_traj = RT_traj, RT_states = RT_states)
     data$RT <- names(old_retra)[itraj]
     data$RT_retra <- names(old_retra)[itraj]
 
     return(unique(data))
   })
 
-  data <- do.call(rbind, data.ls)
+  data1 <- do.call(rbind, data.ls)
+  new_retra1 <- define_retra(data = data1, d = d,
+                             trajectories = trajectories, states = states,
+                             retra = old_retra)
 
-  new_retra <- define_retra(data = data, d = d,
-                            trajectories = trajectories, states = states,
-                            retra = old_retra)
+  data2 <- sapply(old_retra, '[', 'Segments')
+  new_retra2 <- define_retra(data = data2, d = d,
+                             trajectories = trajectories, states = states,
+                             retra = old_retra)
+  names(new_retra2) <- names(old_retra)
 
-  expect_equal(old_retra, new_retra)
+  expect_equal(old_retra, new_retra1)
+  expect_equal(old_retra, new_retra2)
 
 })
 
@@ -85,10 +122,20 @@ test_that("attributes change for a selection of states", {
   })
 
   data <- do.call(rbind, data.ls)
-
   new_retra <- define_retra(data = data, d = as.matrix(d),
-                            trajectories = trajectories, states = states,
-                            retra = old_retra)
+                             trajectories = trajectories, states = states,
+                             retra = old_retra)
+
+  data2 <-  lapply(seq_along(old_retra), function(itraj){
+    Segments <- c(old_retra[[itraj]]$Segments[1],
+                  old_retra[[itraj]]$Segments[length(old_retra[[itraj]]$Segments)])
+  })
+  new_retra2 <- define_retra(data = data2, d = as.matrix(d),
+                             trajectories = trajectories, states = states,
+                             retra = old_retra)
+  names(new_retra2) <- names(new_retra)
+  expect_equal(new_retra, new_retra2)
+
 
   size_diff <- lapply(seq_along(old_retra), function(iRT){
     old_retra[[iRT]]$Size - new_retra[[iRT]]$Size
@@ -115,17 +162,20 @@ test_that("defines a segment", {
   dimnames(d) <- list(paste0(trajectories, "_", states),
                       paste0(trajectories, "_", states))
 
-  data <- data.frame(RT = rep("A", 2),
+  data <- data.frame(RT = rep("newT", 2),
                      RT_traj = rep(28, 2),
                      RT_states = as.integer(c(1, 2)))
-
   retra <- define_retra(data = data, d = d,
                         trajectories = trajectories, states = states)
+  data2 <- "28[1-2]"
+  retra2 <- define_retra(data = data2, d = d,
+                        trajectories = trajectories, states = states)
 
-  expect_equal(length(retra$A$Segments), 1)
-  expect_equal(retra$A$Size, 2)
-  expect_equal(retra$A$Length, d["28_1", "28_2"])
-  expect_equal(retra$A$Link_distance, NA)
+  expect_equal(retra, retra2)
+  expect_equal(length(retra$newT$Segments), 1)
+  expect_equal(retra$newT$Size, 2)
+  expect_equal(retra$newT$Length, d["28_1", "28_2"])
+  expect_equal(retra$newT$Link_distance, NA)
 
 })
 
@@ -136,18 +186,23 @@ test_that("defines a complete trajectory", {
   dimnames(d) <- list(paste0(trajectories, "_", states),
                       paste0(trajectories, "_", states))
 
-  data <- data.frame(RT = rep("A", 5),
+  data <- data.frame(RT = rep("newT", 5),
                      RT_traj = rep(1, 5),
                      RT_states = as.integer(1:5))
-
   retra <- define_retra(data = data, d = d,
                         trajectories = trajectories, states = states)
 
-  expect_equal(length(retra$A$Segments), nrow(data)-1)
-  expect_equal(retra$A$Size, nrow(data))
-  expect_equal(retra$A$Length, sum(d["1_1", "1_2"], d["1_2", "1_3"],
-                                   d["1_3", "1_4"], d["1_4", "1_5"]))
-  expect_equal(retra$A$Link_distance, NA)
+  data2 <- c("1[1-2]", "1[2-3]", "1[3-4]", "1[4-5]")
+  retra2 <- define_retra(data = data2, d = d,
+                         trajectories = trajectories, states = states)
+
+  expect_equal(retra, retra2)
+
+  expect_equal(length(retra$newT$Segments), nrow(data)-1)
+  expect_equal(retra$newT$Size, nrow(data))
+  expect_equal(retra$newT$Length, sum(d["1_1", "1_2"], d["1_2", "1_3"],
+                                      d["1_3", "1_4"], d["1_4", "1_5"]))
+  expect_equal(retra$newT$Link_distance, NA)
 
 })
 
@@ -158,17 +213,22 @@ test_that("defines a segment composed of states from two trajectories", {
   dimnames(d) <- list(paste0(trajectories, "_", states),
                       paste0(trajectories, "_", states))
 
-  data <- data.frame(RT = rep("A", 2),
+  data <- data.frame(RT = rep("newT", 2),
                      RT_traj = c(28, 30),
                      RT_states = as.integer(c(1, 2)))
-
   retra <- define_retra(data = data, d = d,
                         trajectories = trajectories, states = states)
 
-  expect_equal(length(retra$A$Segments), 2)
-  expect_equal(retra$A$Size, 2)
-  expect_equal(retra$A$Length, d["28_1", "30_2"])
-  expect_equal(retra$A$Link_distance$Distance, retra$A$Length)
+  data2 <- c("28[1-1]", "30[2-2]")
+  retra2 <- define_retra(data = data2, d = d,
+                        trajectories = trajectories, states = states)
+
+  expect_equal(retra, retra2)
+
+  expect_equal(length(retra$newT$Segments), 2)
+  expect_equal(retra$newT$Size, 2)
+  expect_equal(retra$newT$Length, d["28_1", "30_2"])
+  expect_equal(retra$newT$Link_distance$Distance, retra$newT$Length)
 
 })
 
@@ -179,18 +239,23 @@ test_that("defines a sequence of states from different trajectories", {
   dimnames(d) <- list(paste0(trajectories, "_", states),
                       paste0(trajectories, "_", states))
 
-  data <- data.frame(RT = rep("A", 4),
+  data <- data.frame(RT = rep("newT", 4),
                      RT_traj = c(28, 30, 5, 15),
                      RT_states = as.integer(1:4))
-
   retra <- define_retra(data = data, d = d,
                         trajectories = trajectories, states = states)
 
-  expect_equal(length(retra$A$Segments), nrow(data))
-  expect_equal(retra$A$Size, nrow(data))
-  expect_equal(retra$A$Length, sum(d["28_1", "30_2"], d["30_2", "5_3"],
+  data2 <- c("28[1-1]", "30[2-2]", "5[3-3]", "15[4-4]")
+  retra2 <- define_retra(data = data2, d = d,
+                        trajectories = trajectories, states = states)
+
+  expect_equal(retra, retra2)
+
+  expect_equal(length(retra$newT$Segments), nrow(data))
+  expect_equal(retra$newT$Size, nrow(data))
+  expect_equal(retra$newT$Length, sum(d["28_1", "30_2"], d["30_2", "5_3"],
                                    d["5_3", "15_4"]))
-  expect_equal(sum(retra$A$Link_distance$Distance), retra$A$Length)
+  expect_equal(sum(retra$newT$Link_distance$Distance), retra$newT$Length)
 
 })
 
@@ -201,19 +266,24 @@ test_that("defines circular trajectories", {
   dimnames(d) <- list(paste0(trajectories, "_", states),
                       paste0(trajectories, "_", states))
 
-  data <- data.frame(RT = rep("A", 6),
+  data <- data.frame(RT = rep("newT", 6),
                      RT_traj = c(28, 30, 5, 15, 28, 28),
                      RT_states = as.integer(c(1:4, 1, 4)))
-
   retra <- define_retra(data = data, d = d,
                         trajectories = trajectories, states = states)
 
-  expect_equal(length(retra$A$Segments), nrow(data))
-  expect_equal(retra$A$Size, nrow(unique(data[, c("RT_traj", "RT_states")])))
-  expect_equal(retra$A$Length, sum(d["28_1", "30_2"], d["30_2", "5_3"],
-                                   d["5_3", "15_4"], d["15_4", "28_1"],
-                                   d["28_1", "28_4"]))
-  expect_equal(sum(retra$A$Link_distance$Distance), retra$A$Length)
+  data2 <- c("28[1-1]", "30[2-2]", "5[3-3]", "15[4-4]", "28[1-1]", "28[4-4]")
+  retra2 <- define_retra(data = data2, d = d,
+                         trajectories = trajectories, states = states)
+
+  expect_equal(retra, retra2)
+
+  expect_equal(length(retra$newT$Segments), nrow(data))
+  expect_equal(retra$newT$Size, nrow(unique(data[, c("RT_traj", "RT_states")])))
+  expect_equal(retra$newT$Length, sum(d["28_1", "30_2"], d["30_2", "5_3"],
+                                      d["5_3", "15_4"], d["15_4", "28_1"],
+                                      d["28_1", "28_4"]))
+  expect_equal(sum(retra$newT$Link_distance$Distance), retra$newT$Length)
 
 })
 
