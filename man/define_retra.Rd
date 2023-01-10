@@ -11,7 +11,9 @@ define_retra(data, d = NULL, trajectories = NULL, states = NULL, retra = NULL)
 trajectories, the individual trajectories or sites to which the states belong,
 the order of the states in the individual trajectories, and the identifier of
 the representative trajectory to which the states belong (only if \code{!is.null(retra)}).
-See Details for further clarifications to define \code{data}.}
+Alternatively, 'data' can be a vector or a list of character vectors including
+the sequence of segments. See Details for further
+clarifications to define \code{data}.}
 
 \item{d}{Either a symmetric matrix or an object of class \code{\link{dist}} containing the
 dissimilarities between each pair of states of all trajectories in the EDR.
@@ -74,8 +76,13 @@ One could be interested in splitting the obtained trajectories, considering
 only a fraction of the returned trajectories, or defining representative
 trajectories following different criteria than those in RETRA-EDR.
 The function \code{define_retra()} allows generating an object of class \code{RETRA} that
-can be used in other functions of \code{ecoregime} (e.g., \code{\link[=plot]{plot()}}). For that, it is
-necessary to provide a data frame (\code{data}) with as many rows as the number of
+can be used in other functions of \code{ecoregime} (e.g., \code{\link[=plot]{plot()}}).
+
+For that, it is necessary to provide information about the set of segments or
+trajectory states that form the new representative trajectory through the
+argument \code{data}:
+\itemize{
+\item \code{data} can be defined as a \strong{data frame} with as many rows as the number of
 states in all representative trajectories and the following columns:
 \describe{
 \item{\code{RT}}{String indicating the identifier of the new representative trajectories.
@@ -90,19 +97,30 @@ of the states in the individual trajectories of the EDR to which they belong.}
 trajectories returned by \code{\link[=retra_edr]{retra_edr()}} (when \code{!is.null(retra)}). Vector of strings
 indicating the representative trajectory in \code{retra} to which each state belongs.}
 }
+\item Alternatively, \code{data} can be defined as a \strong{vector} or a \strong{list of character
+vectors} containing the sequence of segments in one representative trajectory
+(then, \code{data} is a vector of characters) or in a set of representative trajectories
+(list of character vectors with as many elements as the number of representative
+trajectories). In any case, each segment needs to be specified in the form
+\code{traj[st1-st2]}, where \code{traj} is the identifier of the original trajectory to
+which the segment belongs and \code{st1} and \code{st2} are identifiers of the initial
+and final states defining the segment. If only one state of an individual
+trajectory is considered to form the representative trajectory, the corresponding
+segment needs to be defined as \code{traj[st-st]}.
+}
 }
 \examples{
 # Example 1 -----------------------------------------------------------------
-# Define representative trajectories from the outputs of `retra_edr()`.
+# Define representative trajectories from the outputs of retra_edr().
 
-# Identify representative trajectories using `retra_edr()`
+# Identify representative trajectories using retra_edr()
 d <- EDR_data$EDR1$state_dissim
 trajectories <- EDR_data$EDR1$abundance$traj
 states <- EDR_data$EDR1$abundance$state
 old_retra <- retra_edr(d = d, trajectories = trajectories, states = states,
                        minSegs = 5)
 
-# `retra_edr()` returns three representative trajectories
+# retra_edr() returns three representative trajectories
 old_retra
 
 # Keep the last five segments of trajectories "T2" and "T3"
@@ -132,7 +150,7 @@ new_retra <- define_retra(data = df,
                           retra = old_retra)
 
 # Example 2 -----------------------------------------------------------------
-# Define two representative trajectories from individual trajectories in EDR2.
+# Define two representative trajectories from individual trajectories in EDR1.
 
 # Define trajectory "A" from states in trajectories 3 and 4
 data_A <- data.frame(RT = rep("A", 4), # name of the new representative trajectory
@@ -152,6 +170,24 @@ df$RT_states <- as.integer(df$RT_states)
 new_retra <- define_retra(data = df, d = EDR_data$EDR1$state_dissim,
                           trajectories = EDR_data$EDR1$abundance$traj,
                           states = EDR_data$EDR1$abundance$state)
+
+# Example 3 -----------------------------------------------------------------
+
+# Define a representative trajectory from sequences of segments
+
+# Select all segments in T1, split T2 into two new trajectories, and select
+# the first segment of T3
+data <- list(old_retra$T1$Segments,
+             old_retra$T2$Segments[1:3],
+             old_retra$T2$Segments[4:8],
+             old_retra$T3$Segments[1])
+
+#' # Generate a RETRA object using define_retra()
+new_retra <- define_retra(data = data,
+                          d = d,
+                          trajectories = trajectories,
+                          states = states,
+                          retra = old_retra)
 
 }
 \seealso{
