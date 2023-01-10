@@ -4,7 +4,7 @@
 #' Summarize the properties of the representative trajectories of an Ecological
 #' Dynamic Regime (EDR) returned by [`retra_edr()`] or [`define_retra()`]
 #'
-#' @param object Object of class `RETRA`.
+#' @param object An object of class `RETRA`.
 #' @param ... (not used)
 #'
 #' @return
@@ -12,7 +12,7 @@
 #' in `object`. The columns in the returned data frame contain the following
 #' information:
 #' \describe{
-#' \item{`ID`}{Identifier of the representative trajectory.}
+#' \item{`ID`}{Identifier of the representative trajectories.}
 #' \item{`Size`}{Number of states forming each representative trajectory.}
 #' \item{`Length`}{Sum of the dissimilarities in `d` between every pair of
 #' consecutive states forming the representative trajectories.}
@@ -32,11 +32,6 @@
 #' \item{`Max_depth`}{Maximum depth in the kd-tree, that is, the number of partitions
 #' of the ordination space until finding a region with `minSegs` segments or less.}
 #' }
-#'
-#' @note
-#' Note that the `density` of the dense regions identified in the EDR tend to `minSegs`.
-#' In contrast, greater values of `kdTree_depth` indicate a higher stability of
-#' dense regions over sequential partitions of the ordination space.
 #'
 #' @seealso
 #' [retra_edr()] for identifying representative trajectories in EDRs applying
