@@ -150,6 +150,23 @@ new_retra <- define_retra(data = df,
                           retra = old_retra)
 
 # Example 2 -----------------------------------------------------------------
+# Define representative trajectories from sequences of segments
+
+# Select all segments in T1, split T2 into two new trajectories, and include
+# a trajectory composed of states belonging to trajectories "5", "6", and "7"
+data <- list(old_retra$T1$Segments,
+             old_retra$T2$Segments[1:3],
+             old_retra$T2$Segments[4:8],
+             c("5[1-2]", "5[2-3]", "7[4-4]", "6[4-5]"))
+
+#' # Generate a RETRA object using define_retra()
+new_retra <- define_retra(data = data,
+                          d = d,
+                          trajectories = trajectories,
+                          states = states,
+                          retra = old_retra)
+
+# Example 3 -----------------------------------------------------------------
 # Define two representative trajectories from individual trajectories in EDR1.
 
 # Define trajectory "A" from states in trajectories 3 and 4
@@ -171,23 +188,6 @@ new_retra <- define_retra(data = df, d = EDR_data$EDR1$state_dissim,
                           trajectories = EDR_data$EDR1$abundance$traj,
                           states = EDR_data$EDR1$abundance$state)
 
-# Example 3 -----------------------------------------------------------------
-
-# Define a representative trajectory from sequences of segments
-
-# Select all segments in T1, split T2 into two new trajectories, and select
-# the first segment of T3
-data <- list(old_retra$T1$Segments,
-             old_retra$T2$Segments[1:3],
-             old_retra$T2$Segments[4:8],
-             old_retra$T3$Segments[1])
-
-#' # Generate a RETRA object using define_retra()
-new_retra <- define_retra(data = data,
-                          d = d,
-                          trajectories = trajectories,
-                          states = states,
-                          retra = old_retra)
 
 }
 \seealso{
