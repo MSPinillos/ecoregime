@@ -7,7 +7,7 @@
 \method{summary}{RETRA}(object, ...)
 }
 \arguments{
-\item{object}{Object of class \code{RETRA}.}
+\item{object}{An object of class \code{RETRA}.}
 
 \item{...}{(not used)}
 }
@@ -16,7 +16,7 @@ Data frame with nine columns and one row for each representative trajectory
 in \code{object}. The columns in the returned data frame contain the following
 information:
 \describe{
-\item{\code{ID}}{Identifier of the representative trajectory.}
+\item{\code{ID}}{Identifier of the representative trajectories.}
 \item{\code{Size}}{Number of states forming each representative trajectory.}
 \item{\code{Length}}{Sum of the dissimilarities in \code{d} between every pair of
 consecutive states forming the representative trajectories.}
@@ -40,11 +40,6 @@ of the ordination space until finding a region with \code{minSegs} segments or l
 \description{
 Summarize the properties of the representative trajectories of an Ecological
 Dynamic Regime (EDR) returned by \code{\link[=retra_edr]{retra_edr()}} or \code{\link[=define_retra]{define_retra()}}
-}
-\note{
-Note that the \code{density} of the dense regions identified in the EDR tend to \code{minSegs}.
-In contrast, greater values of \code{kdTree_depth} indicate a higher stability of
-dense regions over sequential partitions of the ordination space.
 }
 \examples{
 # Apply RETRA-EDR to identify representative trajectories
