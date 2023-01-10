@@ -20,7 +20,7 @@ retra_edr(
 }
 \arguments{
 \item{d}{Either a symmetric matrix or an object of class \code{\link{dist}} containing the
-dissimilarities between each pair of states of all trajectories.}
+dissimilarities between each pair of states of all trajectories in the EDR.}
 
 \item{trajectories}{Vector indicating the trajectory or site to which each
 state in \code{d} belongs.}
@@ -29,7 +29,7 @@ state in \code{d} belongs.}
 each trajectory.}
 
 \item{minSegs}{Integer indicating the minimum number of segments in a region
-of the EDR to be represented by a segment of the representative trajectory.}
+of the EDR represented by a segment of the representative trajectory.}
 
 \item{dSegs}{Either a symmetric matrix or an object of class \code{\link{dist}} containing
 the dissimilarities between every pair of trajectory segments (see Details).}
@@ -88,7 +88,7 @@ or less.}
 }
 \description{
 \code{retra_edr()} applies the algorithm RETRA-EDR (Sánchez-Pinillos et al.) to identify
-representative trajectories of the main dynamical patters of an Ecological
+representative trajectories summarizing the main dynamical patters of an Ecological
 Dynamic Regime (EDR).
 }
 \details{
@@ -105,16 +105,15 @@ By default, RETRA-EDR calculates segment dissimilarities following the approach
 by De Caceres et al. (2019) and applies metric multidimensional scaling (MDS,
 Borg and Groenen, 2005) to generate the ordination space. It is possible to use
 other dissimilarity metrics and/or ordination methods and reduce the computational
-time by indicating the dissimilarity matrix and the segment coordinates in the
-ordination space of choice through the arguments \code{dSegs} and \code{coordSegs},
-respectively.
+time by indicating the dissimilarity matrix and the coordinates of the segments
+in the ordination space through the arguments \code{dSegs} and \code{coordSegs}, respectively.
 \itemize{
 \item If \code{!is.null(dSegs)} and \code{is.null(coordSegs)}, RETRA-EDR is computed by
 applying MDS to \code{dSegs}.
 \item If \code{!is.null(dSegs)} and \code{!is.null(coordSegs)}, RETRA-EDR is directly computed
 from the coordinates provided in \code{coordSegs} and representative segments are
-identified using \code{dSegs}. Ideally, \code{coordSegs} should be calculated by the user
-from \code{dSegs}.
+identified using \code{dSegs}. \code{coordSegs} should be calculated by the user from
+\code{dSegs}.
 \item If \code{is.null(dSegs)} and \code{!is.null(coordSegs)} (not recommended), RETRA-EDR
 is directly computed from the coordinates provided in \code{coordSegs}. As \code{dSegs}
 is not provided, \code{retra_edr()} assumes that the ordination space is metric and
@@ -127,25 +126,23 @@ identifies representative segments using the Euclidean distance.
 
 # Calculate state dissimilarities (Bray-Curtis) from species abundances
 abundance <- data.frame(EDR_data$EDR1$abundance)
-row.names(abundance) <- paste0(abundance$traj, "_", abundance$state)
 d <- vegan::vegdist(abundance[, -c(1:3)], method = "bray")
 
 # Identify the trajectory (or site) and states in d
-traj_state <- strsplit(labels(d), "_")
-trajectories <- sapply(traj_state, "[", 1)
-states <- as.integer(sapply(traj_state, "[", 2))
+trajectories <- abundance$traj
+states <- as.integer(abundance$state)
 
 # Compute RETRA-EDR
-RT1 <- retra_edr(d = d, trajectories = trajectories, states = states, minSegs = 5)
+RT1 <- retra_edr(d = d, trajectories = trajectories, states = states,
+                 minSegs = 5)
 
 # Example 2 -----------------------------------------------------------------
 # Identify representative trajectories from segment dissimilarities
 
-library(ecotraj)
-
 # Calculate segment dissimilarities using the Hausdorff distance
-dSegs <- segmentDistances(d = d, sites = trajectories, surveys = states,
-                          distance.type = "Hausdorff")
+dSegs <- ecotraj:: segmentDistances(d = d, sites = trajectories,
+                                    surveys = states,
+                                    distance.type = "Hausdorff")
 dSegs <- dSegs$Dseg
 
 # Identify the trajectory (or site) and states in dSegs:
