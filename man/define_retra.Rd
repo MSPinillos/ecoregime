@@ -8,14 +8,14 @@ define_retra(data, d = NULL, trajectories = NULL, states = NULL, retra = NULL)
 }
 \arguments{
 \item{data}{A data frame indicating identifiers for the new representative
-trajectories, the individual trajectories or sites to which their states belong,
-the order of the states in the individual trajectories, and if \code{!is.null(retra)},
-the identifier of the representative trajectory to which their states belong
-(see Details to define \code{data}).}
+trajectories, the individual trajectories or sites to which the states belong,
+the order of the states in the individual trajectories, and the identifier of
+the representative trajectory to which the states belong (only if \code{!is.null(retra)}).
+See Details for further clarifications to define \code{data}.}
 
 \item{d}{Either a symmetric matrix or an object of class \code{\link{dist}} containing the
-dissimilarities between each pair of states of all trajectories. If \code{NULL}
-(default), the length (\code{Length}) of the representative trajectories and the
+dissimilarities between each pair of states of all trajectories in the EDR.
+If \code{NULL} (default), the length (\code{Length}) of the representative trajectories and the
 distances between states of different trajectories or sites (\code{Link_distance})
 are not calculated.}
 
@@ -25,8 +25,8 @@ trajectory or site to which each state in \code{d} belongs.}
 \item{states}{Only needed if \code{!is.null(d)}. Vector of integers indicating the
 order of the states in \code{d} for each trajectory.}
 
-\item{retra}{Object of class \code{RETRA} returned from function \code{\link[=retra_edr]{retra_edr()}}.
-If \code{NULL} (default), \code{minSegs} and \code{Seg_density} are not provided.}
+\item{retra}{Object of class \code{RETRA} returned from \code{\link[=retra_edr]{retra_edr()}}. If \code{NULL}
+(default), \code{minSegs} and \code{Seg_density} are not provided.}
 }
 \value{
 An object of class \code{RETRA}, which is a list of length equal to the number of
@@ -40,8 +40,8 @@ representative trajectory. Each segment is identified by a string of the form
 \code{traj[st1-st2]}, where \code{traj} is the identifier of the original trajectory to
 which the segment belongs and \code{st1} and \code{st2} are identifiers of the initial
 and final states defining the segment. The same format \code{traj[st1-st2]} is
-maintained when one state of an individual trajectory is considered (\code{st1} = \code{st2}).
-\code{traj}, \code{st1}, and \code{st2} are recycled from \code{data}.}
+maintained when only one state of an individual trajectory is considered
+(\code{st1} = \code{st2}). \code{traj}, \code{st1}, and \code{st2} are recycled from \code{data}.}
 \item{\code{Size}}{Integer indicating the number of states forming the representative
 trajectory.}
 \item{\code{Length}}{Numeric value indicating the length of the representative trajectory,
@@ -99,7 +99,8 @@ indicating the representative trajectory in \code{retra} to which each state bel
 d <- EDR_data$EDR1$state_dissim
 trajectories <- EDR_data$EDR1$abundance$traj
 states <- EDR_data$EDR1$abundance$state
-old_retra <- retra_edr(d = d, trajectories = trajectories, states = states, minSegs = 5)
+old_retra <- retra_edr(d = d, trajectories = trajectories, states = states,
+                       minSegs = 5)
 
 # `retra_edr()` returns three representative trajectories
 old_retra
@@ -154,8 +155,11 @@ new_retra <- define_retra(data = df, d = EDR_data$EDR1$state_dissim,
 
 }
 \seealso{
-\code{\link[=retra_edr]{retra_edr()}} for identifying representative trajectories in EDRs applying
+\code{\link[=retra_edr]{retra_edr()}} for identifying representative trajectories in EDRs through
 RETRA-EDR.
+
+\code{\link[=summary]{summary()}} for summarizing the characteristics of the set of representative
+trajectories.
 
 \code{\link[=plot]{plot()}} for plotting representative trajectories in an ordination space
 representing the state space of the EDR.
