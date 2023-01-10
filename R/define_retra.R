@@ -8,7 +8,9 @@
 #' trajectories, the individual trajectories or sites to which the states belong,
 #' the order of the states in the individual trajectories, and the identifier of
 #' the representative trajectory to which the states belong (only if `!is.null(retra)`).
-#' See Details for further clarifications to define `data`.
+#' Alternatively, 'data' can be a vector or a list of character vectors including
+#' the sequence of segments. See Details for further
+#' clarifications to define `data`.
 #' @param d Either a symmetric matrix or an object of class [`dist`] containing the
 #' dissimilarities between each pair of states of all trajectories in the EDR.
 #' If `NULL` (default), the length (`Length`) of the representative trajectories and the
@@ -29,8 +31,13 @@
 #' only a fraction of the returned trajectories, or defining representative
 #' trajectories following different criteria than those in RETRA-EDR.
 #' The function `define_retra()` allows generating an object of class `RETRA` that
-#' can be used in other functions of `ecoregime` (e.g., [plot()]). For that, it is
-#' necessary to provide a data frame (`data`) with as many rows as the number of
+#' can be used in other functions of `ecoregime` (e.g., [plot()]).
+#'
+#' For that, it is necessary to provide information about the set of segments or
+#' trajectory states that form the new representative trajectory through the
+#' argument `data`:
+#'
+#' - `data` can be defined as a **data frame** with as many rows as the number of
 #' states in all representative trajectories and the following columns:
 #' \describe{
 #' \item{`RT`}{String indicating the identifier of the new representative trajectories.
@@ -45,6 +52,17 @@
 #' trajectories returned by [retra_edr()] (when `!is.null(retra)`). Vector of strings
 #' indicating the representative trajectory in `retra` to which each state belongs.}
 #' }
+#'
+#' - Alternatively, `data` can be defined as a **vector** or a **list of character
+#' vectors** containing the sequence of segments in one representative trajectory
+#' (then, `data` is a vector of characters) or in a set of representative trajectories
+#' (list of character vectors with as many elements as the number of representative
+#' trajectories). In any case, each segment needs to be specified in the form
+#' `traj[st1-st2]`, where `traj` is the identifier of the original trajectory to
+#' which the segment belongs and `st1` and `st2` are identifiers of the initial
+#' and final states defining the segment. If only one state of an individual
+#' trajectory is considered to form the representative trajectory, the corresponding
+#' segment needs to be defined as `traj[st-st]`.
 #'
 #' @return
 #' An object of class `RETRA`, which is a list of length equal to the number of
@@ -96,16 +114,16 @@
 #'
 #' @examples
 #' # Example 1 -----------------------------------------------------------------
-#' # Define representative trajectories from the outputs of `retra_edr()`.
+#' # Define representative trajectories from the outputs of retra_edr().
 #'
-#' # Identify representative trajectories using `retra_edr()`
+#' # Identify representative trajectories using retra_edr()
 #' d <- EDR_data$EDR1$state_dissim
 #' trajectories <- EDR_data$EDR1$abundance$traj
 #' states <- EDR_data$EDR1$abundance$state
 #' old_retra <- retra_edr(d = d, trajectories = trajectories, states = states,
 #'                        minSegs = 5)
 #'
-#' # `retra_edr()` returns three representative trajectories
+#' # retra_edr() returns three representative trajectories
 #' old_retra
 #'
 #' # Keep the last five segments of trajectories "T2" and "T3"
@@ -135,7 +153,24 @@
 #'                           retra = old_retra)
 #'
 #' # Example 2 -----------------------------------------------------------------
-#' # Define two representative trajectories from individual trajectories in EDR2.
+#' # Define representative trajectories from sequences of segments
+#'
+#' # Select all segments in T1, split T2 into two new trajectories, and include
+#' # a trajectory composed of states belonging to trajectories "5", "6", and "7"
+#' data <- list(old_retra$T1$Segments,
+#'              old_retra$T2$Segments[1:3],
+#'              old_retra$T2$Segments[4:8],
+#'              c("5[1-2]", "5[2-3]", "7[4-4]", "6[4-5]"))
+#'
+#' #' # Generate a RETRA object using define_retra()
+#' new_retra <- define_retra(data = data,
+#'                           d = d,
+#'                           trajectories = trajectories,
+#'                           states = states,
+#'                           retra = old_retra)
+#'
+#' # Example 3 -----------------------------------------------------------------
+#' # Define two representative trajectories from individual trajectories in EDR1.
 #'
 #' # Define trajectory "A" from states in trajectories 3 and 4
 #' data_A <- data.frame(RT = rep("A", 4), # name of the new representative trajectory
@@ -156,7 +191,38 @@
 #'                           trajectories = EDR_data$EDR1$abundance$traj,
 #'                           states = EDR_data$EDR1$abundance$state)
 #'
+#'
 define_retra <- function(data, d = NULL, trajectories = NULL, states = NULL, retra = NULL) {
+
+  ## CONVERT SEGMENTS INTO DATA FRAME ------------------------------------------
+
+  # If data is a sequence of segments, generate a data.frame
+  if (is.character(data)) {
+    data <- segment_to_df(data, retra = retra)
+  }
+  if (is.list(data) & !is.data.frame(data)) {
+    data.ls <- lapply(data, function(idata){
+      data.df <- segment_to_df(segments = idata, retra = retra)
+      data.df <- unique(data.df)
+    })
+    names(data.ls) <- vapply(data.ls, function(idata){
+      if ("RT_retra" %in% names(idata)) {
+        unique(idata$RT_retra)
+      } else{
+        unique(idata$RT)
+      }
+    }, character(1))
+    for (id in unique(names(data.ls))) {
+      len_idata <- length(data.ls[which(names(data.ls) == id)])
+      if(len_idata > 1) {
+        for (i in 1:len_idata) {
+          data.ls[which(names(data.ls) == id)][i][[id]]$RT <- paste0(id, ".", i)
+        }
+      }
+    }
+
+    data <- data.frame(data.table::rbindlist(data.ls, fill = T))
+  }
 
   ## WARNING MESSAGES ----------------------------------------------------------
 
@@ -332,8 +398,44 @@ define_retra <- function(data, d = NULL, trajectories = NULL, states = NULL, ret
   return(RT)
 }
 
+# Auxiliary function to convert a vector of segments into a data.frame
+segment_to_df <- function(segments, retra = retra) {
+  seg_components <- strsplit(gsub("\\]", "", gsub("\\[", "-", segments)), "-")
+  RT_traj <- c(vapply(seg_components, function(iseg){
+    c(iseg[1], iseg[1])
+  }, character(2)))
+  RT_states <- c(vapply(seg_components, function(iseg){
+    c(as.integer(iseg[2]), as.integer(iseg[3]))
+  }, integer(2)))
 
+  if (!is.null(retra)) {
+    retra_segs <- lapply(retra, "[", "Segments")
+    ind_retra <- which(vapply(retra_segs, function(iretra){
+      all(segments %in% iretra$Segments)
+    }, logical(1)))
+    if (length(ind_retra) == 0) {
+      RT <- rep("newT", length(RT_states))
+      data <- data.frame(RT = RT, RT_traj = RT_traj, RT_states = RT_states)
+    }
+    if (length(ind_retra) >= 1) {
+      ind_retra <- ind_retra[1]
+      RT_retra <- rep(names(retra)[ind_retra], length(RT_states))
+      RT <- paste0(RT_retra, ".1")
+      data <- data.frame(RT = RT, RT_traj = RT_traj, RT_states = RT_states,
+                         RT_retra = RT_retra)
+    }
+  } else {
+    RT <- rep("newT", length(RT_states))
+    data <- data.frame(RT = RT, RT_traj = RT_traj, RT_states = RT_states)
+  }
 
+  data$dup <- sapply(1:(nrow(data)), function(irow){
+    ifelse(any(duplicated(data[irow:(irow+1), ])), 1, 0)
+  })
 
+  data <- data[which(data$dup == 0), ]
+
+  return(data)
+}
 
 
