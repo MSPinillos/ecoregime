@@ -1,15 +1,14 @@
-#' Plot Ecological Dynamic Regimes and representative trajectories
+#' Plot representative trajectories of Ecological Dynamic Regimes
 #'
 #' @description
-#' Plot individual trajectories belonging to an Ecological Dynamic regime (EDR)
-#' in the state space and highlight a set of representative trajectories,
-#' distinguishing representative segments belonging to existent trajectories of
-#' the EDR and the artificial links between segments.
+#' Plot representative trajectories of an Ecological Dynamic Regime (EDR) in the
+#' state space, distinguishing between the segments belonging to real trajectories
+#' of the EDR and the artificial links between segments.
 #'
 #' @param x Object of class `RETRA`.
 #' @param d Symmetric matrix or `dist` object containing the dissimilarities
-#' between each pair of states of all trajectories or data frame containing the
-#' coordinates of all trajectory states in an ordination space.
+#' between each pair of states of all trajectories in the EDR or data frame
+#' containing the coordinates of all trajectory states in an ordination space.
 #' @param trajectories Vector indicating the trajectory or site to which each
 #' state in `d` belongs.
 #' @param states Vector of integers indicating the order of the states in `d` for
@@ -31,12 +30,13 @@
 #' representative trajectories. Defaults 2 = dashed (See [graphics::par]).
 #' @param axes An integer vector indicating the pair of axes in the ordination
 #' space to be plotted.
-#' @param ... Arguments for generic plot().
+#' @param ... Arguments for generic [plot()].
 #'
 #' @return
 #' The function `plot()` plots a set of individual trajectories and the
 #' representative trajectories in an ordination space defined through `d` or
-#' calculated by applying metric multidimensional scaling (mMDS) to `d`.
+#' calculated by applying metric multidimensional scaling (mMDS; Borg and Groenen,
+#' 2005) to `d`.
 #'
 #' @author Martina Sánchez-Pinillos, CNRS, Univ. Montpellier
 #'
@@ -48,11 +48,15 @@
 #' Condit R & Hubbell S. (2019). Trajectory analysis in community ecology. Ecological
 #' Monographs.
 #'
+#' Borg, I., & Groenen, P. J. F. (2005). Modern Multidimensional Scaling (2nd ed.).
+#' Springer.
+#'
 #' @note
-#' This function uses a modified version of the [`ecotraj::trajectoryPlot()`] function
+#' This function uses a modified version of the [ecotraj::trajectoryPlot()] function
 #' in 'ecotraj' (v.0.0.3; De Cáceres et al. 2019). The modification was done the
-#' 2022-12-18 and allows using the function [`shape::Arrows()`] in the 'shape'
-#' package to plot ecological trajectories instead of the function arrows() in base.
+#' 2022-12-18. It allows using the function [shape::Arrows()] to plot ecological
+#' trajectories instead of [graphics::arrows()] and setting the parameters of
+#' generic [plot()].
 #'
 #' @seealso
 #' [`retra_edr()`] for identifying representative trajectories in EDRs applying
@@ -118,8 +122,7 @@
 #'                  RT_states = as.integer(RT_states))
 #' RT_retra <- define_retra(data = RT_df)
 #'
-#' # Plot our selection of representative trajectories with the default graphic
-#' # values
+#' # Plot the defined trajectories with the default graphic values
 #' plot(x = RT_retra, d = coord, trajectories = trajectories, states = states,
 #'      main = "Extreme trajectories in EDR1")
 #'
