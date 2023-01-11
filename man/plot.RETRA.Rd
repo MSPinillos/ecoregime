@@ -129,8 +129,7 @@ RT_df <- data.frame(RT = c(rep("T1", sum(trajectories \%in\% T1)),
                  RT_states = as.integer(RT_states))
 RT_retra <- define_retra(data = RT_df)
 
-# Plot our selection of representative trajectories with the default graphic
-# values
+# Plot the defined trajectories with the default graphic values
 plot(x = RT_retra, d = coord, trajectories = trajectories, states = states,
      main = "Extreme trajectories in EDR1")
 
