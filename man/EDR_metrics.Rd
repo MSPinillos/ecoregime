@@ -18,17 +18,9 @@ dDis(
   ...
 )
 
-dBD(d, d.type = "dStates", trajectories, states = NULL, ...)
+dBD(d, d.type, trajectories, states = NULL, ...)
 
-dEve(
-  d,
-  d.type = "dStates",
-  trajectories,
-  states = NULL,
-  w.type = "none",
-  w.values,
-  ...
-)
+dEve(d, d.type, trajectories, states = NULL, w.type = "none", w.values, ...)
 }
 \arguments{
 \item{d}{Symmetric matrix or object of class \code{\link{dist}} containing the

@@ -265,7 +265,7 @@ dDis <- function(d, d.type, trajectories, states = NULL, reference, w.type = "no
 
 #### DYNAMIC BETA DIVERSITY (dBD) ####
 
-dBD <- function(d, d.type = "dStates", trajectories, states = NULL, ...){
+dBD <- function(d, d.type, trajectories, states = NULL, ...){
 
   d.type <- match.arg(d.type, c("dStates", "dTraj"))
   if (d.type == "dTraj") {
@@ -325,7 +325,7 @@ dBD <- function(d, d.type = "dStates", trajectories, states = NULL, ...){
 
 #### DYNAMIC EVENNESS (dEve) ####
 
-dEve <- function(d, d.type = "dStates", trajectories, states = NULL, w.type = "none", w.values, ...){
+dEve <- function(d, d.type, trajectories, states = NULL, w.type = "none", w.values, ...){
 
   d.type <- match.arg(d.type, c("dStates", "dTraj"))
   w.type <- match.arg(w.type, c("none", "length", "size", "precomputed"))
