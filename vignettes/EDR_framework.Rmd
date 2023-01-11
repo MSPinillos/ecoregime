@@ -556,8 +556,8 @@ Weighting ecological trajectories is equivalent to modifying the location of the
 
 *dBD* is implemented in the function `dBD_edr()`. As you can imagine, *dBD* in our EDR is very small since all trajectories follow the same dynamical patterns. 
 ```{r dBD}
-dBD_edr(d = state_dissim, d.type = "dStates", 
-         trajectories = rep(ID_sampling, each = 3), states = rep(ID_obs, 10))
+dBD(d = state_dissim, d.type = "dStates", 
+    trajectories = rep(ID_sampling, each = 3), states = rep(ID_obs, 10))
 
 ```
 
@@ -701,7 +701,8 @@ Let's see how this is reflected in a dissimilarity matrix generated with `dist_e
 
 ```{r EDR_dissim}
 
-EDR_dissim <- dist_edr(dTraj = traj_dissim_allEDR, edr = rep(c("EDR1", "EDR2", "EDR3"), each = 10), 
+EDR_dissim <- dist_edr(d = traj_dissim_allEDR, d.type = "dTraj",
+                       edr = rep(c("EDR1", "EDR2", "EDR3"), each = 10), 
                        metric = "DDR")
 round(EDR_dissim, 2)
 
