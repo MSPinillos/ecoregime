@@ -16,13 +16,15 @@ test_that("returns an object of class 'RETRA'", {
   expect_type(retra$T1$Size, "integer")
   expect_type(retra$T1$Length, "double")
 
-  expect_true(is.na(retra$T1$Link_distance))
   expect_s3_class(retra$T2$Link_distance, "data.frame")
   expect_type(retra$T2$Link_distance$Link, "character")
   expect_type(retra$T2$Link_distance$Distance, "double")
   expect_s3_class(retra$T1$Seg_density, "data.frame")
   expect_type(retra$T1$Seg_density$Density, "double")
   expect_type(retra$T1$Seg_density$kdTree_depth, "double")
+
+  # This is a specific case for EDR1 (T1: "28[1-2]" "28[2-3]")
+  expect_true(is.na(retra$T1$Link_distance))
 
 })
 
