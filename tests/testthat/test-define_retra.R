@@ -90,8 +90,17 @@ test_that("returns same results when data is defined from 'retra'", {
                              retra = old_retra)
   names(new_retra2) <- names(old_retra)
 
-  expect_equal(old_retra, new_retra1)
-  expect_equal(old_retra, new_retra2)
+  expect_equal(new_retra1, new_retra2)
+
+  # The deinition of the segments may change: RETRA-EDR only returns the representative
+  # segments (e.g., T[1-2], T[3-4]); define_retra returns all possible segments
+  # (T[1-2], T[2-3], T[3-4])
+  old_retra_noSegs <- lapply(old_retra, "[", c("minSegs", "Size", "Length",
+                                               "Link_distance", "Seg_density"))
+  new_retra_noSegs <- lapply(new_retra1, "[", c("minSegs", "Size", "Length",
+                                               "Link_distance", "Seg_density"))
+
+  expect_equal(old_retra_noSegs, new_retra_noSegs)
 
 })
 
