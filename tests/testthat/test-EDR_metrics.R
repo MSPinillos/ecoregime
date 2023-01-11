@@ -24,10 +24,13 @@ test_that("dDis, dBD, and dEve return a number in [0, 1]", {
 
 })
 
-test_that("dDis is smaller then the reference trajectory belongs to the EDR
-          than it it is external", {
-  abun <- rbind(EDR_data$EDR1$abundance,
-                EDR_data$EDR2$abundance[1:5, traj := 31][1:5, ])
+test_that("dDis is smaller when the reference trajectory belongs to the EDR
+          than if it is external", {
+  abun1 <- EDR_data$EDR1$abundance
+  abun2 <- EDR_data$EDR2$abundance[1:5, ]
+  abun2$traj <- 31
+  abun <- rbind(abun1, abun2)
+
   dStates <- vegan::vegdist(abun[, -c(1:3)], method = "bray")
 
   dDis_inEDR <- dDis(d = dStates, d.type = "dStates",
@@ -255,3 +258,4 @@ test_that("dEve returns errors", {
 
 
 })
+
