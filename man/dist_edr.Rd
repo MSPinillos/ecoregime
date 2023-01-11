@@ -4,13 +4,34 @@
 \alias{dist_edr}
 \title{Dissimilarities between Ecological Dynamic Regimes}
 \usage{
-dist_edr(dTraj, edr, metric = "DDR", symmetrize = NULL)
+dist_edr(
+  d,
+  d.type,
+  trajectories = NULL,
+  states = NULL,
+  edr,
+  metric = "DDR",
+  symmetrize = NULL,
+  ...
+)
 }
 \arguments{
-\item{dTraj}{Either a square matrix or an object of class \code{\link{dist}} containing
-the dissimilarities between every pair of trajectories in the target EDRs.}
+\item{d}{Symmetric matrix or object of class \code{\link{dist}} containing the
+dissimilarities between each pair of states of all trajectories in the EDR or
+the dissimilarities between each pair of trajectories. To compute dDis, \code{d}
+needs to include the dissimilarities between all states/trajectories and the
+states/trajectory of reference.}
 
-\item{edr}{Vector indicating the EDR to which each trajectory in \code{dTraj} belongs.}
+\item{d.type}{One of \code{"dStates"} (if \code{d} contains state dissimilarities) or
+\code{"dTraj"} (if \code{d} contains trajectory dissimilarities).}
+
+\item{trajectories}{Only if \code{d.type} = \code{"dStates"}. Vector indicating the
+trajectory or site corresponding to each entry in \code{d}.}
+
+\item{states}{Only if \code{d.type} = \code{"dStates"}. Vector of integers indicating the
+order of the states in \code{d} for each trajectory.}
+
+\item{edr}{Vector indicating the EDR to which each trajectory/state in \code{d} belongs.}
 
 \item{metric}{A string indicating the dissimilarity index to be used: \code{"DDR"}
 (default), \code{"minDist"}, \code{"maxDist"}.}
@@ -18,12 +39,15 @@ the dissimilarities between every pair of trajectories in the target EDRs.}
 \item{symmetrize}{String naming the function to be called to symmetrize the
 resulting dissimilarity matrix (\code{"mean"}, \code{"min"}, \verb{"max}, \code{"lower"}, \code{"upper"}).
 If \code{NULL} (default), the matrix is not symmetrized.}
+
+\item{...}{Only if \code{d.type} = \code{"dStates"}. Further arguments to calculate
+trajectory dissimilarities. See \code{\link[ecotraj:trajectorymetrics]{ecotraj::trajectoryDistances()}}.}
 }
 \value{
 Matrix including the dissimilarities between every pair of EDRs.
 }
 \description{
-Generate a matrix compiling dissimilarities between one or more pairs of
+Generate a matrix containing dissimilarities between one or more pairs of
 Ecological Dynamic Regimes (EDR). \code{dist_edr()} computes different dissimilarity
 indices, all of them based on the dissimilarities between the trajectories of
 two EDRs.
@@ -106,8 +130,7 @@ row.names(abun) <- paste0(abun$EDR, "_", abun$traj, "_", abun$state)
 
 # Calculate dissimilarities between every pair of states
 # For example, Bray-Curtis index
-library(vegan)
-dStates <- vegdist(abun[, -c(1, 2, 3)], method = "bray")
+dStates <- vegan::vegdist(abun[, -c(1, 2, 3)], method = "bray")
 
 # Use the labels in dStates to define the trajectories to which each state
 # belongs
@@ -117,40 +140,39 @@ id_traj <- vapply(strsplit(labels(dStates), "_"), function(x){
 id_state <- vapply(strsplit(labels(dStates), "_"), function(x){
                     as.integer(x[3])
                 }, integer(1))
+id_edr <- vapply(strsplit(labels(dStates), "_"), function(x){
+                    paste0("EDR", x[1])
+                }, character(1))
 
 # Calculate dissimilarities between every pair of trajectories
-library(ecotraj)
-dTraj <- trajectoryDistances(d = dStates,
-                             sites = id_traj,
-                             surveys = id_state,
-                             distance.type = "DSPD")
+dTraj <- ecotraj::trajectoryDistances(d = dStates, sites = id_traj,
+                                      surveys = id_state,
+                                      distance.type = "DSPD")
 
 # Use labels in dTraj to identify EDRs
-id_edr <- vapply(strsplit(labels(dTraj), "_"), function(x){
+id_edr_traj <- vapply(strsplit(labels(dTraj), "_"), function(x){
                     paste0("EDR", x[1])
                 }, character(1))
 
 # Compute dissimilarities between EDRs:
-# 1) without symmetrizing the matrix
-dEDR <- dist_edr(dTraj = dTraj,
-                 edr = id_edr,
-                 metric = "DDR",
-                 symmetrize = NULL)
+# 1.1) without symmetrizing the matrix using state dissimilarities
+dEDR <- dist_edr(d = dStates, d.type = "dStates",
+                 trajectories = id_traj, states = id_state, edr = id_edr,
+                 metric = "DDR", symmetrize = NULL)
+
+# 1.2) without symmetrizing the matrix using trajectory dissimilarities
+dEDR <- dist_edr(d = dTraj, d.type = "dTraj", edr = id_edr_traj,
+                 metric = "DDR", symmetrize = NULL)
+
 # 2) symmetrizing by averaging elements on and below the diagonal
-dEDR <- dist_edr(dTraj = dTraj,
-                 edr = id_edr,
-                 metric = "DDR",
-                 symmetrize = "mean")
+dEDR <- dist_edr(d = dTraj, d.type = "dTraj", edr = id_edr_traj,
+                 metric = "DDR", symmetrize = "mean")
 # 3) symmetrizing by using the minimum dissimilarity between two EDRs
-dEDR <- dist_edr(dTraj = dTraj,
-                 edr = id_edr,
-                 metric = "DDR",
-                 symmetrize = "min")
+dEDR <- dist_edr(d = dTraj, d.type = "dTraj", edr = id_edr_traj,
+                 metric = "DDR", symmetrize = "min")
 # 4) symmetrizing by using the lower triangular part of the asymmetric matrix
-dEDR <- dist_edr(dTraj = dTraj,
-                 edr = id_edr,
-                 metric = "DDR",
-                 symmetrize = "lower")
+dEDR <- dist_edr(d = dTraj, d.type = "dTraj", edr = id_edr_traj,
+                 metric = "DDR", symmetrize = "lower")
 
 }
 \references{

@@ -1,19 +1,30 @@
 #' Dissimilarities between Ecological Dynamic Regimes
 #'
 #' @description
-#' Generate a matrix compiling dissimilarities between one or more pairs of
+#' Generate a matrix containing dissimilarities between one or more pairs of
 #' Ecological Dynamic Regimes (EDR). `dist_edr()` computes different dissimilarity
 #' indices, all of them based on the dissimilarities between the trajectories of
 #' two EDRs.
 #'
-#' @param dTraj Either a square matrix or an object of class [`dist`] containing
-#' the dissimilarities between every pair of trajectories in the target EDRs.
-#' @param edr Vector indicating the EDR to which each trajectory in `dTraj` belongs.
+#' @param d Symmetric matrix or object of class [`dist`] containing the
+#' dissimilarities between each pair of states of all trajectories in the EDR or
+#' the dissimilarities between each pair of trajectories. To compute dDis, `d`
+#' needs to include the dissimilarities between all states/trajectories and the
+#' states/trajectory of reference.
+#' @param d.type One of `"dStates"` (if `d` contains state dissimilarities) or
+#' `"dTraj"` (if `d` contains trajectory dissimilarities).
+#' @param trajectories Only if `d.type` = `"dStates"`. Vector indicating the
+#' trajectory or site corresponding to each entry in `d`.
+#' @param states Only if `d.type` = `"dStates"`. Vector of integers indicating the
+#' order of the states in `d` for each trajectory.
+#' @param edr Vector indicating the EDR to which each trajectory/state in `d` belongs.
 #' @param metric A string indicating the dissimilarity index to be used: `"DDR"`
 #' (default), `"minDist"`, `"maxDist"`.
 #' @param symmetrize String naming the function to be called to symmetrize the
 #' resulting dissimilarity matrix (`"mean"`, `"min"`, `"max`, `"lower"`, `"upper"`).
 #' If `NULL` (default), the matrix is not symmetrized.
+#' @param ... Only if `d.type` = `"dStates"`. Further arguments to calculate
+#' trajectory dissimilarities. See [ecotraj::trajectoryDistances()].
 #'
 #' @details
 #' The implemented metrics are:
@@ -105,8 +116,7 @@
 #'
 #' # Calculate dissimilarities between every pair of states
 #' # For example, Bray-Curtis index
-#' library(vegan)
-#' dStates <- vegdist(abun[, -c(1, 2, 3)], method = "bray")
+#' dStates <- vegan::vegdist(abun[, -c(1, 2, 3)], method = "bray")
 #'
 #' # Use the labels in dStates to define the trajectories to which each state
 #' # belongs
@@ -116,58 +126,90 @@
 #' id_state <- vapply(strsplit(labels(dStates), "_"), function(x){
 #'                     as.integer(x[3])
 #'                 }, integer(1))
+#' id_edr <- vapply(strsplit(labels(dStates), "_"), function(x){
+#'                     paste0("EDR", x[1])
+#'                 }, character(1))
 #'
 #' # Calculate dissimilarities between every pair of trajectories
-#' library(ecotraj)
-#' dTraj <- trajectoryDistances(d = dStates,
-#'                              sites = id_traj,
-#'                              surveys = id_state,
-#'                              distance.type = "DSPD")
+#' dTraj <- ecotraj::trajectoryDistances(d = dStates, sites = id_traj,
+#'                                       surveys = id_state,
+#'                                       distance.type = "DSPD")
 #'
 #' # Use labels in dTraj to identify EDRs
-#' id_edr <- vapply(strsplit(labels(dTraj), "_"), function(x){
+#' id_edr_traj <- vapply(strsplit(labels(dTraj), "_"), function(x){
 #'                     paste0("EDR", x[1])
 #'                 }, character(1))
 #'
 #' # Compute dissimilarities between EDRs:
-#' # 1) without symmetrizing the matrix
-#' dEDR <- dist_edr(dTraj = dTraj,
-#'                  edr = id_edr,
-#'                  metric = "DDR",
-#'                  symmetrize = NULL)
-#' # 2) symmetrizing by averaging elements on and below the diagonal
-#' dEDR <- dist_edr(dTraj = dTraj,
-#'                  edr = id_edr,
-#'                  metric = "DDR",
-#'                  symmetrize = "mean")
-#' # 3) symmetrizing by using the minimum dissimilarity between two EDRs
-#' dEDR <- dist_edr(dTraj = dTraj,
-#'                  edr = id_edr,
-#'                  metric = "DDR",
-#'                  symmetrize = "min")
-#' # 4) symmetrizing by using the lower triangular part of the asymmetric matrix
-#' dEDR <- dist_edr(dTraj = dTraj,
-#'                  edr = id_edr,
-#'                  metric = "DDR",
-#'                  symmetrize = "lower")
+#' # 1.1) without symmetrizing the matrix using state dissimilarities
+#' dEDR <- dist_edr(d = dStates, d.type = "dStates",
+#'                  trajectories = id_traj, states = id_state, edr = id_edr,
+#'                  metric = "DDR", symmetrize = NULL)
 #'
-dist_edr <- function(dTraj, edr, metric = "DDR", symmetrize = NULL){
+#' # 1.2) without symmetrizing the matrix using trajectory dissimilarities
+#' dEDR <- dist_edr(d = dTraj, d.type = "dTraj", edr = id_edr_traj,
+#'                  metric = "DDR", symmetrize = NULL)
+#'
+#' # 2) symmetrizing by averaging elements on and below the diagonal
+#' dEDR <- dist_edr(d = dTraj, d.type = "dTraj", edr = id_edr_traj,
+#'                  metric = "DDR", symmetrize = "mean")
+#' # 3) symmetrizing by using the minimum dissimilarity between two EDRs
+#' dEDR <- dist_edr(d = dTraj, d.type = "dTraj", edr = id_edr_traj,
+#'                  metric = "DDR", symmetrize = "min")
+#' # 4) symmetrizing by using the lower triangular part of the asymmetric matrix
+#' dEDR <- dist_edr(d = dTraj, d.type = "dTraj", edr = id_edr_traj,
+#'                  metric = "DDR", symmetrize = "lower")
+#'
+dist_edr <- function(d, d.type, trajectories = NULL, states = NULL, edr, metric = "DDR", symmetrize = NULL, ...){
 
   metric <- match.arg(metric, c("DDR", "minDist", "maxDist"))
   if (!is.null(symmetrize)) {
     symmetrize <- match.arg(symmetrize, c("mean", "min", "max", "lower", "upper"))
   }
 
-  # Convert dTraj into a matrix
-  if (all(!is.matrix(dTraj), !dendextend::is.dist(dTraj)) |
-      dim(dTraj)[1] != dim(dTraj)[2]) {
-    stop("'d' must be a square matrix or an object of class 'dist'.")
+  d.type <- match.arg(d.type, c("dStates", "dTraj"))
+  if (d.type == "dTraj") {
+    states <- NULL
   }
-  dTrajmat <- as.matrix(dTraj)
+
+  ## WARNING MESSAGES ----------------------------------------------------------
+
+  # Check the format for d, trajectories, states, and reference
+  if (all(!is.matrix(d), !dendextend::is.dist(d)) |
+      nrow(as.matrix(d)) != ncol(as.matrix(d))) {
+    stop("'d' must be a symmetric dissimilarity matrix or an object of class 'dist'.")
+  }
+
+  if (d.type == "dStates") {
+    if (is.null(trajectories)) {
+      stop("If 'd.type' = \"dStates\", you must provide a value for 'trajectories'.")
+    }
+    if (is.null(states)) {
+      stop("If 'd.type' = \"dStates\", you must provide a value for 'states'.")
+    }
+    if (length(trajectories) != nrow(as.matrix(d))) {
+      stop("The length of 'trajectories' must be equal to both dimensions in 'd'.")
+    }
+    if (length(states) != nrow(as.matrix(d))) {
+      stop("The length of 'states' must be equal to both dimensions in 'd'.")
+    }
+  }
 
   # Check input data is correct
-  if(length(edr) != nrow(dTrajmat)){
-    stop(cat("'edr' needs to have a length equal to the number of rows and columns of 'dTraj'. \nProvide the EDR of each trajectory considered in 'dTraj'.", "\n"))
+  if(length(edr) != nrow(as.matrix(d))){
+    stop("'edr' needs to have a length equal to the number of rows and columns of 'd'. \nProvide the EDR of all trajectories considered in 'd'.")
+  }
+
+  ## TRAJECTORIES & DISSIMILARITIES --------------------------------------------
+
+  # Trajectory dissimilarity
+  if(d.type == "dStates"){
+    edr.df <- unique(data.frame(traj = trajectories, edr = edr))
+    edr <- edr.df$edr
+    dTrajmat <- as.matrix(ecotraj::trajectoryDistances(d = d, sites = trajectories, surveys = states,...))
+  }
+  if(d.type == "dTraj") {
+    dTrajmat <- as.matrix(d)
   }
 
   # Nb edr and trajectories/edr
