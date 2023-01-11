@@ -362,15 +362,17 @@ define_retra <- function(data, d = NULL, trajectories = NULL, states = NULL, ret
         }, numeric(1)),
 
         Real = vapply(1:(length(Segments) - 1), function (ilink) {
-          iSt1 <- paste0(seg_components[[ilink]][1], "_", seg_components[[ilink]][3])
-          iSt2 <- paste0(seg_components[[ilink+1]][1], "_", seg_components[[ilink+1]][2])
-          if (iSt1 == iSt2) {T} else {F}
+          traj1 <- seg_components[[ilink]][1]
+          traj2 <- seg_components[[ilink+1]][1]
+          iSt1 <- as.integer(seg_components[[ilink]][3])
+          iSt2 <- as.integer(seg_components[[ilink+1]][2])
+          if (traj1 == traj2 & diff(c(iSt1, iSt2)) <= 1) {T} else {F}
         }, logical(1))
       )
       Link_distance <- Link_distance[which(Link_distance$Real == F), c("Link", "Distance")]
       if (nrow(Link_distance) == 0){
         Link_distance <- NA
-      }
+      } else {row.names(Link_distance) <- 1:nrow(Link_distance)}
     } else {
       Link_distance <- NA
     }
