@@ -1,19 +1,14 @@
 #' Ecological Dynamic Regime data
 #'
 #' @description
-#' Example datasets to characterize and compare EDRs, including abundance data,
+#' Example datasets to characterize and compare EDRs, including abundance data;
 #' state, segment, and trajectory dissimilarity matrices for 90 artificial communities
 #' belonging to three different EDRs.
-#' Artificial data of community dynamics was generated defining initial states
-#' by the abundance of 12 species in a hypothetical environmental space and
-#' simulating their dynamics using a general Lotka-Volterra model (Sánchez-Pinillos
-#' et al.).
 #'
 #' @format
 #' List of three nested sublists (`"EDR1"`, `"EDR2"`, and `"EDR3"`), each
 #' associated with one EDR, including the following elements:
-#' * `abundance`: Data table or data frame with 15 columns and one row for each
-#' community state:
+#' * `abundance`: Data table with 15 columns and one row for each community state:
 #'     + `EDR`: Integer indicating the identifier of the EDR.
 #'     + `traj`: Integer containing the identifier of the trajectory for each
 #'     artificial community in the corresponding EDR. Each trajectory represents
@@ -30,8 +25,15 @@
 #' between every pair of community trajectories in `abundance` (see Details).
 #'
 #' @details
-#' Segment and trajectory dissimilarities were calculated using the approach by
-#' De Cáceres et al. (2019).
+#' Artificial data was generated following the procedure explained in Box 1 in
+#' Sánchez-Pinillos et al. In particular, the initial state of each community was
+#' defined using a hypothetical environmental space with optimal locations for
+#' 12 species ([coenocliner::coenocline()]). Community dynamics were simulated
+#' using a general Lotka-Volterra model ([primer::lvcompg()]).
+#'
+#' State dissimilarities were calculated through [vegan::vegdist()]. Segment and
+#' trajectory dissimilarities were calculated through [ecotraj::segmentDistances()]
+#' and [ecotraj::trajectoryDistances()], respectively
 #'
 #'
 "EDR_data"

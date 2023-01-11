@@ -8,8 +8,7 @@
 List of three nested sublists (\code{"EDR1"}, \code{"EDR2"}, and \code{"EDR3"}), each
 associated with one EDR, including the following elements:
 \itemize{
-\item \code{abundance}: Data table or data frame with 15 columns and one row for each
-community state:
+\item \code{abundance}: Data table with 15 columns and one row for each community state:
 \itemize{
 \item \code{EDR}: Integer indicating the identifier of the EDR.
 \item \code{traj}: Integer containing the identifier of the trajectory for each
@@ -32,16 +31,19 @@ between every pair of community trajectories in \code{abundance} (see Details).
 EDR_data
 }
 \description{
-Example datasets to characterize and compare EDRs, including abundance data,
+Example datasets to characterize and compare EDRs, including abundance data;
 state, segment, and trajectory dissimilarity matrices for 90 artificial communities
 belonging to three different EDRs.
-Artificial data of community dynamics was generated defining initial states
-by the abundance of 12 species in a hypothetical environmental space and
-simulating their dynamics using a general Lotka-Volterra model (Sánchez-Pinillos
-et al.).
 }
 \details{
-Segment and trajectory dissimilarities were calculated using the approach by
-De Cáceres et al. (2019).
+Artificial data was generated following the procedure explained in Box 1 in
+Sánchez-Pinillos et al. In particular, the initial state of each community was
+defined using a hypothetical environmental space with optimal locations for
+12 species (\code{\link[coenocliner:coenocline]{coenocliner::coenocline()}}). Community dynamics were simulated
+using a general Lotka-Volterra model (\code{\link[primer:lvcompg]{primer::lvcompg()}}).
+
+State dissimilarities were calculated through \code{\link[vegan:vegdist]{vegan::vegdist()}}. Segment and
+trajectory dissimilarities were calculated through \code{\link[ecotraj:trajectorymetrics]{ecotraj::segmentDistances()}}
+and \code{\link[ecotraj:trajectorymetrics]{ecotraj::trajectoryDistances()}}, respectively
 }
 \keyword{datasets}
