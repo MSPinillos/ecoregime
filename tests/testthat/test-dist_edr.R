@@ -4,20 +4,33 @@ test_that("dissimilarity of an EDR to itself is zero", {
                 EDR_data$EDR2$abundance,
                 EDR_data$EDR3$abundance)
   dStates <- vegan::vegdist(abun[, -c(1:3)])
+  trajectories <- paste0(abun$EDR, "_", abun$traj)
+  states <- abun$state
+
   dTraj <- ecotraj::trajectoryDistances(d = dStates,
-                                        sites = paste0(abun$EDR, "_", abun$traj),
-                                        surveys = abun$state)
+                                        sites = trajectories,
+                                        surveys = states)
   metrics <- c("DDR", "minDist", "maxDist")
-  dEDR <- lapply(setNames(metrics, metrics), function(imetric){
-    dist_edr(dTraj = as.matrix(dTraj),
+
+  dEDR_traj <- lapply(setNames(metrics, metrics), function(imetric){
+    dist_edr(d = as.matrix(dTraj), d.type = "dTraj",
              edr = rep(1:3, each = 30),
              metric = imetric,
              symmetrize = NULL)
   })
+  dEDR_states <- lapply(setNames(metrics, metrics), function(imetric){
+    dist_edr(d = as.matrix(dStates), d.type = "dStates",
+             trajectories = trajectories, states = states,
+             edr = rep(1:3, each = 150),
+             metric = imetric,
+             symmetrize = NULL)
+  })
 
-  expect_equal(unique(diag(dEDR[["DDR"]])), 0)
-  expect_equal(unique(diag(dEDR[["minDist"]])), 0)
-  expect_equal(unique(diag(dEDR[["maxDist"]])), 0)
+  expect_equal(dEDR_traj, dEDR_states)
+
+  expect_equal(unique(diag(dEDR_traj[["DDR"]])), 0)
+  expect_equal(unique(diag(dEDR_traj[["minDist"]])), 0)
+  expect_equal(unique(diag(dEDR_traj[["maxDist"]])), 0)
 
 })
 
@@ -32,7 +45,8 @@ test_that("symmetrize argument works", {
   dTraj <- ecotraj::trajectoryDistances(d = dStates,
                                         sites = paste0(abun$EDR, "_", abun$traj),
                                         surveys = abun$state)
-  dEDR_asym <- dist_edr(dTraj = as.matrix(dTraj),
+
+  dEDR_asym <- dist_edr(d = as.matrix(dTraj), d.type = "dTraj",
                         edr = c(rep(1:3, each = 30), rep(4, 15)),
                         metric = "DDR",
                         symmetrize = NULL)
@@ -41,11 +55,30 @@ test_that("symmetrize argument works", {
 
   symmetrization <- c("mean", "min", "max", "lower", "upper")
   dEDR <- lapply(setNames(symmetrization, symmetrization), function(isym){
-    dist_edr(dTraj = as.matrix(dTraj),
+    dist_edr(d = as.matrix(dTraj), d.type = "dTraj",
              edr = c(rep(1:3, each = 30), rep(4, 15)),
              metric = "DDR",
              symmetrize = isym)
   })
+
+  # test results for d.type = "dStates"
+  dEDR_asym_st <- dist_edr(d = as.matrix(dStates), d.type = "dStates",
+                           trajectories = paste0(abun$EDR, "_", abun$traj),
+                           states = abun$state,
+                           edr = c(rep(1:3, each = 150), rep(4, 15*5)),
+                           metric = "DDR",
+                           symmetrize = NULL)
+  dEDR_st <- lapply(setNames(symmetrization, symmetrization), function(isym){
+    dist_edr(d = as.matrix(dStates), d.type = "dStates",
+             trajectories = paste0(abun$EDR, "_", abun$traj),
+             states = abun$state,
+             edr = c(rep(1:3, each = 150), rep(4, 15*5)),
+             metric = "DDR",
+             symmetrize = isym)
+  })
+  expect_equal(dEDR_asym_st, dEDR_asym)
+  expect_equal(dEDR_st, dEDR)
+
 
   # Test symmetry
   expect_true(isSymmetric(dEDR[["mean"]]))
@@ -92,10 +125,17 @@ test_that("the properties of DDR are fit", {
   dTraj <- ecotraj::trajectoryDistances(d = dStates,
                                         sites = paste0(abun$EDR, "_", abun$traj),
                                         surveys = abun$state)
-  dEDR <- dist_edr(dTraj = as.matrix(dTraj),
+  dEDR <- dist_edr(d = as.matrix(dTraj), d.type = "dTraj",
                    edr = c(rep(1:4, each = 30), rep(5, 15)),
                    metric = "DDR",
                    symmetrize = NULL)
+  dEDR_st <- dist_edr(d = as.matrix(dStates), d.type = "dStates",
+                      trajectories = paste0(abun$EDR, "_", abun$traj),
+                      states = abun$state,
+                      edr = c(rep(1:4, each = 150), rep(5, 15*5)),
+                      metric = "DDR",
+                      symmetrize = NULL)
+  expect_equal(dEDR, dEDR_st)
 
   expect_equal(dEDR[2, 4], dEDR[4, 2])
   expect_equal(dEDR[2, 4], 0)
@@ -105,6 +145,42 @@ test_that("the properties of DDR are fit", {
                 dEDR[2, 5] >= dEDR[2, 3])
 })
 
+test_that("returns errors", {
+  abun <- rbind(EDR_data$EDR1$abundance,
+                EDR_data$EDR2$abundance,
+                EDR_data$EDR3$abundance)
+  dStates <- vegan::vegdist(abun[, -c(1:3)])
+  trajectories <- paste0(abun$EDR, "_", abun$traj)
+  states <- abun$state
+
+  dTraj <- ecotraj::trajectoryDistances(d = dStates,
+                                        sites = trajectories,
+                                        surveys = states)
+
+  expect_error(dist_edr(d = as.data.frame(as.matrix(dTraj)), d.type = "dTraj",
+                        edr = rep(1:3, each = 30)),
+               regexp = "symmetric dissimilarity matrix")
+  expect_error(dist_edr(d = as.matrix(dStates), d.type = "dStates",
+                        trajectories = NULL, states = states,
+                        edr = rep(1:3, each = 150)),
+               regexp = "you must provide a value for 'trajectories'")
+  expect_error(dist_edr(d = as.matrix(dStates), d.type = "dStates",
+                        trajectories = trajectories, states = NULL,
+                        edr = rep(1:3, each = 150)),
+               regexp = "you must provide a value for 'states'")
+  expect_error(dist_edr(d = as.matrix(dStates), d.type = "dStates",
+                        trajectories = trajectories[1:5], states = states,
+                        edr = rep(1:3, each = 150)),
+               regexp = "The length of 'trajectories'")
+  expect_error(dist_edr(d = as.matrix(dStates), d.type = "dStates",
+                        trajectories = trajectories, states = states[1:5],
+                        edr = rep(1:3, each = 150)),
+               regexp = "The length of 'states'")
+  expect_error(dist_edr(d = as.matrix(dTraj), d.type = "dTraj",
+                        edr = rep(1:3, each = 10)),
+               regexp = "'edr' needs to have a length")
+
+})
 
 
 
