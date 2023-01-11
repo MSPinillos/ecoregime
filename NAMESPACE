@@ -2,9 +2,9 @@
 
 S3method(plot,RETRA)
 S3method(summary,RETRA)
-export(dBD_edr)
-export(dDis_edr)
-export(dEve_edr)
+export(dBD)
+export(dDis)
+export(dEve)
 export(define_retra)
 export(dist_edr)
 export(retra_edr)

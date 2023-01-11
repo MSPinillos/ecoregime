@@ -491,10 +491,10 @@ state_dissim_T2 <- vegan::vegdist(abundance_T2[, c("sp1", "sp2")], method = "bra
 
 ```
 
-Then, we can compute dDis using the function `dDis_edr()`:
+Then, we can compute dDis using the function `dDis()`:
 
 ```{r dDis_T2}
-dDis_T2 <- dDis_edr(d = state_dissim_T2, d.type = "dStates", 
+dDis_T2 <- dDis(d = state_dissim_T2, d.type = "dStates", 
          trajectories = abundance_T2$sampling_unit, states = abundance_T2$time, 
          reference = "T2")
 dDis_T2
@@ -507,11 +507,11 @@ In this case, we will use the trajectory dissimilarity matrix generated for the 
 
 ```{r dDis_I_F}
 # dDis: reference C
-dDis_I <- dDis_edr(d = traj_dissim, d.type = "dTraj", 
+dDis_I <- dDis(d = traj_dissim, d.type = "dTraj", 
          trajectories = ID_sampling, 
          reference = "I")
 # dDis: reference F
-dDis_F <- dDis_edr(d = traj_dissim, d.type = "dTraj", 
+dDis_F <- dDis(d = traj_dissim, d.type = "dTraj", 
          trajectories = ID_sampling, 
          reference = "F")
 
@@ -522,7 +522,7 @@ dDis_F
 
 As expected, the dispersion when trajectory *F* is taken as the reference is larger than for trajectory *I*, indicating that *F* is more isolated than *I* within the EDR.
 
-Alternatively, you can weight each trajectory depending on some criteria. Currently, `dDis_edr()` is able to compute *dDis* weighting ecological trajectories by their size (`w.type = "size"`) and length (`w.type = "length"`). However, if you want to use different criteria, you can use a set of weights of your choice (`w.type = "precomputed"`) and indicate them through the `w.values` argument. For example, imagine that you want to weight each trajectory by the initial abundance of *sp2*:
+Alternatively, you can weight each trajectory depending on some criteria. Currently, `dDis()` is able to compute *dDis* weighting ecological trajectories by their size (`w.type = "size"`) and length (`w.type = "length"`). However, if you want to use different criteria, you can use a set of weights of your choice (`w.type = "precomputed"`) and indicate them through the `w.values` argument. For example, imagine that you want to weight each trajectory by the initial abundance of *sp2*:
 
 ```{r dDis_w}
 # Define w values
@@ -534,11 +534,11 @@ ind_F <- which(ID_sampling == "F")
 
 # Compute dDis with weighted trajectories:
 # Considering C as reference
-dDis_I_w <- dDis_edr(d = traj_dissim, d.type = "dTraj", 
+dDis_I_w <- dDis(d = traj_dissim, d.type = "dTraj", 
          trajectories = ID_sampling, reference = "I", 
          w.type = "precomputed", w.values = w.values[-ind_I])
 # Considering C as reference
-dDis_F_w <- dDis_edr(d = traj_dissim, d.type = "dTraj", 
+dDis_F_w <- dDis(d = traj_dissim, d.type = "dTraj", 
          trajectories = ID_sampling, reference = "F", 
          w.type = "precomputed", w.values = w.values[-ind_F])
 dDis_I_w
@@ -565,10 +565,10 @@ dBD_edr(d = state_dissim, d.type = "dStates",
 
 **Dynamic evenness (dEve)** quantifies the regularity with which an EDR is filled by ecological trajectories (Sánchez-Pinillos et al.). This metric informs about the existence of groups of trajectories within the EDR.
 
-You can compute *dEve* with the function `dEve_edr()`:
+You can compute *dEve* with the function `dEve()`:
 
 ```{r dEve}
-dEve_edr(d = traj_dissim, d.type = "dTraj", trajectories = ID_sampling)
+dEve(d = traj_dissim, d.type = "dTraj", trajectories = ID_sampling)
 
 ```
 
@@ -577,7 +577,7 @@ Like *dDis*, *dEve* can also be calculated using different weights for the indiv
 For example, weighting ecological trajectories by the initial abundance of *sp2* is equivalent to reducing the dissimilarity of the trajectories dominated by *sp2*.
 
 ```{r dEvew}
-dEve_edr(d = traj_dissim, d.type = "dTraj", trajectories = ID_sampling,
+dEve(d = traj_dissim, d.type = "dTraj", trajectories = ID_sampling,
          w.type = "precomputed", w.values = w.values)
 
 ```

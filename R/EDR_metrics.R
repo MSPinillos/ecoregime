@@ -6,12 +6,12 @@
 #' beta diversity (dBD), and dynamic evenness (dEve).
 #'
 #' @name EDR_metrics
-#' @aliases dDis_edr dBD_edr dEve_edr
+#' @aliases dDis dBD dEve
 #'
 #' @param d Symmetric matrix or object of class [`dist`] containing the
-#' dissimilarities between each pair of states of all trajectories or the
-#' dissimilarities between each pair of trajectories. To compute dDis, `d` needs
-#' to include the dissimilarities between all states/trajectories and the
+#' dissimilarities between each pair of states of all trajectories in the EDR or
+#' the dissimilarities between each pair of trajectories. To compute dDis, `d`
+#' needs to include the dissimilarities between all states/trajectories and the
 #' states/trajectory of reference.
 #' @param d.type One of `"dStates"` (if `d` contains state dissimilarities) or
 #' `"dTraj"` (if `d` contains trajectory dissimilarities).
@@ -31,20 +31,19 @@
 #' trajectory states and `d.type` = `"dStates"`.
 #' * `"precomputed"`: Trajectories weighted according to different criteria.
 #' @param w.values Only if `w.type` = `"precomputed"`. Numeric vector of length
-#' equal to the number of different trajectories containing the weight of each
-#' trajectory.
+#' equal to the number of trajectories containing the weight of each trajectory.
 #' @param ... Only if `d.type` = `"dStates"`. Further arguments to calculate
 #' trajectory dissimilarities. See [ecotraj::trajectoryDistances()].
 #'
 #' @return
-#' * `dDis_edr()` returns the value of dynamic dispersion for a given trajectory
+#' * `dDis()` returns the value of dynamic dispersion for a given trajectory
 #' taken as a reference.
-#' * `dBD_edr()` returns the value of dynamic beta diversity.
-#' * `dEve_edr()` returns the value of dynamic evenness.
+#' * `dBD()` returns the value of dynamic beta diversity.
+#' * `dEve()` returns the value of dynamic evenness.
 #'
 #' @details
 #'
-#' \strong{Dynamic Dispersion (`dDis_edr()`)}
+#' \strong{Dynamic Dispersion (`dDis()`)}
 #'
 #' dDis is calculated as the average dissimilarity between each trajectory in an
 #' EDR and a target trajectory taken as reference (Sánchez-Pinillos et al.).
@@ -66,7 +65,7 @@
 #' where \eqn{w_{i}} is the weight assigned to trajectory \eqn{i}.
 #'
 #'
-#' \strong{Dynamic Beta Diversity (`dBD_edr()`)}
+#' \strong{Dynamic Beta Diversity (`dBD()`)}
 #'
 #' dBD quantifies the overall variation of the trajectories in an EDR and is
 #' equivalent to the average distance to the centroid of the EDR
@@ -76,7 +75,7 @@
 #' dBD = \frac{\sum_{i=1}^{m-1}\sum_{j=i+1}^{m}d_{ij}^{2}}{m(m-1)}
 #' }
 #'
-#' \strong{Dynamic Evenness (`dEve_edr()`)}
+#' \strong{Dynamic Evenness (`dEve()`)}
 #'
 #' dEve quantifies the regularity with which an EDR is filled by the individual
 #' trajectories (Sánchez-Pinillos et al.).
@@ -126,30 +125,30 @@
 #' states <- EDR_data$EDR1$abundance$state
 #'
 #' # Dynamic dispersion taking the first trajectory as reference
-#' dDis_edr(d = dTraj, d.type = "dTraj", trajectories = unique(trajectories),
+#' dDis(d = dTraj, d.type = "dTraj", trajectories = unique(trajectories),
 #'          reference = "T1")
 #'
 #' # Dynamic dispersion weighting trajectories by their length
-#' dDis_edr(d = dStates, d.type = "dStates", trajectories = trajectories, states = states,
+#' dDis(d = dStates, d.type = "dStates", trajectories = trajectories, states = states,
 #'          reference = "T1", w.type = "length")
 #'
 #' # Dynamic beta diversity using trajectory dissimilarities
-#' dBD_edr(d = dTraj, d.type = "dTraj", trajectories = unique(trajectories))
+#' dBD(d = dTraj, d.type = "dTraj", trajectories = unique(trajectories))
 #'
 #' # Dynamic evenness
-#' dEve_edr(d = dStates, d.type = "dStates", trajectories = trajectories, states = states)
+#' dEve(d = dStates, d.type = "dStates", trajectories = trajectories, states = states)
 #'
 #' # Dynamic evenness considering that the 10 first trajectories are three times
 #' # more relevant than the rest
 #' w.values <- c(rep(3, 10), rep(1, length(unique(trajectories))-10))
-#' dEve_edr(d = dTraj, d.type = "dTraj", trajectories = unique(trajectories),
+#' dEve(d = dTraj, d.type = "dTraj", trajectories = unique(trajectories),
 #'          w.type = "precomputed", w.values = w.values)
 #'
 
 
 #### DYNAMIC DISPERSION (dDis) ####
 
-dDis_edr <- function(d, d.type, trajectories, states = NULL, reference, w.type = "none", w.values, ...){
+dDis <- function(d, d.type, trajectories, states = NULL, reference, w.type = "none", w.values, ...){
 
   d.type <- match.arg(d.type, c("dStates", "dTraj"))
   w.type <- match.arg(w.type, c("none", "length", "size", "precomputed"))
@@ -266,7 +265,7 @@ dDis_edr <- function(d, d.type, trajectories, states = NULL, reference, w.type =
 
 #### DYNAMIC BETA DIVERSITY (dBD) ####
 
-dBD_edr <- function(d, d.type = "dStates", trajectories, states = NULL, ...){
+dBD <- function(d, d.type = "dStates", trajectories, states = NULL, ...){
 
   d.type <- match.arg(d.type, c("dStates", "dTraj"))
   if (d.type == "dTraj") {
@@ -326,7 +325,7 @@ dBD_edr <- function(d, d.type = "dStates", trajectories, states = NULL, ...){
 
 #### DYNAMIC EVENNESS (dEve) ####
 
-dEve_edr <- function(d, d.type = "dStates", trajectories, states = NULL, w.type = "none", w.values, ...){
+dEve <- function(d, d.type = "dStates", trajectories, states = NULL, w.type = "none", w.values, ...){
 
   d.type <- match.arg(d.type, c("dStates", "dTraj"))
   w.type <- match.arg(w.type, c("none", "length", "size", "precomputed"))
