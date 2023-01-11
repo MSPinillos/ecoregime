@@ -83,7 +83,7 @@ beta diversity (dBD), and dynamic evenness (dEve).
 \details{
 \strong{Dynamic Dispersion (\code{dDis()})}
 
-dDis is calculated as the average dissimilarity between each trajectory in an
+\emph{dDis} is calculated as the average dissimilarity between each trajectory in an
 EDR and a target trajectory taken as reference (Sánchez-Pinillos et al.).
 
 \eqn{
@@ -104,7 +104,7 @@ where \eqn{w_{i}} is the weight assigned to trajectory \eqn{i}.
 
 \strong{Dynamic Beta Diversity (\code{dBD()})}
 
-dBD quantifies the overall variation of the trajectories in an EDR and is
+\emph{dBD} quantifies the overall variation of the trajectories in an EDR and is
 equivalent to the average distance to the centroid of the EDR
 (De Cáceres et al., 2019).
 
@@ -114,7 +114,7 @@ dBD = \frac{\sum_{i=1}^{m-1}\sum_{j=i+1}^{m}d_{ij}^{2}}{m(m-1)}
 
 \strong{Dynamic Evenness (\code{dEve()})}
 
-dEve quantifies the regularity with which an EDR is filled by the individual
+\emph{dEve} quantifies the regularity with which an EDR is filled by the individual
 trajectories (Sánchez-Pinillos et al.).
 
 \eqn{
@@ -125,7 +125,7 @@ where \eqn{d_{ij}} is the dissimilarity between trajectories \eqn{i} and \eqn{j}
 linked in a minimum spanning tree by the link \eqn{l}.
 
 Optionally, it is possible to weight the trajectories of the EDR. In that case,
-dEve becomes analogous to the functional evenness index proposed by Villéger
+\emph{dEve} becomes analogous to the functional evenness index proposed by Villéger
 et al. (2008).
 
 \eqn{
