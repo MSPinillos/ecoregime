@@ -491,8 +491,8 @@ retra_edr <- function (d, trajectories, states, minSegs,
       data.table::setkey(links)
       Cp1 <- Cp1 + 1
       cols <- c(paste0("C", c(Cp1-2, Cp1-1)))
-      temp <- merge(temp, temp[, cols, with = F],
-                    by.x = paste0("C", Cp1-1), by.y = paste0("C", Cp1-2))
+      temp <- merge(temp, unique(temp[, cols, with = F]),
+                    by.x = paste0("C", Cp1-1), by.y = paste0("C", Cp1-2), all = T)
       names(temp)[ncol(temp)] <- paste0("C", Cp1)
       cols <- c(paste0("C", Cp1-2), paste0("C", Cp1))
       temp <- temp[temp[[cols[1]]] != temp[[cols[2]]]]
