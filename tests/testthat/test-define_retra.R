@@ -1,5 +1,5 @@
 test_that("returns an object of class 'RETRA'", {
-  d <- as.matrix(EDR_data$EDR1$state_dissim)
+  d <- EDR_data$EDR1$state_dissim
   trajectories <- EDR_data$EDR1$abundance$traj
   states <- EDR_data$EDR1$abundance$state
   data <- data.frame(RT = c(rep("A", 6), rep("B", 2)),
