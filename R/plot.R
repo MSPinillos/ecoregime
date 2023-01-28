@@ -190,7 +190,7 @@ plot.RETRA <- function (x, d, trajectories, states, select_RT = NULL,
   if (dendextend::is.dist(d) || isSymmetric(as.matrix(d))) {
     warning(cat("Representative trajectories will be displayed in an ordination space generated through multidimensional scaling (MDS). You can avoid this step by providing state coordinates in the 'd' argument.", "\n"))
     statesMDS <- data.frame(smacof::mds(delta = d, ndim = ncol(d)-1,
-                                        itmax = 300, verbose = T)$conf)
+                                        itmax = 300, verbose = F)$conf)
   } else {
     warning(cat("Representative trajectories will be displayed considering the coordinates provided in 'd'."))
     statesMDS <- data.frame(d)
