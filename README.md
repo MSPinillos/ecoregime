@@ -18,8 +18,7 @@ comparison.
 
 ## Installation
 
-You can install the development version of ecoregime from
-[GitHub](https://github.com/) with:
+You can install the development version of ecoregime with:
 
 ``` r
 # install.packages("devtools")
@@ -38,7 +37,7 @@ devtools::install_github("MSPinillos/ecoregime",
 # Load the package after the installation
 library(ecoregime)
 
-# Access to the documentation and vignette
+# Access the documentation and vignette
 ?ecoregime
 vignette("EDR_framework", package = "ecoregime")
 ```
@@ -51,7 +50,7 @@ regimes.
 ``` r
 library(ecoregime)
 
-# Calculate state dissimilarities from a matrix species abundances
+# Calculate state dissimilarities from a matrix of species abundances
 abundance <- data.frame(EDR_data$EDR1$abundance)
 d <- vegan::vegdist(abundance[, -c(1:3)])
 
