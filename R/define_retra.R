@@ -40,29 +40,28 @@
 #' - `data` can be defined as a **data frame** with as many rows as the number of
 #' states in all representative trajectories and the following columns:
 #' \describe{
-#' \item{`RT`}{String indicating the identifier of the new representative trajectories.
+#' \item{`RT`}{A string indicating the identifier of the new representative trajectories.
 #' Each identifier needs to appear as many times as the number of states forming
 #' each representative trajectory.}
-#' \item{`RT_traj`}{Vector indicating the individual trajectory in the EDR to which
+#' \item{`RT_traj`}{A vector indicating the individual trajectories in the EDR to which
 #' each state of the representative trajectory belongs.}
-#' \item{`RT_states`}{Vector of integers indicating the identifier of the states
+#' \item{`RT_states`}{A vector of integers indicating the identifier of the states
 #' forming the representative trajectories. Each integer must refer to the order
 #' of the states in the individual trajectories of the EDR to which they belong.}
 #' \item{`RT_retra`}{Only if the new trajectories are defined from representative
-#' trajectories returned by [retra_edr()] (when `!is.null(retra)`). Vector of strings
+#' trajectories returned by [retra_edr()] (when `!is.null(retra)`). A vector of strings
 #' indicating the representative trajectory in `retra` to which each state belongs.}
 #' }
 #'
-#' - Alternatively, `data` can be defined as a **vector** or a **list of character
-#' vectors** containing the sequence of segments in one representative trajectory
-#' (then, `data` is a vector of characters) or in a set of representative trajectories
-#' (list of character vectors with as many elements as the number of representative
-#' trajectories). In any case, each segment needs to be specified in the form
-#' `traj[st1-st2]`, where `traj` is the identifier of the original trajectory to
-#' which the segment belongs and `st1` and `st2` are identifiers of the initial
-#' and final states defining the segment. If only one state of an individual
-#' trajectory is considered to form the representative trajectory, the corresponding
-#' segment needs to be defined as `traj[st-st]`.
+#' - Alternatively, `data` can be defined as either a **vector** (if there is one
+#' representative trajectory) or a **list of character vectors** (with as many
+#' elements as the number of representative trajectories) containing the sequence
+#' of segments of the representative trajectories. In any case, each segment needs
+#' to be specified in the form `traj[st1-st2]`, where `traj` is the identifier of
+#' the original trajectory to which the segment belongs and `st1` and `st2` are
+#' identifiers of the initial and final states defining the segment. If only one
+#' state of an individual trajectory is considered to form the representative
+#' trajectory, the corresponding segment needs to be defined as `traj[st-st]`.
 #'
 #' @return
 #' An object of class `RETRA`, which is a list of length equal to the number of
@@ -91,11 +90,11 @@
 #' is not considered in the returned data frame. If `d` is `NULL`, `Link_distance`
 #' = `NA`.}
 #' \item{`Seg_density`}{Data frame of two columns and one row for each representative
-#' segment. `Density` contains the number of segments in the leaf of the kd-tree
-#' represented by each segment. `kdTree_depth` contains the depth of the kd-tree
-#' for each leaf represented by the corresponding segment. That is, the number of
-#' partitions of the ordination space until finding a region with `minSegs` segments
-#' or less. If `retra` is `NULL`, `Seg_density` = `NA`.}
+#' segment. `Density` contains the number of segments in the EDR that is represented
+#' by each segment of the representative trajectory. `kdTree_depth` contains the
+#' depth of the k-d tree for each leaf represented by the corresponding segment.
+#' That is, the number of partitions of the ordination space until finding a region
+#' with `minSegs` segments or less. If `retra` is `NULL`, `Seg_density` = `NA`.}
 #' }
 #'
 #' @author Martina Sánchez-Pinillos, CNRS, Univ. Montpellier
@@ -104,7 +103,7 @@
 #' [retra_edr()] for identifying representative trajectories in EDRs through
 #' RETRA-EDR.
 #'
-#' [`summary()`] for summarizing the characteristics of the set of representative
+#' [`summary()`] for summarizing the characteristics of the representative
 #' trajectories.
 #'
 #' [plot()] for plotting representative trajectories in an ordination space
@@ -133,7 +132,7 @@
 #' selected_segs   # each value represents traj[st1-st2]
 #' selected_traj <- rep(c(15, 4, 4, 1, 14), each = 2) # This is "traj" in traj[st1-st2]
 #'
-#' # ...and the states (in the same order than the representative trajectory).
+#' # ...and the states (in the same order as the representative trajectory).
 #' selected_states <- c(1, 2, 2, 3, 3, 4, 1, 2, 2, 3) # This is "st1, st2" in traj[st1-st2]
 #'
 #' # Generate the data frame with the format indicated in the documentation
@@ -162,7 +161,7 @@
 #'              old_retra$T2$Segments[4:8],
 #'              c("5[1-2]", "5[2-3]", "7[4-4]", "6[4-5]"))
 #'
-#' #' # Generate a RETRA object using define_retra()
+#' # Generate a RETRA object using define_retra()
 #' new_retra <- define_retra(data = data,
 #'                           d = d,
 #'                           trajectories = trajectories,

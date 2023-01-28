@@ -57,11 +57,11 @@ equal to the length of a real segment, respectively. In both cases, the link
 is not considered in the returned data frame. If \code{d} is \code{NULL}, \code{Link_distance}
 = \code{NA}.}
 \item{\code{Seg_density}}{Data frame of two columns and one row for each representative
-segment. \code{Density} contains the number of segments in the leaf of the kd-tree
-represented by each segment. \code{kdTree_depth} contains the depth of the kd-tree
-for each leaf represented by the corresponding segment. That is, the number of
-partitions of the ordination space until finding a region with \code{minSegs} segments
-or less. If \code{retra} is \code{NULL}, \code{Seg_density} = \code{NA}.}
+segment. \code{Density} contains the number of segments in the EDR that is represented
+by each segment of the representative trajectory. \code{kdTree_depth} contains the
+depth of the k-d tree for each leaf represented by the corresponding segment.
+That is, the number of partitions of the ordination space until finding a region
+with \code{minSegs} segments or less. If \code{retra} is \code{NULL}, \code{Seg_density} = \code{NA}.}
 }
 }
 \description{
@@ -85,28 +85,27 @@ argument \code{data}:
 \item \code{data} can be defined as a \strong{data frame} with as many rows as the number of
 states in all representative trajectories and the following columns:
 \describe{
-\item{\code{RT}}{String indicating the identifier of the new representative trajectories.
+\item{\code{RT}}{A string indicating the identifier of the new representative trajectories.
 Each identifier needs to appear as many times as the number of states forming
 each representative trajectory.}
-\item{\code{RT_traj}}{Vector indicating the individual trajectory in the EDR to which
+\item{\code{RT_traj}}{A vector indicating the individual trajectories in the EDR to which
 each state of the representative trajectory belongs.}
-\item{\code{RT_states}}{Vector of integers indicating the identifier of the states
+\item{\code{RT_states}}{A vector of integers indicating the identifier of the states
 forming the representative trajectories. Each integer must refer to the order
 of the states in the individual trajectories of the EDR to which they belong.}
 \item{\code{RT_retra}}{Only if the new trajectories are defined from representative
-trajectories returned by \code{\link[=retra_edr]{retra_edr()}} (when \code{!is.null(retra)}). Vector of strings
+trajectories returned by \code{\link[=retra_edr]{retra_edr()}} (when \code{!is.null(retra)}). A vector of strings
 indicating the representative trajectory in \code{retra} to which each state belongs.}
 }
-\item Alternatively, \code{data} can be defined as a \strong{vector} or a \strong{list of character
-vectors} containing the sequence of segments in one representative trajectory
-(then, \code{data} is a vector of characters) or in a set of representative trajectories
-(list of character vectors with as many elements as the number of representative
-trajectories). In any case, each segment needs to be specified in the form
-\code{traj[st1-st2]}, where \code{traj} is the identifier of the original trajectory to
-which the segment belongs and \code{st1} and \code{st2} are identifiers of the initial
-and final states defining the segment. If only one state of an individual
-trajectory is considered to form the representative trajectory, the corresponding
-segment needs to be defined as \code{traj[st-st]}.
+\item Alternatively, \code{data} can be defined as either a \strong{vector} (if there is one
+representative trajectory) or a \strong{list of character vectors} (with as many
+elements as the number of representative trajectories) containing the sequence
+of segments of the representative trajectories. In any case, each segment needs
+to be specified in the form \code{traj[st1-st2]}, where \code{traj} is the identifier of
+the original trajectory to which the segment belongs and \code{st1} and \code{st2} are
+identifiers of the initial and final states defining the segment. If only one
+state of an individual trajectory is considered to form the representative
+trajectory, the corresponding segment needs to be defined as \code{traj[st-st]}.
 }
 }
 \examples{
@@ -130,7 +129,7 @@ selected_segs <- old_retra$T2$Segments[4:length(old_retra$T2$Segments)]
 selected_segs   # each value represents traj[st1-st2]
 selected_traj <- rep(c(15, 4, 4, 1, 14), each = 2) # This is "traj" in traj[st1-st2]
 
-# ...and the states (in the same order than the representative trajectory).
+# ...and the states (in the same order as the representative trajectory).
 selected_states <- c(1, 2, 2, 3, 3, 4, 1, 2, 2, 3) # This is "st1, st2" in traj[st1-st2]
 
 # Generate the data frame with the format indicated in the documentation
@@ -159,7 +158,7 @@ data <- list(old_retra$T1$Segments,
              old_retra$T2$Segments[4:8],
              c("5[1-2]", "5[2-3]", "7[4-4]", "6[4-5]"))
 
-#' # Generate a RETRA object using define_retra()
+# Generate a RETRA object using define_retra()
 new_retra <- define_retra(data = data,
                           d = d,
                           trajectories = trajectories,
@@ -194,7 +193,7 @@ new_retra <- define_retra(data = df, d = EDR_data$EDR1$state_dissim,
 \code{\link[=retra_edr]{retra_edr()}} for identifying representative trajectories in EDRs through
 RETRA-EDR.
 
-\code{\link[=summary]{summary()}} for summarizing the characteristics of the set of representative
+\code{\link[=summary]{summary()}} for summarizing the characteristics of the representative
 trajectories.
 
 \code{\link[=plot]{plot()}} for plotting representative trajectories in an ordination space
