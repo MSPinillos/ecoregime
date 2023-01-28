@@ -117,4 +117,6 @@ To cite `ecoregime` in publications use:
 print(citation("ecoregime"), style = "text")
 ```
 
+## Acknowledgements
 
+This project has received funding from the European Union’s Horizon 2020 research and innovation program under the Marie Sklodowska-Curie grant agreement No 891477 (RESET project).

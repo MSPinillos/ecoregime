@@ -24,11 +24,11 @@ knitr::opts_chunk$set(
 
 ### 1.1. Ecological Dynamic Regimes and the EDR framework
 
-An **Ecological Dynamic Regime (EDR)** is defined as the *"natural fluctuations of ecosystem states around some trend or average resulting from an intricate mix of internal processes and external forces that push the system towards specific domains of attraction"* (Sánchez-Pinillos et al.).
+An **Ecological Dynamic Regime (EDR)** is defined as the *"fluctuations of ecosystem states around some trend or average resulting from an intricate mix of internal processes and external forces that, in the absence of perturbations, keep the system within specific domains of attraction"* (Sánchez-Pinillos et al.).
 
-EDRs are composed of multiple ecological trajectories showing similar processes in the development, interaction, and reorganization of some state variables over time. Thus, **ecological trajectories** are the essential units of EDRs and can be defined as sequences of observations capturing the temporal changes of some state variables. Usually, ecological trajectories are defined based on multiple state variables (e.g., species, functional traits, land uses) that make make challenging the characterization and comparison of EDRs.
+EDRs are composed of multiple ecological trajectories showing similar processes in the development, interaction, and reorganization of some state variables over time. Thus, **ecological trajectories** are the essential units of EDRs and can be defined as sequences of observations capturing the temporal changes of some state variables. Usually, ecological trajectories are defined based on multiple state variables (e.g., species, functional traits, land uses) that make challenging the characterization and comparison of EDRs.
 
-The **EDR framework** is a set of algorithms and metrics aiming to characterize and compare EDRs composed of ecological trajectories in multidimensional state spaces. You can find more information in the following publication, including the formal definition of the EDR concept, all the methodological details of the framework, and some illustrative examples with artificial and real data sets:
+The **EDR framework** is a set of algorithms and metrics aiming to characterize and compare EDRs composed of ecological trajectories in multidimensional state spaces. You can find more information in the following publication, including the formal definition of the EDR concept, the methodological details of the framework, and some illustrative examples with artificial and real data sets:
 
 - Sánchez-Pinillos M., Kéfi, S., De Cáceres, M., Dakos, V. Ecological Dynamic Regimes: Identification, characterization, and comparison.
 
@@ -115,7 +115,7 @@ as.matrix(state_dissim)[1:6, 1:6]
 
 ```
 
-We can visualize the state space using ordination methods. Here, I apply multidimensional scaling (mMDS; `smacof`) to the state dissimilarity matrix (**$D_O$**) and plot the distribution of the ecological states in an ordination space. We will use different colors and the code of the sampling unit to represent the observations of each sampling unit:
+We can visualize the state space using ordination methods. Here, I apply multidimensional scaling (mMDS; `smacof`) to the dissimilarity matrix **$D_O$** and plot the distribution of the ecological states in an ordination space. We will use different colors and the code of the sampling unit to represent the observations of each sampling unit:
 
 ```{r state_mds, fig = TRUE, fig.height = 5, fig.width = 5, fig.align = "center"}
 # Multidimensional scaling
@@ -205,7 +205,7 @@ Currently, this is out of the scope of `ecoregime` but you can find more details
 
 ### 3.2. Defining EDRs based on ecological properties
 
-Clustering analyses are not the only way to define EDRs. As I stated before, the ecological trajectories of our simulated data can be considered part of the same EDR for having similar dynamical patterns. Thus, you could define groups of trajectories that you want to evaluate for sharing similar aspects in the state variables. For example, you could consider groups of trajectories with the same number of observations in which the state variables change synchronously.  
+Clustering analyses are not the only way to define EDRs. As I stated before, the ecological trajectories of our simulated data can be considered part of the same EDR for having similar dynamical patterns. Thus, you could define groups of trajectories that you want to evaluate for sharing similar aspects in the state variables. For example, you could consider groups of trajectories with the same number of observations in which the state variables change following similar patterns.  
 
 ## 4. Representative trajectories
 
@@ -249,7 +249,7 @@ cor(state_mds$D1, abundance$sp2)
 
 ```
 
-These analyses are fine for extremely simple systems as the ones simulated in our toy data. However, when we want to apply these or similar approaches to empirical data, the story is very different. In real ecosystems, we usually have to deal with a great heterogeneity, multiple variables interacting between each other, and noise. As a consequence, we need robust tools able to summarize a great variety of trajectories in multidimensional spaces. That is precisely what RETRA-EDR pursues.
+These analyses are fine for extremely simple systems as the ones simulated in our toy data. However, when we want to apply these or similar approaches to empirical data, finding clear dynamical patterns becomes more difficult. In real ecosystems, we usually have to deal with a great heterogeneity, multiple variables interacting between each other, and noise. As a consequence, we need robust tools able to summarize a great variety of trajectories in multidimensional spaces. That is precisely what RETRA-EDR pursues.
 
 ### 4.1. Identifying representative trajectories with RETRA-EDR
 
@@ -337,7 +337,7 @@ plot(repr_traj, # <-- This is a RETRA object returned by retra_edr()
      d = state_mds, trajectories = rep(ID_sampling, each = 3), states = rep(ID_obs, 10),
      # use the colors previously used for individual trajectories. 
      # (make them more transparent to highlight representative trajectories)
-     traj.colors = alpha(traj.colors, 0.4),
+     traj.colors = alpha(traj.colors, 0.3),
      # display representative trajectories in blue    
      RT.colors = "blue",
      # select T2 to be displayed with a different color (black)
@@ -459,7 +459,7 @@ legend("bottomright", c("T1.1, T2.1", "T1.2", "Link"),
 
 The definition of representative trajectories is based on the real states of the sampling units. Thus, it is possible to assess the variation of some ecological properties along the representative trajectories, and therefore, across the EDR.
 
-Let's see how the species diversity varies along the representative trajectories returned by `retra_edr()`. First, we need to calculate an index of species diversity (e.g., Shannon index) for the states in each representative trajectory and set the order of the states in the trajectory:
+Let's see how species diversity varies along the representative trajectories returned by `retra_edr()`. First, we need to calculate an index of species diversity (e.g., Shannon index) for the states in each representative trajectory and set the order of the states in the trajectory:
 
 ```{r sp_diversity}
 # Set an ID in the abundance matrix
@@ -490,7 +490,7 @@ RT_diversity$T2
 
 ```
 
-Then, we can evaluate the variation of the species diversity along the representative trajectories graphically:
+Then, we can evaluate the variation of species diversity along the representative trajectories graphically:
 
 ```{r plot_sp_diversity, fig = TRUE, fig.height = 5, fig.width = 5, fig.align = "center"}
 # Plot the variation of species diversity in T1
@@ -508,7 +508,7 @@ legend("topright", c("T1", "T2"), col = c("blue", "black"), lty = 1)
 ```
 
 
-## 5. Variability and heterogeneity of ecological trajectories in EDRs
+## 5. Distribution and heterogeneity of ecological trajectories in EDRs
 
 Representative trajectories aim to summarize the main dynamical patterns of ecological systems in a given EDR. As a complement, you can compute additional metrics to understand the internal structure of the EDR.
 
@@ -769,7 +769,9 @@ round(EDR_dissim, 2)
 
 As expected, the dissimilarity values between *EDR1* and *EDR2* are smaller than the dissimilarities between *EDR3* and both, *EDR1* and *EDR2*.
 
+## Acknowledgements
 
+This project has received funding from the European Union’s Horizon 2020 research and innovation program under the Marie Sklodowska-Curie grant agreement No 891477 (RESET project).
 
 
 

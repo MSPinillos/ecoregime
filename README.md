@@ -121,3 +121,9 @@ To cite `ecoregime` in publications use:
 Sánchez-Pinillos M (2023). *ecoregime: Analysis of Ecological Dynamic
 Regimes*. R package version 0.1.0,
 <https://github.com/MSPinillos/ecoregime>.
+
+## Acknowledgements
+
+This project has received funding from the European Union’s Horizon 2020
+research and innovation program under the Marie Sklodowska-Curie grant
+agreement No 891477 (RESET project).
