@@ -18,9 +18,7 @@ dist_edr(
 \arguments{
 \item{d}{Symmetric matrix or object of class \code{\link{dist}} containing the
 dissimilarities between each pair of states of all trajectories in the EDR or
-the dissimilarities between each pair of trajectories. To compute dDis, \code{d}
-needs to include the dissimilarities between all states/trajectories and the
-states/trajectory of reference.}
+the dissimilarities between each pair of trajectories.}
 
 \item{d.type}{One of \code{"dStates"} (if \code{d} contains state dissimilarities) or
 \code{"dTraj"} (if \code{d} contains trajectory dissimilarities).}
@@ -155,12 +153,12 @@ id_edr_traj <- vapply(strsplit(labels(dTraj), "_"), function(x){
                 }, character(1))
 
 # Compute dissimilarities between EDRs:
-# 1.1) without symmetrizing the matrix using state dissimilarities
+# 1.1) without symmetrizing the matrix and using state dissimilarities
 dEDR <- dist_edr(d = dStates, d.type = "dStates",
                  trajectories = id_traj, states = id_state, edr = id_edr,
                  metric = "DDR", symmetrize = NULL)
 
-# 1.2) without symmetrizing the matrix using trajectory dissimilarities
+# 1.2) without symmetrizing the matrix and using trajectory dissimilarities
 dEDR <- dist_edr(d = dTraj, d.type = "dTraj", edr = id_edr_traj,
                  metric = "DDR", symmetrize = NULL)
 

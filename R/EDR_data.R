@@ -18,7 +18,7 @@
 #'     + `sp1, ..., sp12`: Vectors containing species abundances for each community
 #'     state.
 #' * `state_dissim`: Object of class `dist` containing Bray-Curtis dissimilarities
-#' between every pair of states in `abundance`.
+#' between every pair of states in `abundance` (see Details).
 #' * `segment_dissim`: Object of class `dist` containing the dissimilarities
 #' between every pair of trajectory segments in `abundance` (see Details).
 #' * `traj_dissim`: Object of class `dist` containing the dissimilarities

@@ -105,12 +105,12 @@
 #' @author Martina Sánchez-Pinillos, CNRS, Univ. Montpellier
 #'
 #' @references
+#' De Cáceres, M, Coll L, Legendre P, Allen RB, Wiser SK, Fortin MJ, Condit R &
+#' Hubbell S. (2019). Trajectory analysis in community ecology. Ecological
+#' Monographs.
+#'
 #' Sánchez-Pinillos, M., Kéfi, S., De Cáceres, M., Dakos, V. Ecological Dynamic
 #' Regimes: Identification, characterization, and comparison
-#'
-#' De Cáceres, M, Coll L, Legendre P, Allen RB, Wiser SK, Fortin MJ,
-#' Condit R & Hubbell S. (2019). Trajectory analysis in community ecology. Ecological
-#' Monographs.
 #'
 #' Villéger, S., Mason, N.W.H., Mouillot, D. (2008) New multidimensional functional
 #' diversity indices for a multifaced framework in functional ecology. Ecology.

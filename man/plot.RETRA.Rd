@@ -72,7 +72,7 @@ of the EDR and the artificial links between segments.
 \note{
 This function uses a modified version of the \code{\link[ecotraj:trajectoryplots]{ecotraj::trajectoryPlot()}} function
 in 'ecotraj' (v.0.0.3; De Cáceres et al. 2019). The modification was done the
-2022-12-18. It allows using the function \code{\link[shape:Arrows]{shape::Arrows()}} to plot ecological
+2022-12-08. It allows using the function \code{\link[shape:Arrows]{shape::Arrows()}} to plot ecological
 trajectories instead of \code{\link[graphics:arrows]{graphics::arrows()}} and setting the parameters of
 generic \code{\link[=plot]{plot()}}.
 }
@@ -135,15 +135,15 @@ plot(x = RT_retra, d = coord, trajectories = trajectories, states = states,
 
 }
 \references{
-Sánchez-Pinillos, M., Kéfi, S., De Cáceres, M., Dakos, V. Ecological Dynamic
-Regimes: Identification, characterization, and comparison
-
-De Cáceres, M, Coll L, Legendre P, Allen RB, Wiser SK, Fortin MJ,
-Condit R & Hubbell S. (2019). Trajectory analysis in community ecology. Ecological
-Monographs.
-
 Borg, I., & Groenen, P. J. F. (2005). Modern Multidimensional Scaling (2nd ed.).
 Springer.
+
+De Cáceres, M, Coll L, Legendre P, Allen RB, Wiser SK, Fortin MJ, Condit R &
+Hubbell S. (2019). Trajectory analysis in community ecology. Ecological
+Monographs.
+
+Sánchez-Pinillos, M., Kéfi, S., De Cáceres, M., Dakos, V. Ecological Dynamic
+Regimes: Identification, characterization, and comparison
 }
 \seealso{
 \code{\link[=retra_edr]{retra_edr()}} for identifying representative trajectories in EDRs applying

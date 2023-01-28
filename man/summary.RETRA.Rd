@@ -30,16 +30,16 @@ or site (i.e., artificial links).}
 segment of the representative trajectory (excluding artificial links).}
 \item{\code{Max_density}}{Maximum number of segments represented by at least one of
 the segments of the representative trajectory (excluding artificial links).}
-\item{\code{Avg_depth}}{Mean value of the kd-tree depths, that is, the number of
+\item{\code{Avg_depth}}{Mean value of the k-d tree depths, that is, the number of
 partitions of the ordination space until finding a region with \code{minSegs} segments
 or less.}
-\item{\code{Max_depth}}{Maximum depth in the kd-tree, that is, the number of partitions
+\item{\code{Max_depth}}{Maximum depth in the k-d tree, that is, the number of partitions
 of the ordination space until finding a region with \code{minSegs} segments or less.}
 }
 }
 \description{
-Summarize the properties of the representative trajectories of an Ecological
-Dynamic Regime (EDR) returned by \code{\link[=retra_edr]{retra_edr()}} or \code{\link[=define_retra]{define_retra()}}
+Summarize the properties of representative trajectories returned by
+\code{\link[=retra_edr]{retra_edr()}} or \code{\link[=define_retra]{define_retra()}}
 }
 \examples{
 # Apply RETRA-EDR to identify representative trajectories

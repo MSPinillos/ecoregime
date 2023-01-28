@@ -1,8 +1,8 @@
 #' Summarize representative trajectories
 #'
 #' @description
-#' Summarize the properties of the representative trajectories of an Ecological
-#' Dynamic Regime (EDR) returned by [`retra_edr()`] or [`define_retra()`]
+#' Summarize the properties of representative trajectories returned by
+#' [`retra_edr()`] or [`define_retra()`]
 #'
 #' @param object An object of class `RETRA`.
 #' @param ... (not used)
@@ -26,10 +26,10 @@
 #' segment of the representative trajectory (excluding artificial links).}
 #' \item{`Max_density`}{Maximum number of segments represented by at least one of
 #' the segments of the representative trajectory (excluding artificial links).}
-#' \item{`Avg_depth`}{Mean value of the kd-tree depths, that is, the number of
+#' \item{`Avg_depth`}{Mean value of the k-d tree depths, that is, the number of
 #' partitions of the ordination space until finding a region with `minSegs` segments
 #' or less.}
-#' \item{`Max_depth`}{Maximum depth in the kd-tree, that is, the number of partitions
+#' \item{`Max_depth`}{Maximum depth in the k-d tree, that is, the number of partitions
 #' of the ordination space until finding a region with `minSegs` segments or less.}
 #' }
 #'

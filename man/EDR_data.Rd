@@ -20,7 +20,7 @@ The sequence of states of a given community forms a trajectory.
 state.
 }
 \item \code{state_dissim}: Object of class \code{dist} containing Bray-Curtis dissimilarities
-between every pair of states in \code{abundance}.
+between every pair of states in \code{abundance} (see Details).
 \item \code{segment_dissim}: Object of class \code{dist} containing the dissimilarities
 between every pair of trajectory segments in \code{abundance} (see Details).
 \item \code{traj_dissim}: Object of class \code{dist} containing the dissimilarities

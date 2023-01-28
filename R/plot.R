@@ -41,20 +41,21 @@
 #' @author Martina Sánchez-Pinillos, CNRS, Univ. Montpellier
 #'
 #' @references
+#' Borg, I., & Groenen, P. J. F. (2005). Modern Multidimensional Scaling (2nd ed.).
+#' Springer.
+#'
+#' De Cáceres, M, Coll L, Legendre P, Allen RB, Wiser SK, Fortin MJ, Condit R &
+#' Hubbell S. (2019). Trajectory analysis in community ecology. Ecological
+#' Monographs.
+#'
 #' Sánchez-Pinillos, M., Kéfi, S., De Cáceres, M., Dakos, V. Ecological Dynamic
 #' Regimes: Identification, characterization, and comparison
 #'
-#' De Cáceres, M, Coll L, Legendre P, Allen RB, Wiser SK, Fortin MJ,
-#' Condit R & Hubbell S. (2019). Trajectory analysis in community ecology. Ecological
-#' Monographs.
-#'
-#' Borg, I., & Groenen, P. J. F. (2005). Modern Multidimensional Scaling (2nd ed.).
-#' Springer.
 #'
 #' @note
 #' This function uses a modified version of the [ecotraj::trajectoryPlot()] function
 #' in 'ecotraj' (v.0.0.3; De Cáceres et al. 2019). The modification was done the
-#' 2022-12-18. It allows using the function [shape::Arrows()] to plot ecological
+#' 2022-12-08. It allows using the function [shape::Arrows()] to plot ecological
 #' trajectories instead of [graphics::arrows()] and setting the parameters of
 #' generic [plot()].
 #'
