@@ -20,7 +20,7 @@ knitr::opts_chunk$set(
 <!-- badges: start -->
 <!-- badges: end -->
 
-`ecoregime` implements the EDR framework to characterize and compare groups of ecological trajectories in multidimensional spaces defined by ecosystem state variables. The EDR framework was introduced in 
+`ecoregime` implements the EDR framework to characterize and compare groups of ecological trajectories in multidimensional spaces defined by ecosystem state variables. The EDR framework was introduced in:
 
 Sánchez-Pinillos, M., Kéfi, S., De Cáceres, M., Dakos, V. 2023. Ecological Dynamic Regimes: Identification, characterization, and comparison.
 

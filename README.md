@@ -10,7 +10,7 @@
 
 `ecoregime` implements the EDR framework to characterize and compare
 groups of ecological trajectories in multidimensional spaces defined by
-ecosystem state variables. The EDR framework was introduced in
+ecosystem state variables. The EDR framework was introduced in:
 
 Sánchez-Pinillos, M., Kéfi, S., De Cáceres, M., Dakos, V. 2023.
 Ecological Dynamic Regimes: Identification, characterization, and
@@ -62,9 +62,6 @@ states <- as.integer(abundance$state)
 # Compute RETRA-EDR
 RT <- retra_edr(d = d, trajectories = trajectories, states = states,
                  minSegs = 5)
-#> Registered S3 method overwritten by 'dendextend':
-#>   method     from 
-#>   rev.hclust vegan
 
 # Plot representative trajectories of the EDR
 plot(x = RT, d = d, trajectories = trajectories, states = states, select_RT = "T2",
