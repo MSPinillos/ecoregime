@@ -204,9 +204,11 @@ dist_edr <- function(d, d.type, trajectories = NULL, states = NULL, edr, metric 
 
   # Trajectory dissimilarity
   if(d.type == "dStates"){
-    edr.df <- unique(data.frame(traj = trajectories, edr = edr))
+    edr.df <- unique(data.frame(traj = paste0(edr, "_", trajectories), edr = edr))
     edr <- edr.df$edr
-    dTrajmat <- as.matrix(ecotraj::trajectoryDistances(d = d, sites = trajectories, surveys = states,...))
+    dTrajmat <- as.matrix(ecotraj::trajectoryDistances(d = d,
+                                                       sites = paste0(edr, "_", trajectories),
+                                                       surveys = states,...))
   }
   if(d.type == "dTraj") {
     dTrajmat <- as.matrix(d)
