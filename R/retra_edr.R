@@ -163,7 +163,7 @@ retra_edr <- function (d, trajectories, states, minSegs,
   ## WARNING MESSAGES ----------------------------------------------------------
 
   # Check the format for d, trajectories, and states
-  if (all(!is.matrix(d), !dendextend::is.dist(d)) |
+  if (all(!is.matrix(d), class(d) != "dist") |
       nrow(as.matrix(d)) != ncol(as.matrix(d))) {
     stop("'d' must be a symmetric dissimilarity matrix or an object of class 'dist'.")
   }
@@ -201,7 +201,7 @@ retra_edr <- function (d, trajectories, states, minSegs,
 
   # Check the format of dSegs
   if (!is.null(dSegs)) {
-    if (all(!is.matrix(dSegs), !dendextend::is.dist(dSegs)) |
+    if (all(!is.matrix(dSegs), class(dSegs) != "dist") |
         dim(dSegs)[1] != dim(dSegs)[2]) {
       stop("'dSegs' must be a symmetric dissimilarity matrix or an object of class 'dist'.")
     }

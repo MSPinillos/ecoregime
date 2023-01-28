@@ -159,7 +159,7 @@ dDis <- function(d, d.type, trajectories, states = NULL, reference, w.type = "no
   ## WARNING MESSAGES ----------------------------------------------------------
 
   # Check the format for d, trajectories, states, and reference
-  if (all(!is.matrix(d), !dendextend::is.dist(d)) |
+  if (all(!is.matrix(d), class(d) != "dist") |
       nrow(as.matrix(d)) != ncol(as.matrix(d))) {
     stop("'d' must be a symmetric dissimilarity matrix or an object of class 'dist'.")
   }
@@ -275,7 +275,7 @@ dBD <- function(d, d.type, trajectories, states = NULL, ...){
   ## WARNING MESSAGES ----------------------------------------------------------
 
   # Check the format for d, trajectories, states, and reference
-  if (all(!is.matrix(d), !dendextend::is.dist(d)) |
+  if (all(!is.matrix(d), class(d) != "dist") |
       nrow(as.matrix(d)) != ncol(as.matrix(d))) {
     stop("'d' must be a symmetric dissimilarity matrix or an object of class 'dist'.")
   }
@@ -336,7 +336,7 @@ dEve <- function(d, d.type, trajectories, states = NULL, w.type = "none", w.valu
   ## WARNING MESSAGES ----------------------------------------------------------
 
   # Check the format for d, trajectories, states, and reference
-  if (all(!is.matrix(d), !dendextend::is.dist(d)) |
+  if (all(!is.matrix(d), class(d) != "dist") |
       nrow(as.matrix(d)) != ncol(as.matrix(d))) {
     stop("'d' must be a symmetric dissimilarity matrix or an object of class 'dist'.")
   }
