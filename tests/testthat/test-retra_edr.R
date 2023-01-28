@@ -75,7 +75,7 @@ test_that("returns same results for dSegs and coordSegs", {
 
 })
 
-test_that("minSegs and eps works", {
+test_that("minSegs and eps work", {
   d <- EDR_data$EDR1$state_dissim
   trajectories <- EDR_data$EDR1$abundance$traj
   states <- EDR_data$EDR1$abundance$state
