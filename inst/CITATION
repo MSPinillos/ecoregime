@@ -1,18 +1,20 @@
 citHeader("To cite ecoregime in publications use:")
 
 citEntry(
-  entry    = "Article",
-  title    = "Ecological Dynamic Regimes: Identification, characterization, and comparison",
-  author   = "Martina Sánchez-Pinillos, Sonia Kéfi, Miquel De Cáceres, Vasilis Dakos",
-  journal  = "?",
-  year     = "?",
-  volume   = "?",
-  number   = "?",
-  pages    = "?",
-  url      = "?",
+  entry    = "Manual",
+  title    = "ecoregime: Analysis of Ecological Dynamic Regimes",
+  author   = person(given = "Martina", family = "Sánchez-Pinillos",
+           email = "martina.sanchez.pinillos@gmail.com",
+           role = c("aut", "cre"), comment = c(ORCID = "0000-0002-1499-4507")),
+  year     = "2023",
+  doi      = "",
+  note     = "R package version 0.1.0",
+  url      = "https://github.com/MSPinillos/ecoregime",
   textVersion = paste(
-  "Sánchez-Pinillos, M., Kéfi, S., De Cáceres, M., Dakos, V. ",
-  "Ecological Dynamic Regimes: Identification, characterization, and comparison",
-  sep = ""
+  "Martina Sánchez-Pinillos. 2023.",
+  "ecoregime:  Analysis of Ecological Dynamic Regimes.",
+  "R package version 0.1.0.",
+  "",
+  "https://github.com/MSPinillos/ecoregime"
   )
 )
