@@ -2,7 +2,7 @@
 #'
 #' @description
 #' `retra_edr()` applies the algorithm RETRA-EDR (Sánchez-Pinillos et al.) to identify
-#' representative trajectories summarizing the main dynamical patters of an Ecological
+#' representative trajectories summarizing the main dynamical patterns of an Ecological
 #' Dynamic Regime (EDR).
 #'
 #' @param d Either a symmetric matrix or an object of class [`dist`] containing the
@@ -26,10 +26,10 @@
 #' and/or `coordSegs` according to the values given in `states`. Only required if
 #' `dSegs` or `coordSegs` are not `NULL`.
 #' @param Dim Optional integer indicating the number of axes considered to
-#' partition the segment space and generate a kd-tree. By default (`Dim = NULL`),
+#' partition the segment space and generate a k-d tree. By default (`Dim = NULL`),
 #' all axes are considered.
 #' @param eps Numeric value indicating the minimum length in the axes of the segment
-#' space to be partitioned when the kd-tree is generated. If `eps = 0` (default),
+#' space to be partitioned when the k-d tree is generated. If `eps = 0` (default),
 #' partitions are made regardless of the size.
 #'
 #' @details
@@ -38,19 +38,19 @@
 #' a representative segment in each dense region, and joins the representative
 #' segments by a set of artificial `Links` to generate a network of representative
 #' trajectories. For that, RETRA-EDR splits the trajectories of the EDR into
-#' segments and uses an ordination space generated from a matrix compiling the
+#' segments and uses an ordination space generated from a matrix containing the
 #' dissimilarities between trajectory segments. Dense regions are identified by
-#' applying a kd-tree to the ordination space.
+#' applying a k-d tree to the ordination space.
 #'
 #' By default, RETRA-EDR calculates segment dissimilarities following the approach
-#' by De Caceres et al. (2019) and applies metric multidimensional scaling (MDS,
+#' by De Cáceres et al. (2019) and applies metric multidimensional scaling (mMDS,
 #' Borg and Groenen, 2005) to generate the ordination space. It is possible to use
 #' other dissimilarity metrics and/or ordination methods and reduce the computational
 #' time by indicating the dissimilarity matrix and the coordinates of the segments
 #' in the ordination space through the arguments `dSegs` and `coordSegs`, respectively.
 #'
 #' * If `!is.null(dSegs)` and `is.null(coordSegs)`, RETRA-EDR is computed by
-#' applying MDS to `dSegs`.
+#' applying mMDS to `dSegs`.
 #' * If `!is.null(dSegs)` and `!is.null(coordSegs)`, RETRA-EDR is directly computed
 #' from the coordinates provided in `coordSegs` and representative segments are
 #' identified using `dSegs`. `coordSegs` should be calculated by the user from
@@ -83,28 +83,29 @@
 #' is zero or equal to the length of a real segment, respectively. In both cases,
 #' the link is not considered in the returned data frame.}
 #' \item{`Seg_density`}{Data frame of two columns and one row for each representative
-#' segment. `Density` contains the number of segments in the leaf of the kd-tree
-#' represented by each segment. `kdTree_depth` contains the depth of the kd-tree
-#' for each leaf represented by the corresponding segment. That is, the number of
-#' partitions of the ordination space until finding a region with `minSegs` segments
-#' or less.}
+#' segment. `Density` contains the number of segments in the EDR that is represented
+#' by each segment of the representative trajectory. `kdTree_depth` contains the
+#' depth of the k-d tree for each leaf represented by the corresponding segment.
+#' That is, the number of partitions of the ordination space until finding a region
+#' with `minSegs` segments or less.}
 #' }
 #'
 #' @author Martina Sánchez-Pinillos, CNRS, Univ. Montpellier
 #'
 #' @references
-#' Sánchez-Pinillos, M., Kéfi, S., De Cáceres, M., Dakos, V. Ecological Dynamic
-#' Regimes: Identification, characterization, and comparison
+#' Borg, I., & Groenen, P. J. F. (2005). Modern Multidimensional Scaling (2nd ed.).
+#' Springer.
 #'
 #' De Cáceres, M, Coll L, Legendre P, Allen RB, Wiser SK, Fortin MJ,
 #' Condit R & Hubbell S. (2019). Trajectory analysis in community ecology. Ecological
 #' Monographs.
 #'
-#' Borg, I., & Groenen, P. J. F. (2005). Modern Multidimensional Scaling (2nd ed.).
-#' Springer.
+#' Sánchez-Pinillos, M., Kéfi, S., De Cáceres, M., Dakos, V. Ecological Dynamic
+#' Regimes: Identification, characterization, and comparison
+#'
 #'
 #' @seealso
-#' [`summary()`] for summarizing the characteristics of the set of representative
+#' [`summary()`] for summarizing the characteristics of the representative
 #' trajectories.
 #'
 #' [`plot()`] for plotting representative trajectories in an ordination space
@@ -292,7 +293,7 @@ retra_edr <- function (d, trajectories, states, minSegs,
   }
   Dim_col = rep(1:Dim, 1e5) + 1
 
-  ## COMPUTE KD-TREE BASED ON MIDPOINTS ----------------------------------------
+  ## COMPUTE K-D TREE BASED ON MIDPOINTS ----------------------------------------
 
   # First partition
   if (nSegs > minSegs) {
