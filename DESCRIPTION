@@ -25,7 +25,6 @@ LazyData: true
 Imports: 
     ape,
     data.table,
-    dendextend,
     ecotraj,
     GDAtools,
     graphics,

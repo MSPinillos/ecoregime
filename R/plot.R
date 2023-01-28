@@ -135,7 +135,7 @@ plot.RETRA <- function (x, d, trajectories, states, select_RT = NULL,
 
   # Check the formats
   if (!is.data.frame(d)) {
-    if (all(!is.matrix(d), class(d) != "dist") |
+    if (all(!is.matrix(d), !inherits(d, "dist")) |
         nrow(as.matrix(d)) != ncol(as.matrix(d))) {
       stop("'d' must be a symmetric dissimilarity matrix or an object of class 'dist' containing state dissimilarities. Alternatively, you can use a data frame containing state coordinates in a ordination space.")
     }
@@ -187,7 +187,7 @@ plot.RETRA <- function (x, d, trajectories, states, select_RT = NULL,
   # STATE COORDINATES ----------------------------------------------------------
 
     # Coordinates MDS
-  if (class(d) == "dist" || isSymmetric(as.matrix(d))) {
+  if (inherits(d, "dist") || isSymmetric(as.matrix(d))) {
     warning(cat("Representative trajectories will be displayed in an ordination space generated through multidimensional scaling (MDS). You can avoid this step by providing state coordinates in the 'd' argument.", "\n"))
     statesMDS <- data.frame(smacof::mds(delta = d, ndim = ncol(d)-1,
                                         itmax = 300, verbose = F)$conf)

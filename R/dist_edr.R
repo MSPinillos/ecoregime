@@ -175,7 +175,7 @@ dist_edr <- function(d, d.type, trajectories = NULL, states = NULL, edr, metric 
   ## WARNING MESSAGES ----------------------------------------------------------
 
   # Check the format for d, trajectories, states, and reference
-  if (all(!is.matrix(d), class(d) != "dist") |
+  if (all(!is.matrix(d), !inherits(d, "dist")) |
       nrow(as.matrix(d)) != ncol(as.matrix(d))) {
     stop("'d' must be a symmetric dissimilarity matrix or an object of class 'dist'.")
   }

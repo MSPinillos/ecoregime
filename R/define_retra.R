@@ -242,7 +242,7 @@ define_retra <- function(data, d = NULL, trajectories = NULL, states = NULL, ret
 
   # Check the format for d, trajectories, and states
   if (!is.null(d)) {
-    if (all(!is.matrix(d), class(d) != "dist") |
+    if (all(!is.matrix(d), !inherits(d, "dist")) |
         nrow(as.matrix(d)) != ncol(as.matrix(d))) {
       stop("'d' must be a symmetric dissimilarity matrix or an object of class 'dist'.")
     }
