@@ -1,0 +1,120 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+
+# `ecoregime`
+
+## Analysis of Ecological Dynamic Regimes
+
+<!-- badges: start -->
+<!-- badges: end -->
+
+`ecoregime` implements the EDR framework to characterize and compare groups of ecological trajectories in multidimensional spaces defined by ecosystem state variables. The EDR framework was introduced in 
+
+Sánchez-Pinillos, M., Kéfi, S., De Cáceres, M., Dakos, V. 2023. Ecological Dynamic Regimes: Identification, characterization, and comparison.
+
+## Installation
+
+You can install the development version of ecoregime from [GitHub](https://github.com/) with:
+
+``` r
+# install.packages("devtools")
+devtools::install_github("MSPinillos/ecoregime")
+```
+
+You can get an overview about its functionality and the workflow of the EDR framework in the package documentation and vignette.
+
+``` r
+# Force the inclusion of the vignette in the installation
+devtools::install_github("MSPinillos/ecoregime", 
+                         build_opts = c("--no-resave-data", "--no-manual"),
+                         build_vignettes = TRUE)
+
+# Load the package after the installation
+library(ecoregime)
+
+# Access to the documentation and vignette
+?ecoregime
+vignette("EDR_framework", package = "ecoregime")
+
+```
+
+## Usage
+
+Identify and plot representative trajectories in ecological dynamic regimes.
+
+```{r plotEDR, warning=FALSE}
+library(ecoregime)
+
+# Calculate state dissimilarities from a matrix species abundances
+abundance <- data.frame(EDR_data$EDR1$abundance)
+d <- vegan::vegdist(abundance[, -c(1:3)])
+
+# Identify the trajectory (or site) and states in d
+trajectories <- abundance$traj
+states <- as.integer(abundance$state)
+
+# Compute RETRA-EDR
+RT <- retra_edr(d = d, trajectories = trajectories, states = states,
+                 minSegs = 5)
+
+# Plot representative trajectories of the EDR
+plot(x = RT, d = d, trajectories = trajectories, states = states, select_RT = "T2",
+     traj.colors = "lightblue", RT.colors = "orange", sel.color = "darkgreen",
+     link.lty = 1, asp = 1, main = "Representative trajectories - EDR")
+
+```
+
+Characterize the internal structure of ecological dynamic regimes calculating the dispersion (dDis), beta diversity (dBD), and evenness (dEve) of the individual trajectories.
+
+```{r structureEDR}
+# Dynamic dispersion considering trajectory "1" as a reference
+dDis(d = d, d.type = "dStates", trajectories = trajectories, states = states, reference = "1")
+
+# Dynamic beta diversity
+dBD(d = d, d.type = "dStates", trajectories = trajectories, states = states)
+
+# Dynamic evenness
+dEve(d = d, d.type = "dStates", trajectories = trajectories, states = states)
+
+```
+
+Compare ecological dynamic regimes.
+
+```{r compareEDR}
+# Load species abundances and compile in a data frame
+abun1 <- EDR_data$EDR1$abundance
+abun2 <- EDR_data$EDR2$abundance
+abun3 <- EDR_data$EDR3$abundance
+abun <- data.frame(rbind(abun1, abun2, abun3))
+
+# Calculate dissimilarities between every pair of states
+d <- vegan::vegdist(abun[, -c(1:3)])
+
+# Compute dissimilarities between EDRs:
+dist_edr(d = d, d.type = "dStates",
+                 trajectories = abun$traj, states = abun$state, edr = abun$EDR,
+                 metric = "DDR", symmetrize = NULL)
+
+```
+
+## Citation
+
+To cite `ecoregime` in publications use:
+
+```{r citation, echo=FALSE, results='asis', cache = FALSE}
+print(citation("ecoregime"), style = "text")
+```
+
+
