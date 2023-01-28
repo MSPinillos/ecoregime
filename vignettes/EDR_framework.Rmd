@@ -49,7 +49,7 @@ library(ecoregime)
 ```
 
 ```{r citation}
-# citation("ecoregime")
+citation("ecoregime")
 ```
 
 ## 2. Trajectory data, state and trajectory spaces
