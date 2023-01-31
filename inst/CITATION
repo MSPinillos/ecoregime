@@ -14,7 +14,7 @@ citEntry(
   "Martina Sánchez-Pinillos. 2023.",
   "ecoregime:  Analysis of Ecological Dynamic Regimes.",
   "R package version 0.1.0.",
-  "",
+  "https://doi.org/10.5281/zenodo.7584943",
   "https://github.com/MSPinillos/ecoregime"
   )
 )
