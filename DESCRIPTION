@@ -6,7 +6,7 @@ Authors@R:
            email = "martina.sanchez.pinillos@gmail.com", 
            role = c("aut", "cre"), comment = c(ORCID = "0000-0002-1499-4507"))
 Description: A toolbox for implementing the EDR framework (Sánchez-Pinillos et
-    al.) to characterize and compare groups of ecological trajectories in  
+    al. 2023) to characterize and compare groups of ecological trajectories in  
     multidimensional spaces defined by state variables. The package includes the 
     RETRA-EDR algorithm to identify representative trajectories, functions to 
     generate, summarize, and visualize representative trajectories, and several 

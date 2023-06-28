@@ -1,20 +1,25 @@
-citHeader("To cite ecoregime in publications use:")
+citHeader("To cite 'ecoregime' in publications use:")
 
-citEntry(
-  entry    = "Manual",
-  title    = "ecoregime: Analysis of Ecological Dynamic Regimes",
-  author   = person(given = "Martina", family = "Sánchez-Pinillos",
-           email = "martina.sanchez.pinillos@gmail.com",
-           role = c("aut", "cre"), comment = c(ORCID = "0000-0002-1499-4507")),
-  year     = "2023",
-  doi      = "https://doi.org/10.5281/zenodo.7584943",
-  note     = "R package version 0.1.0",
-  url      = "https://github.com/MSPinillos/ecoregime",
-  textVersion = paste(
-  "Martina Sánchez-Pinillos. 2023.",
-  "ecoregime:  Analysis of Ecological Dynamic Regimes.",
-  "R package version 0.1.0.",
-  "https://doi.org/10.5281/zenodo.7584943",
-  "https://github.com/MSPinillos/ecoregime"
-  )
+bibentry(
+  bibtype = "Article",
+  title = "Ecological dynamic regimes: Identification, characterization, and comparison",
+  author = c(
+    person("Martina", "Sánchez-Pinillos"),
+    person("Sonia", "Kéfi"),
+    person("Miquel", "De Cáceres"),
+    person("Vasilis", "Dakos")),
+  year = "2023",
+  journal = "Ecological Monographs",
+  number = " ",
+  pages = " ",
+  url = "https://doi.org/10.1002/ecm.####"
 )
+
+bibentry(
+  bibtype = "Manual",
+  title = "ecoregime: Analysis of Ecological Dynamic Regimes",
+  author = person("Martina", "Sánchez-Pinillos"),
+    year = "2023",
+    url = "https://doi.org/10.5281/zenodo.7584943"
+)
+

@@ -6,9 +6,6 @@
 ## Analysis of Ecological Dynamic Regimes
 
 <!-- badges: start -->
-
-[![R-CMD-check](https://github.com/MSPinillos/ecoregime/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/MSPinillos/ecoregime/actions/workflows/R-CMD-check.yaml)
-
 <!-- badges: end -->
 
 `ecoregime` implements the EDR framework to characterize and compare
@@ -17,7 +14,9 @@ ecosystem state variables. The EDR framework was introduced in:
 
 Sánchez-Pinillos, M., Kéfi, S., De Cáceres, M., Dakos, V. 2023.
 Ecological Dynamic Regimes: Identification, characterization, and
-comparison.
+comparison. *Ecological Monographs*
+<a href="https://doi.org/10.1002/ecm.####"
+class="uri">https://doi.org/10.1002/ecm.####</a>
 
 ## Installation
 
@@ -121,10 +120,13 @@ dist_edr(d = d, d.type = "dStates",
 
 To cite `ecoregime` in publications use:
 
+Sánchez-Pinillos M, Kéfi S, De Cáceres M, Dakos V (2023). “Ecological
+dynamic regimes: Identification, characterization, and comparison.”
+*Ecological Monographs*. <a href="https://doi.org/10.1002/ecm.####"
+class="uri">https://doi.org/10.1002/ecm.####</a>.
+
 Sánchez-Pinillos M (2023). *ecoregime: Analysis of Ecological Dynamic
-Regimes*. <doi:10.5281/zenodo.7584943>
-<https://doi.org/10.5281/zenodo.7584943>, R package version 0.1.0,
-<https://github.com/MSPinillos/ecoregime>.
+Regimes*. <https://doi.org/10.5281/zenodo.7584943>.
 
 ## Acknowledgements
 
