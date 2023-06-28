@@ -1,4 +1,6 @@
 test_that("plots representative trajectories from RETRA-EDR", {
+  skip_on_cran()
+  # Empty test that returns Skip and Warning
   d <- as.matrix(EDR_data$EDR1$state_dissim)
   trajectories <- EDR_data$EDR1$abundance$traj
   states <- EDR_data$EDR1$abundance$state
@@ -11,6 +13,8 @@ test_that("plots representative trajectories from RETRA-EDR", {
 })
 
 test_that("plots a fraction of retra", {
+  skip_on_cran()
+  # Empty test that returns Skip and Warning
   d <- as.matrix(EDR_data$EDR1$state_dissim)
   trajectories <- EDR_data$EDR1$abundance$traj
   states <- EDR_data$EDR1$abundance$state
@@ -26,6 +30,8 @@ test_that("plots a fraction of retra", {
 })
 
 test_that("plots a segment", {
+  skip_on_cran()
+  # Empty test that returns Skip and Warning
   d <- as.matrix(EDR_data$EDR1$state_dissim)
   trajectories <- EDR_data$EDR1$abundance$traj
   states <- EDR_data$EDR1$abundance$state
@@ -41,6 +47,8 @@ test_that("plots a segment", {
 })
 
 test_that("plots a segment composed of states from two trajectories", {
+  skip_on_cran()
+  # Empty test that returns Skip and Warning
   d <- as.matrix(EDR_data$EDR1$state_dissim)
   trajectories <- EDR_data$EDR1$abundance$traj
   states <- EDR_data$EDR1$abundance$state
@@ -56,6 +64,8 @@ test_that("plots a segment composed of states from two trajectories", {
 })
 
 test_that("plots a sequence of states from different trajectories", {
+  skip_on_cran()
+  # Empty test that returns Skip and Warning
   d <- as.matrix(EDR_data$EDR1$state_dissim)
   trajectories <- EDR_data$EDR1$abundance$traj
   states <- EDR_data$EDR1$abundance$state
@@ -71,6 +81,8 @@ test_that("plots a sequence of states from different trajectories", {
 })
 
 test_that("plots states leading to circular trajectories", {
+  skip_on_cran()
+  # Empty test that returns Skip and Warning
   d <- as.matrix(EDR_data$EDR1$state_dissim)
   trajectories <- EDR_data$EDR1$abundance$traj
   states <- EDR_data$EDR1$abundance$state
