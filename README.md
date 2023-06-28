@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# `ecoregime` <img src="man/figures/easyclimate_logo_small.png" align="right" height="139"/></a>
+# `ecoregime` <img src="man/figures/logo.png" align="right" height="139"/></a>
 
 ## Analysis of Ecological Dynamic Regimes
 
