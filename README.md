@@ -6,6 +6,9 @@
 ## Analysis of Ecological Dynamic Regimes
 
 <!-- badges: start -->
+
+[![R-CMD-check](https://github.com/MSPinillos/ecoregime/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/MSPinillos/ecoregime/actions/workflows/R-CMD-check.yaml)
+
 <!-- badges: end -->
 
 `ecoregime` implements the EDR framework to characterize and compare
@@ -119,7 +122,8 @@ dist_edr(d = d, d.type = "dStates",
 To cite `ecoregime` in publications use:
 
 Sánchez-Pinillos M (2023). *ecoregime: Analysis of Ecological Dynamic
-Regimes*. R package version 0.1.0,
+Regimes*. <doi:10.5281/zenodo.7584943>
+<https://doi.org/10.5281/zenodo.7584943>, R package version 0.1.0,
 <https://github.com/MSPinillos/ecoregime>.
 
 ## Acknowledgements
