@@ -43,10 +43,10 @@
 #'
 #' @details
 #'
-#' \strong{Dynamic Dispersion (`dDis()`)}
+#' \strong{Dynamic dispersion (`dDis()`)}
 #'
 #' *dDis* is calculated as the average dissimilarity between each trajectory in an
-#' EDR and a target trajectory taken as reference (Sánchez-Pinillos et al.).
+#' EDR and a target trajectory taken as reference (Sánchez-Pinillos et al., 2023).
 #'
 #' \eqn{
 #' dDis = \frac{\sum_{i=1}^{m}d_{i\alpha}}{m}
@@ -65,7 +65,7 @@
 #' where \eqn{w_{i}} is the weight assigned to trajectory \eqn{i}.
 #'
 #'
-#' \strong{Dynamic Beta Diversity (`dBD()`)}
+#' \strong{Dynamic beta diversity (`dBD()`)}
 #'
 #' *dBD* quantifies the overall variation of the trajectories in an EDR and is
 #' equivalent to the average distance to the centroid of the EDR
@@ -75,10 +75,10 @@
 #' dBD = \frac{\sum_{i=1}^{m-1}\sum_{j=i+1}^{m}d_{ij}^{2}}{m(m-1)}
 #' }
 #'
-#' \strong{Dynamic Evenness (`dEve()`)}
+#' \strong{Dynamic evenness (`dEve()`)}
 #'
 #' *dEve* quantifies the regularity with which an EDR is filled by the individual
-#' trajectories (Sánchez-Pinillos et al.).
+#' trajectories (Sánchez-Pinillos et al., 2023).
 #'
 #' \eqn{
 #' dEve = \frac{\sum_{l=1}^{m-1}\min(\frac{d_{ij}}{\sum_{l=1}^{m-1}d_{ij}}, \frac{1}{m-1}) - \frac{1}{m-1}}{1-\frac{1}{1-1}}
@@ -102,15 +102,16 @@
 #' }
 #'
 #'
-#' @author Martina Sánchez-Pinillos, CNRS, Univ. Montpellier
+#' @author Martina Sánchez-Pinillos
 #'
 #' @references
 #' De Cáceres, M, Coll L, Legendre P, Allen RB, Wiser SK, Fortin MJ, Condit R &
 #' Hubbell S. (2019). Trajectory analysis in community ecology. Ecological
 #' Monographs.
 #'
-#' Sánchez-Pinillos, M., Kéfi, S., De Cáceres, M., Dakos, V. Ecological Dynamic
-#' Regimes: Identification, characterization, and comparison
+#' Sánchez-Pinillos, M., Kéfi, S., De Cáceres, M., Dakos, V. 2023. Ecological Dynamic
+#' Regimes: Identification, characterization, and comparison. *Ecological Monographs*
+#' <https://doi.org/10.1002/ecm.####>
 #'
 #' Villéger, S., Mason, N.W.H., Mouillot, D. (2008) New multidimensional functional
 #' diversity indices for a multifaced framework in functional ecology. Ecology.
