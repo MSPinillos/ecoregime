@@ -1,7 +1,7 @@
 #' Ecological Dynamic Regime data
 #'
 #' @description
-#' Example datasets to characterize and compare EDRs, including abundance data;
+#' Example datasets to characterize and compare EDRs, including abundance data,
 #' state, segment, and trajectory dissimilarity matrices for 90 artificial communities
 #' belonging to three different EDRs.
 #'
@@ -26,7 +26,7 @@
 #'
 #' @details
 #' Artificial data was generated following the procedure explained in Box 1 in
-#' Sánchez-Pinillos et al. In particular, the initial state of each community was
+#' Sánchez-Pinillos et al. (2023) In particular, the initial state of each community was
 #' defined using a hypothetical environmental space with optimal locations for
 #' 12 species ([coenocliner::coenocline()]). Community dynamics were simulated
 #' using a general Lotka-Volterra model ([primer::lvcompg()]).
@@ -34,6 +34,11 @@
 #' State dissimilarities were calculated through [vegan::vegdist()]. Segment and
 #' trajectory dissimilarities were calculated through [ecotraj::segmentDistances()]
 #' and [ecotraj::trajectoryDistances()], respectively
+#'
+#' @references
+#' Sánchez-Pinillos, M., Kéfi, S., De Cáceres, M., Dakos, V. 2023. Ecological Dynamic
+#' Regimes: Identification, characterization, and comparison. *Ecological Monographs*
+#' <https://doi.org/10.1002/ecm.####>
 #'
 #'
 "EDR_data"
