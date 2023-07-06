@@ -4,7 +4,8 @@ Version: 0.0.0.9000
 Authors@R: 
     person(given = "Martina", family = "Sánchez-Pinillos", 
            email = "martina.sanchez.pinillos@gmail.com", 
-           role = c("aut", "cre"), comment = c(ORCID = "0000-0002-1499-4507"))
+           role = c("aut", "cre", "cph"), 
+           comment = c(ORCID = "0000-0002-1499-4507"))
 Description: A toolbox for implementing the EDR framework (Sánchez-Pinillos et
     al. 2023) to characterize and compare groups of ecological trajectories in  
     multidimensional spaces defined by state variables. The package includes the 
