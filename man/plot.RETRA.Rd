@@ -51,7 +51,7 @@ segments forming representative trajectories. By default, the same color than
 \code{RT.colors} is used.}
 
 \item{link.lty}{The line type of the links between trajectory segments forming
-representative trajectories. Defaults 2 = dashed (See \link[graphics:par]{graphics::par}).}
+representative trajectories. Defaults 2 = "dashed" (See \link[graphics:par]{graphics::par}).}
 
 \item{axes}{An integer vector indicating the pair of axes in the ordination
 space to be plotted.}
@@ -66,15 +66,14 @@ calculated by applying metric multidimensional scaling (mMDS; Borg and Groenen,
 }
 \description{
 Plot representative trajectories of an Ecological Dynamic Regime (EDR) in the
-state space, distinguishing between the segments belonging to real trajectories
+state space distinguishing between the segments belonging to real trajectories
 of the EDR and the artificial links between segments.
 }
 \note{
-This function uses a modified version of the \code{\link[ecotraj:trajectoryplots]{ecotraj::trajectoryPlot()}} function
-in 'ecotraj' (v.0.0.3; De Cáceres et al. 2019). The modification was done the
-2022-12-08. It allows using the function \code{\link[shape:Arrows]{shape::Arrows()}} to plot ecological
-trajectories instead of \code{\link[graphics:arrows]{graphics::arrows()}} and setting the parameters of
-generic \code{\link[=plot]{plot()}}.
+This function uses a modified version of \code{\link[ecotraj:trajectoryplots]{ecotraj::trajectoryPlot()}} (v.0.0.3;
+De Cáceres et al. 2019). The modification was done the 2022-12-08. It allows
+using the function \code{\link[shape:Arrows]{shape::Arrows()}} to plot ecological trajectories instead
+of \code{\link[graphics:arrows]{graphics::arrows()}} and setting the parameters of generic \code{\link[=plot]{plot()}}.
 }
 \examples{
 # Example 1 -----------------------------------------------------------------
@@ -142,8 +141,9 @@ De Cáceres, M, Coll L, Legendre P, Allen RB, Wiser SK, Fortin MJ, Condit R &
 Hubbell S. (2019). Trajectory analysis in community ecology. Ecological
 Monographs.
 
-Sánchez-Pinillos, M., Kéfi, S., De Cáceres, M., Dakos, V. Ecological Dynamic
-Regimes: Identification, characterization, and comparison
+Sánchez-Pinillos, M., Kéfi, S., De Cáceres, M., Dakos, V. 2023. Ecological Dynamic
+Regimes: Identification, characterization, and comparison. \emph{Ecological Monographs}
+\url{https://doi.org/10.1002/ecm.####}
 }
 \seealso{
 \code{\link[=retra_edr]{retra_edr()}} for identifying representative trajectories in EDRs applying
@@ -155,5 +155,5 @@ segments or trajectory features.
 \code{\link[=summary]{summary()}} for summarizing representative trajectories in EDRs.
 }
 \author{
-Martina Sánchez-Pinillos, CNRS, Univ. Montpellier
+Martina Sánchez-Pinillos
 }

@@ -2,7 +2,7 @@
 #'
 #' @description
 #' Plot representative trajectories of an Ecological Dynamic Regime (EDR) in the
-#' state space, distinguishing between the segments belonging to real trajectories
+#' state space distinguishing between the segments belonging to real trajectories
 #' of the EDR and the artificial links between segments.
 #'
 #' @param x Object of class `RETRA`.
@@ -27,7 +27,7 @@
 #' segments forming representative trajectories. By default, the same color than
 #' `RT.colors` is used.
 #' @param link.lty The line type of the links between trajectory segments forming
-#' representative trajectories. Defaults 2 = dashed (See [graphics::par]).
+#' representative trajectories. Defaults 2 = "dashed" (See [graphics::par]).
 #' @param axes An integer vector indicating the pair of axes in the ordination
 #' space to be plotted.
 #' @param ... Arguments for generic [plot()].
@@ -38,7 +38,7 @@
 #' calculated by applying metric multidimensional scaling (mMDS; Borg and Groenen,
 #' 2005) to `d`.
 #'
-#' @author Martina Sánchez-Pinillos, CNRS, Univ. Montpellier
+#' @author Martina Sánchez-Pinillos
 #'
 #' @references
 #' Borg, I., & Groenen, P. J. F. (2005). Modern Multidimensional Scaling (2nd ed.).
@@ -48,16 +48,16 @@
 #' Hubbell S. (2019). Trajectory analysis in community ecology. Ecological
 #' Monographs.
 #'
-#' Sánchez-Pinillos, M., Kéfi, S., De Cáceres, M., Dakos, V. Ecological Dynamic
-#' Regimes: Identification, characterization, and comparison
+#' Sánchez-Pinillos, M., Kéfi, S., De Cáceres, M., Dakos, V. 2023. Ecological Dynamic
+#' Regimes: Identification, characterization, and comparison. *Ecological Monographs*
+#' <https://doi.org/10.1002/ecm.####>
 #'
 #'
 #' @note
-#' This function uses a modified version of the [ecotraj::trajectoryPlot()] function
-#' in 'ecotraj' (v.0.0.3; De Cáceres et al. 2019). The modification was done the
-#' 2022-12-08. It allows using the function [shape::Arrows()] to plot ecological
-#' trajectories instead of [graphics::arrows()] and setting the parameters of
-#' generic [plot()].
+#' This function uses a modified version of [ecotraj::trajectoryPlot()] (v.0.0.3;
+#' De Cáceres et al. 2019). The modification was done the 2022-12-08. It allows
+#' using the function [shape::Arrows()] to plot ecological trajectories instead
+#' of [graphics::arrows()] and setting the parameters of generic [plot()].
 #'
 #' @seealso
 #' [`retra_edr()`] for identifying representative trajectories in EDRs applying
