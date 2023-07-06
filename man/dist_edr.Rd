@@ -76,7 +76,7 @@ d_{DRmax}(R_1, R_2) = \max_{i=1}^{n} \{ d_{TR}(T_{1i}, R_2) \}
 where \eqn{R_1} and \eqn{R_2} are two EDRs composed of \eqn{n} and \eqn{m}
 ecological trajectories, respectively, and \eqn{d_{TR}(T_{1i}, R_2)} is the
 dissimilarity between the trajectory \eqn{T_{1i}} of \eqn{R_1} and the closest
-trajectory of \eqn{R_2} (Sánchez-Pinillos et al.):
+trajectory of \eqn{R_2}:
 
 \eqn{
 d_{TR}(T_{1i}, R_2) = \min\{d_T(T_{1i}, T_{21}), ... , d_T(T_{1i}, T_{2m})\}
