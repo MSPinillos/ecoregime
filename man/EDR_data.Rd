@@ -31,13 +31,13 @@ between every pair of community trajectories in \code{abundance} (see Details).
 EDR_data
 }
 \description{
-Example datasets to characterize and compare EDRs, including abundance data;
+Example datasets to characterize and compare EDRs, including abundance data,
 state, segment, and trajectory dissimilarity matrices for 90 artificial communities
 belonging to three different EDRs.
 }
 \details{
 Artificial data was generated following the procedure explained in Box 1 in
-Sánchez-Pinillos et al. In particular, the initial state of each community was
+Sánchez-Pinillos et al. (2023) In particular, the initial state of each community was
 defined using a hypothetical environmental space with optimal locations for
 12 species (\code{\link[coenocliner:coenocline]{coenocliner::coenocline()}}). Community dynamics were simulated
 using a general Lotka-Volterra model (\code{\link[primer:lvcompg]{primer::lvcompg()}}).
@@ -45,5 +45,10 @@ using a general Lotka-Volterra model (\code{\link[primer:lvcompg]{primer::lvcomp
 State dissimilarities were calculated through \code{\link[vegan:vegdist]{vegan::vegdist()}}. Segment and
 trajectory dissimilarities were calculated through \code{\link[ecotraj:trajectorymetrics]{ecotraj::segmentDistances()}}
 and \code{\link[ecotraj:trajectorymetrics]{ecotraj::trajectoryDistances()}}, respectively
+}
+\references{
+Sánchez-Pinillos, M., Kéfi, S., De Cáceres, M., Dakos, V. 2023. Ecological Dynamic
+Regimes: Identification, characterization, and comparison. \emph{Ecological Monographs}
+\url{https://doi.org/10.1002/ecm.####}
 }
 \keyword{datasets}

@@ -7,18 +7,19 @@
 define_retra(data, d = NULL, trajectories = NULL, states = NULL, retra = NULL)
 }
 \arguments{
-\item{data}{A data frame indicating identifiers for the new representative
-trajectories, the individual trajectories or sites to which the states belong,
-the order of the states in the individual trajectories, and the identifier of
-the representative trajectory to which the states belong (only if \code{!is.null(retra)}).
-Alternatively, 'data' can be a vector or a list of character vectors including
-the sequence of segments. See Details for further
-clarifications to define \code{data}.}
+\item{data}{A data frame of four columns indicating identifiers for the new
+representative trajectories, the individual trajectories or sites to which the
+states belong, the order of the states in the individual trajectories, and the
+identifier of the representative trajectory to which the states belong (only
+if \code{!is.null(retra)}). Alternatively, 'data' can be a vector or a list of
+character vectors including the sequence of segments forming the new
+representative trajectory. See Details for further clarifications to define
+\code{data}.}
 
 \item{d}{Either a symmetric matrix or an object of class \code{\link{dist}} containing the
 dissimilarities between each pair of states of all trajectories in the EDR.
-If \code{NULL} (default), the length (\code{Length}) of the representative trajectories and the
-distances between states of different trajectories or sites (\code{Link_distance})
+If \code{NULL} (default), the length (\code{Length}) of the new representative trajectories
+and the distances between states of different trajectories or sites (\code{Link_distance})
 are not calculated.}
 
 \item{trajectories}{Only needed if \code{!is.null(d)}. Vector indicating the
@@ -28,7 +29,8 @@ trajectory or site to which each state in \code{d} belongs.}
 order of the states in \code{d} for each trajectory.}
 
 \item{retra}{Object of class \code{RETRA} returned from \code{\link[=retra_edr]{retra_edr()}}. If \code{NULL}
-(default), \code{minSegs} and \code{Seg_density} are not provided.}
+(default), \code{minSegs} and \code{Seg_density} are not provided for the new representative
+trajectories.}
 }
 \value{
 An object of class \code{RETRA}, which is a list of length equal to the number of
@@ -71,8 +73,8 @@ states to define representative trajectories in Ecological Dynamic Regimes (EDR)
 \details{
 Each representative trajectory returned by the function \code{\link[=retra_edr]{retra_edr()}} corresponds
 to the longest sequence of representative segments that can be linked according
-to the criteria defined in the RETRA-EDR algorithm (Sánchez-Pinillos et al.).
-One could be interested in splitting the obtained trajectories, considering
+to the criteria defined in the RETRA-EDR algorithm (Sánchez-Pinillos et al.,
+2023). One could be interested in splitting the obtained trajectories, considering
 only a fraction of the returned trajectories, or defining representative
 trajectories following different criteria than those in RETRA-EDR.
 The function \code{define_retra()} allows generating an object of class \code{RETRA} that
@@ -89,9 +91,9 @@ states in all representative trajectories and the following columns:
 Each identifier needs to appear as many times as the number of states forming
 each representative trajectory.}
 \item{\code{RT_traj}}{A vector indicating the individual trajectories in the EDR to which
-each state of the representative trajectory belongs.}
+each state of the new representative trajectory belongs.}
 \item{\code{RT_states}}{A vector of integers indicating the identifier of the states
-forming the representative trajectories. Each integer must refer to the order
+forming the new representative trajectories. Each integer must refer to the order
 of the states in the individual trajectories of the EDR to which they belong.}
 \item{\code{RT_retra}}{Only if the new trajectories are defined from representative
 trajectories returned by \code{\link[=retra_edr]{retra_edr()}} (when \code{!is.null(retra)}). A vector of strings
@@ -99,13 +101,14 @@ indicating the representative trajectory in \code{retra} to which each state bel
 }
 \item Alternatively, \code{data} can be defined as either a \strong{vector} (if there is one
 representative trajectory) or a \strong{list of character vectors} (with as many
-elements as the number of representative trajectories) containing the sequence
-of segments of the representative trajectories. In any case, each segment needs
-to be specified in the form \code{traj[st1-st2]}, where \code{traj} is the identifier of
-the original trajectory to which the segment belongs and \code{st1} and \code{st2} are
-identifiers of the initial and final states defining the segment. If only one
-state of an individual trajectory is considered to form the representative
-trajectory, the corresponding segment needs to be defined as \code{traj[st-st]}.
+elements as the number of representative trajectories desired) containing the
+sequence of segments of the representative trajectories. In any case, each
+segment needs to be specified in the form \code{traj[st1-st2]}, where \code{traj} is the
+identifier of the original trajectory to which the segment belongs and \code{st1}
+and \code{st2} are identifiers of the initial and final states defining the segment.
+If only one state of an individual trajectory is considered to form the
+representative trajectory, the corresponding segment needs to be defined as
+\code{traj[st-st]}.
 }
 }
 \examples{
@@ -200,5 +203,5 @@ trajectories.
 representing the state space of the EDR.
 }
 \author{
-Martina Sánchez-Pinillos, CNRS, Univ. Montpellier
+Martina Sánchez-Pinillos
 }

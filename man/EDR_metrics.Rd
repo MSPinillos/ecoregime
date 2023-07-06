@@ -73,10 +73,10 @@ in Ecological Dynamic Regimes (EDR), including dynamic dispersion (dDis), dynami
 beta diversity (dBD), and dynamic evenness (dEve).
 }
 \details{
-\strong{Dynamic Dispersion (\code{dDis()})}
+\strong{Dynamic dispersion (\code{dDis()})}
 
 \emph{dDis} is calculated as the average dissimilarity between each trajectory in an
-EDR and a target trajectory taken as reference (Sánchez-Pinillos et al.).
+EDR and a target trajectory taken as reference (Sánchez-Pinillos et al., 2023).
 
 \eqn{
 dDis = \frac{\sum_{i=1}^{m}d_{i\alpha}}{m}
@@ -94,7 +94,7 @@ dDis = \frac{\sum_{i=1}^{m}w_{i}d_{i\alpha}}{\sum_{i=1}^{m}w_{i}}
 
 where \eqn{w_{i}} is the weight assigned to trajectory \eqn{i}.
 
-\strong{Dynamic Beta Diversity (\code{dBD()})}
+\strong{Dynamic beta diversity (\code{dBD()})}
 
 \emph{dBD} quantifies the overall variation of the trajectories in an EDR and is
 equivalent to the average distance to the centroid of the EDR
@@ -104,10 +104,10 @@ equivalent to the average distance to the centroid of the EDR
 dBD = \frac{\sum_{i=1}^{m-1}\sum_{j=i+1}^{m}d_{ij}^{2}}{m(m-1)}
 }
 
-\strong{Dynamic Evenness (\code{dEve()})}
+\strong{Dynamic evenness (\code{dEve()})}
 
 \emph{dEve} quantifies the regularity with which an EDR is filled by the individual
-trajectories (Sánchez-Pinillos et al.).
+trajectories (Sánchez-Pinillos et al., 2023).
 
 \eqn{
 dEve = \frac{\sum_{l=1}^{m-1}\min(\frac{d_{ij}}{\sum_{l=1}^{m-1}d_{ij}}, \frac{1}{m-1}) - \frac{1}{m-1}}{1-\frac{1}{1-1}}
@@ -163,12 +163,13 @@ De Cáceres, M, Coll L, Legendre P, Allen RB, Wiser SK, Fortin MJ, Condit R &
 Hubbell S. (2019). Trajectory analysis in community ecology. Ecological
 Monographs.
 
-Sánchez-Pinillos, M., Kéfi, S., De Cáceres, M., Dakos, V. Ecological Dynamic
-Regimes: Identification, characterization, and comparison
+Sánchez-Pinillos, M., Kéfi, S., De Cáceres, M., Dakos, V. 2023. Ecological Dynamic
+Regimes: Identification, characterization, and comparison. \emph{Ecological Monographs}
+\url{https://doi.org/10.1002/ecm.####}
 
 Villéger, S., Mason, N.W.H., Mouillot, D. (2008) New multidimensional functional
 diversity indices for a multifaced framework in functional ecology. Ecology.
 }
 \author{
-Martina Sánchez-Pinillos, CNRS, Univ. Montpellier
+Martina Sánchez-Pinillos
 }
