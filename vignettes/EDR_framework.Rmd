@@ -1,12 +1,11 @@
 ---
 title: "Ecological Dynamic Regime framework"
 author: "Martina Sánchez-Pinillos"
-date: "`r Sys.Date()`"
 output: 
   rmarkdown::html_vignette:
     toc: TRUE
 vignette: >
-  %\VignetteIndexEntry{The Ecological Dynamic Regime Framework}
+  %\VignetteIndexEntry{Ecological Dynamic Regime framework}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -36,9 +35,10 @@ The **EDR framework** is a set of algorithms and metrics aiming to characterize 
 
 This vignette aims to give you an overview of the EDR framework and its implementation in `ecoregime` to characterize and compare EDRs.
 
-You can install the current (development) version of `ecoregime` from my GitHub account:
+You can install `ecoregime` directly from CRAN or from my GitHub account (development version):
 
-```{r install }
+```{r install}
+# install.packages("ecoregime")
 # devtools::install_github(repo = "MSPinillos/ecoregime", dependencies = T, build_vignettes = T)
 ```
 
