@@ -6,6 +6,8 @@
 ## Analysis of Ecological Dynamic Regimes
 
 <!-- badges: start -->
+
+[![R-CMD-check](https://github.com/MSPinillos/ecoregime/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/MSPinillos/ecoregime/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 `ecoregime` implements the EDR framework to characterize and compare
