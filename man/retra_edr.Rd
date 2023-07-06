@@ -87,9 +87,9 @@ with \code{minSegs} segments or less.}
 }
 }
 \description{
-\code{retra_edr()} applies the algorithm RETRA-EDR (Sánchez-Pinillos et al.) to identify
-representative trajectories summarizing the main dynamical patterns of an Ecological
-Dynamic Regime (EDR).
+\code{retra_edr()} applies the algorithm RETRA-EDR (Sánchez-Pinillos et al., 2023)
+to identify representative trajectories summarizing the main dynamical patterns
+of an Ecological Dynamic Regime (EDR).
 }
 \details{
 The algorithm RETRA-EDR is based on a partition-and-group approach by which it
@@ -167,8 +167,9 @@ De Cáceres, M, Coll L, Legendre P, Allen RB, Wiser SK, Fortin MJ,
 Condit R & Hubbell S. (2019). Trajectory analysis in community ecology. Ecological
 Monographs.
 
-Sánchez-Pinillos, M., Kéfi, S., De Cáceres, M., Dakos, V. Ecological Dynamic
-Regimes: Identification, characterization, and comparison
+Sánchez-Pinillos, M., Kéfi, S., De Cáceres, M., Dakos, V. 2023. Ecological Dynamic
+Regimes: Identification, characterization, and comparison. \emph{Ecological Monographs}
+\url{https://doi.org/10.1002/ecm.####}
 }
 \seealso{
 \code{\link[=summary]{summary()}} for summarizing the characteristics of the representative
@@ -181,5 +182,5 @@ representing the state space of the EDR.
 segments or trajectory features.
 }
 \author{
-Martina Sánchez-Pinillos, CNRS, Univ. Montpellier
+Martina Sánchez-Pinillos
 }

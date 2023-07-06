@@ -1,9 +1,9 @@
 #' Representative trajectories in Ecological Dynamic Regimes (RETRA-EDR)
 #'
 #' @description
-#' `retra_edr()` applies the algorithm RETRA-EDR (Sánchez-Pinillos et al.) to identify
-#' representative trajectories summarizing the main dynamical patterns of an Ecological
-#' Dynamic Regime (EDR).
+#' `retra_edr()` applies the algorithm RETRA-EDR (Sánchez-Pinillos et al., 2023)
+#' to identify representative trajectories summarizing the main dynamical patterns
+#' of an Ecological Dynamic Regime (EDR).
 #'
 #' @param d Either a symmetric matrix or an object of class [`dist`] containing the
 #' dissimilarities between each pair of states of all trajectories in the EDR.
@@ -90,7 +90,7 @@
 #' with `minSegs` segments or less.}
 #' }
 #'
-#' @author Martina Sánchez-Pinillos, CNRS, Univ. Montpellier
+#' @author Martina Sánchez-Pinillos
 #'
 #' @references
 #' Borg, I., & Groenen, P. J. F. (2005). Modern Multidimensional Scaling (2nd ed.).
@@ -100,8 +100,9 @@
 #' Condit R & Hubbell S. (2019). Trajectory analysis in community ecology. Ecological
 #' Monographs.
 #'
-#' Sánchez-Pinillos, M., Kéfi, S., De Cáceres, M., Dakos, V. Ecological Dynamic
-#' Regimes: Identification, characterization, and comparison
+#' Sánchez-Pinillos, M., Kéfi, S., De Cáceres, M., Dakos, V. 2023. Ecological Dynamic
+#' Regimes: Identification, characterization, and comparison. *Ecological Monographs*
+#' <https://doi.org/10.1002/ecm.####>
 #'
 #'
 #' @seealso
