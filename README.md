@@ -22,7 +22,13 @@ class="uri">https://doi.org/10.1002/ecm.####</a>
 
 ## Installation
 
-You can install the development version of ecoregime with:
+You can install `ecoregime` via CRAN:
+
+``` r
+install.packages("ecoregime")
+```
+
+You can also install the development version of `ecoregime` with:
 
 ``` r
 # install.packages("devtools")

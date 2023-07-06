@@ -27,7 +27,13 @@ Sánchez-Pinillos, M., Kéfi, S., De Cáceres, M., Dakos, V. 2023. Ecological Dy
 
 ## Installation
 
-You can install the development version of ecoregime with:
+You can install `ecoregime` via CRAN:
+
+``` r
+install.packages("ecoregime")
+```
+
+You can also install the development version of `ecoregime` with:
 
 ``` r
 # install.packages("devtools")
