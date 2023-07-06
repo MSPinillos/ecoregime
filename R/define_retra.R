@@ -4,30 +4,32 @@
 #' Generate an object of class `RETRA` from a data frame containing trajectory
 #' states to define representative trajectories in Ecological Dynamic Regimes (EDR).
 #'
-#' @param data A data frame indicating identifiers for the new representative
-#' trajectories, the individual trajectories or sites to which the states belong,
-#' the order of the states in the individual trajectories, and the identifier of
-#' the representative trajectory to which the states belong (only if `!is.null(retra)`).
-#' Alternatively, 'data' can be a vector or a list of character vectors including
-#' the sequence of segments. See Details for further
-#' clarifications to define `data`.
+#' @param data A data frame of four columns indicating identifiers for the new
+#' representative trajectories, the individual trajectories or sites to which the
+#' states belong, the order of the states in the individual trajectories, and the
+#' identifier of the representative trajectory to which the states belong (only
+#' if `!is.null(retra)`). Alternatively, 'data' can be a vector or a list of
+#' character vectors including the sequence of segments forming the new
+#' representative trajectory. See Details for further clarifications to define
+#' `data`.
 #' @param d Either a symmetric matrix or an object of class [`dist`] containing the
 #' dissimilarities between each pair of states of all trajectories in the EDR.
-#' If `NULL` (default), the length (`Length`) of the representative trajectories and the
-#' distances between states of different trajectories or sites (`Link_distance`)
+#' If `NULL` (default), the length (`Length`) of the new representative trajectories
+#' and the distances between states of different trajectories or sites (`Link_distance`)
 #' are not calculated.
 #' @param trajectories Only needed if `!is.null(d)`. Vector indicating the
 #' trajectory or site to which each state in `d` belongs.
 #' @param states Only needed if `!is.null(d)`. Vector of integers indicating the
 #' order of the states in `d` for each trajectory.
 #' @param retra Object of class `RETRA` returned from [retra_edr()]. If `NULL`
-#' (default), `minSegs` and `Seg_density` are not provided.
+#' (default), `minSegs` and `Seg_density` are not provided for the new representative
+#' trajectories.
 #'
 #' @details
 #' Each representative trajectory returned by the function [retra_edr()] corresponds
 #' to the longest sequence of representative segments that can be linked according
-#' to the criteria defined in the RETRA-EDR algorithm (Sánchez-Pinillos et al.).
-#' One could be interested in splitting the obtained trajectories, considering
+#' to the criteria defined in the RETRA-EDR algorithm (Sánchez-Pinillos et al.,
+#' 2023). One could be interested in splitting the obtained trajectories, considering
 #' only a fraction of the returned trajectories, or defining representative
 #' trajectories following different criteria than those in RETRA-EDR.
 #' The function `define_retra()` allows generating an object of class `RETRA` that
@@ -44,9 +46,9 @@
 #' Each identifier needs to appear as many times as the number of states forming
 #' each representative trajectory.}
 #' \item{`RT_traj`}{A vector indicating the individual trajectories in the EDR to which
-#' each state of the representative trajectory belongs.}
+#' each state of the new representative trajectory belongs.}
 #' \item{`RT_states`}{A vector of integers indicating the identifier of the states
-#' forming the representative trajectories. Each integer must refer to the order
+#' forming the new representative trajectories. Each integer must refer to the order
 #' of the states in the individual trajectories of the EDR to which they belong.}
 #' \item{`RT_retra`}{Only if the new trajectories are defined from representative
 #' trajectories returned by [retra_edr()] (when `!is.null(retra)`). A vector of strings
@@ -55,13 +57,14 @@
 #'
 #' - Alternatively, `data` can be defined as either a **vector** (if there is one
 #' representative trajectory) or a **list of character vectors** (with as many
-#' elements as the number of representative trajectories) containing the sequence
-#' of segments of the representative trajectories. In any case, each segment needs
-#' to be specified in the form `traj[st1-st2]`, where `traj` is the identifier of
-#' the original trajectory to which the segment belongs and `st1` and `st2` are
-#' identifiers of the initial and final states defining the segment. If only one
-#' state of an individual trajectory is considered to form the representative
-#' trajectory, the corresponding segment needs to be defined as `traj[st-st]`.
+#' elements as the number of representative trajectories desired) containing the
+#' sequence of segments of the representative trajectories. In any case, each
+#' segment needs to be specified in the form `traj[st1-st2]`, where `traj` is the
+#' identifier of the original trajectory to which the segment belongs and `st1`
+#' and `st2` are identifiers of the initial and final states defining the segment.
+#' If only one state of an individual trajectory is considered to form the
+#' representative trajectory, the corresponding segment needs to be defined as
+#' `traj[st-st]`.
 #'
 #' @return
 #' An object of class `RETRA`, which is a list of length equal to the number of
@@ -97,7 +100,7 @@
 #' with `minSegs` segments or less. If `retra` is `NULL`, `Seg_density` = `NA`.}
 #' }
 #'
-#' @author Martina Sánchez-Pinillos, CNRS, Univ. Montpellier
+#' @author Martina Sánchez-Pinillos
 #'
 #' @seealso
 #' [retra_edr()] for identifying representative trajectories in EDRs through
