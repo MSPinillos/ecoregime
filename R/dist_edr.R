@@ -16,7 +16,7 @@
 #' @param states Only if `d.type` = `"dStates"`. Vector of integers indicating the
 #' order of the states in `d` for each trajectory.
 #' @param edr Vector indicating the EDR to which each trajectory/state in `d` belongs.
-#' @param metric A string indicating the dissimilarity index to be used: `"DDR"`
+#' @param metric A string indicating the dissimilarity index to be used: `"dDR"`
 #' (default), `"minDist"`, `"maxDist"`.
 #' @param symmetrize String naming the function to be called to symmetrize the
 #' resulting dissimilarity matrix (`"mean"`, `"min"`, `"max`, `"lower"`, `"upper"`).
@@ -28,54 +28,54 @@
 #' The implemented metrics are:
 #'
 #' \describe{
-#' \item{`"DDR"`}{
+#' \item{`"dDR"`}{
 #' \eqn{
-#' D_{DR}(R_1, R_2) = \frac{1}{n} \sum_{i=1}^{n} D_{TR}(T_{1i}, R_2)
+#' d_{DR}(R_1, R_2) = \frac{1}{n} \sum_{i=1}^{n} d_{TR}(T_{1i}, R_2)
 #' }
 #' }
 #'
 #' \item{`"minDist"`}{
 #' \eqn{
-#' D_{DRmin}(R_1, R_2) = \min_{i=1}^{n} \{ D_{TR}(T_{1i}, R_2) \}
+#' d_{DRmin}(R_1, R_2) = \min_{i=1}^{n} \{ d_{TR}(T_{1i}, R_2) \}
 #' }
 #' }
 #'
 #' \item{`"maxDist"`}{
 #' \eqn{
-#' D_{DRmax}(R_1, R_2) = \max_{i=1}^{n} \{ D_{TR}(T_{1i}, R_2) \}
+#' d_{DRmax}(R_1, R_2) = \max_{i=1}^{n} \{ d_{TR}(T_{1i}, R_2) \}
 #' }
 #' }
 #' }
 #'
 #' where \eqn{R_1} and \eqn{R_2} are two EDRs composed of \eqn{n} and \eqn{m}
-#' ecological trajectories, respectively, and \eqn{D_{TR}(T_{1i}, R_2)} is the
+#' ecological trajectories, respectively, and \eqn{d_{TR}(T_{1i}, R_2)} is the
 #' dissimilarity between the trajectory \eqn{T_{1i}} of \eqn{R_1} and the closest
-#' trajectory of \eqn{R_2} (Sánchez-Pinillos et al.):
+#' trajectory of \eqn{R_2}:
 #'
 #' \eqn{
-#' D_{TR}(T_{1i}, R_2) = \min\{D_T(T_{1i}, T_{21}), ... , D_T(T_{1i}, T_{2m})\}
+#' d_{TR}(T_{1i}, R_2) = \min\{d_T(T_{1i}, T_{21}), ... , d_T(T_{1i}, T_{2m})\}
 #' }
 #'
-#' The metrics calculated are not necessarily symmetric. That is, \eqn{D_{DR}(R_1, R_2)}
-#' is not necessarily equal to \eqn{D_{DR}(R_2, R_1)}. It is possible to symmetrize
+#' The metrics calculated are not necessarily symmetric. That is, \eqn{d_{DR}(R_1, R_2)}
+#' is not necessarily equal to \eqn{d_{DR}(R_2, R_1)}. It is possible to symmetrize
 #' the returned matrix by indicating the name of the function to be used in `symmetrize`:
 #'
 #' \describe{
 #' \item{`"mean"`}{
 #' \eqn{
-#' D_{DRsym} = \frac{D_{DR}(R_1, R_2) + D_{DR}(R_2, R_1)}{2}
+#' d_{DRsym} = \frac{d_{DR}(R_1, R_2) + d_{DR}(R_2, R_1)}{2}
 #' }
 #' }
 #'
 #' \item{`"min"`}{
 #' \eqn{
-#' D_{DRsym} = \min\{D_{DR}(R_1, R_2), D_{DR}(R_2, R_1)\}
+#' d_{DRsym} = \min\{d_{DR}(R_1, R_2), d_{DR}(R_2, R_1)\}
 #' }
 #' }
 #'
 #' \item{`"max"`}{
 #' \eqn{
-#' D_{DRsym} = \max\{D_{DR}(R_1, R_2), D_{DR}(R_2, R_1)\}
+#' d_{DRsym} = \max\{d_{DR}(R_1, R_2), d_{DR}(R_2, R_1)\}
 #' }
 #' }
 #'
@@ -92,11 +92,12 @@
 #' @return
 #' Matrix including the dissimilarities between every pair of EDRs.
 #'
-#' @author Martina Sánchez-Pinillos, CNRS, Univ. Montpellier
+#' @author Martina Sánchez-Pinillos
 #'
 #' @references
-#' Sánchez-Pinillos, M., Kéfi, S., De Cáceres, M., Dakos, V. Ecological Dynamic
-#' Regimes: Identification, characterization, and comparison
+#' Sánchez-Pinillos, M., Kéfi, S., De Cáceres, M., Dakos, V. 2023. Ecological Dynamic
+#' Regimes: Identification, characterization, and comparison. *Ecological Monographs*
+#' <https://doi.org/10.1002/ecm.####>
 #'
 #'
 #' @export
@@ -142,25 +143,25 @@
 #' # 1.1) without symmetrizing the matrix and using state dissimilarities
 #' dEDR <- dist_edr(d = dStates, d.type = "dStates",
 #'                  trajectories = id_traj, states = id_state, edr = id_edr,
-#'                  metric = "DDR", symmetrize = NULL)
+#'                  metric = "dDR", symmetrize = NULL)
 #'
 #' # 1.2) without symmetrizing the matrix and using trajectory dissimilarities
 #' dEDR <- dist_edr(d = dTraj, d.type = "dTraj", edr = id_edr_traj,
-#'                  metric = "DDR", symmetrize = NULL)
+#'                  metric = "dDR", symmetrize = NULL)
 #'
 #' # 2) symmetrizing by averaging elements on and below the diagonal
 #' dEDR <- dist_edr(d = dTraj, d.type = "dTraj", edr = id_edr_traj,
-#'                  metric = "DDR", symmetrize = "mean")
+#'                  metric = "dDR", symmetrize = "mean")
 #' # 3) symmetrizing by using the minimum dissimilarity between two EDRs
 #' dEDR <- dist_edr(d = dTraj, d.type = "dTraj", edr = id_edr_traj,
-#'                  metric = "DDR", symmetrize = "min")
+#'                  metric = "dDR", symmetrize = "min")
 #' # 4) symmetrizing by using the lower triangular part of the asymmetric matrix
 #' dEDR <- dist_edr(d = dTraj, d.type = "dTraj", edr = id_edr_traj,
-#'                  metric = "DDR", symmetrize = "lower")
+#'                  metric = "dDR", symmetrize = "lower")
 #'
-dist_edr <- function(d, d.type, trajectories = NULL, states = NULL, edr, metric = "DDR", symmetrize = NULL, ...){
+dist_edr <- function(d, d.type, trajectories = NULL, states = NULL, edr, metric = "dDR", symmetrize = NULL, ...){
 
-  metric <- match.arg(metric, c("DDR", "minDist", "maxDist"))
+  metric <- match.arg(metric, c("dDR", "minDist", "maxDist"))
   if (!is.null(symmetrize)) {
     symmetrize <- match.arg(symmetrize, c("mean", "min", "max", "lower", "upper"))
   }
@@ -230,8 +231,8 @@ dist_edr <- function(d, d.type, trajectories = NULL, states = NULL, edr, metric 
         T2 <- (sum(Ntraj_edr[1:iR2]) - Ntraj_edr[iR2] + 1):sum(Ntraj_edr[1:iR2])  # indices of all T21,..., T2m in dTraj
         minD_T1R2 <- c(minD_T1R2, min(dTrajmat[iT1, T2]))            # min{DSDSP(T1i, T21), ..., DSDSP(T1i, T2m)}
       }
-      if(metric == "DDR"){
-        dReg[iR1, iR2] <- sum(minD_T1R2)/(Ntraj_edr[iR1])           # DDR(R1, R2)
+      if(metric == "dDR"){
+        dReg[iR1, iR2] <- sum(minD_T1R2)/(Ntraj_edr[iR1])           # dDR(R1, R2)
       }
       if(metric == "minDist"){
         dReg[iR1, iR2] <- min(minD_T1R2)
@@ -242,7 +243,7 @@ dist_edr <- function(d, d.type, trajectories = NULL, states = NULL, edr, metric 
     }
   }
 
-  # Symmetrize DDR if required
+  # Symmetrize dDR if required
   if (!is.null(symmetrize)) {
     if (symmetrize == "mean") {
       for (iR1 in seq_along(ID_edr)) {

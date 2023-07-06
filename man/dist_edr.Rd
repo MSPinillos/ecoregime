@@ -10,7 +10,7 @@ dist_edr(
   trajectories = NULL,
   states = NULL,
   edr,
-  metric = "DDR",
+  metric = "dDR",
   symmetrize = NULL,
   ...
 )
@@ -31,7 +31,7 @@ order of the states in \code{d} for each trajectory.}
 
 \item{edr}{Vector indicating the EDR to which each trajectory/state in \code{d} belongs.}
 
-\item{metric}{A string indicating the dissimilarity index to be used: \code{"DDR"}
+\item{metric}{A string indicating the dissimilarity index to be used: \code{"dDR"}
 (default), \code{"minDist"}, \code{"maxDist"}.}
 
 \item{symmetrize}{String naming the function to be called to symmetrize the
@@ -54,54 +54,54 @@ two EDRs.
 The implemented metrics are:
 
 \describe{
-\item{\code{"DDR"}}{
+\item{\code{"dDR"}}{
 \eqn{
-D_{DR}(R_1, R_2) = \frac{1}{n} \sum_{i=1}^{n} D_{TR}(T_{1i}, R_2)
+d_{DR}(R_1, R_2) = \frac{1}{n} \sum_{i=1}^{n} d_{TR}(T_{1i}, R_2)
 }
 }
 
 \item{\code{"minDist"}}{
 \eqn{
-D_{DRmin}(R_1, R_2) = \min_{i=1}^{n} \{ D_{TR}(T_{1i}, R_2) \}
+d_{DRmin}(R_1, R_2) = \min_{i=1}^{n} \{ d_{TR}(T_{1i}, R_2) \}
 }
 }
 
 \item{\code{"maxDist"}}{
 \eqn{
-D_{DRmax}(R_1, R_2) = \max_{i=1}^{n} \{ D_{TR}(T_{1i}, R_2) \}
+d_{DRmax}(R_1, R_2) = \max_{i=1}^{n} \{ d_{TR}(T_{1i}, R_2) \}
 }
 }
 }
 
 where \eqn{R_1} and \eqn{R_2} are two EDRs composed of \eqn{n} and \eqn{m}
-ecological trajectories, respectively, and \eqn{D_{TR}(T_{1i}, R_2)} is the
+ecological trajectories, respectively, and \eqn{d_{TR}(T_{1i}, R_2)} is the
 dissimilarity between the trajectory \eqn{T_{1i}} of \eqn{R_1} and the closest
 trajectory of \eqn{R_2} (Sánchez-Pinillos et al.):
 
 \eqn{
-D_{TR}(T_{1i}, R_2) = \min\{D_T(T_{1i}, T_{21}), ... , D_T(T_{1i}, T_{2m})\}
+d_{TR}(T_{1i}, R_2) = \min\{d_T(T_{1i}, T_{21}), ... , d_T(T_{1i}, T_{2m})\}
 }
 
-The metrics calculated are not necessarily symmetric. That is, \eqn{D_{DR}(R_1, R_2)}
-is not necessarily equal to \eqn{D_{DR}(R_2, R_1)}. It is possible to symmetrize
+The metrics calculated are not necessarily symmetric. That is, \eqn{d_{DR}(R_1, R_2)}
+is not necessarily equal to \eqn{d_{DR}(R_2, R_1)}. It is possible to symmetrize
 the returned matrix by indicating the name of the function to be used in \code{symmetrize}:
 
 \describe{
 \item{\code{"mean"}}{
 \eqn{
-D_{DRsym} = \frac{D_{DR}(R_1, R_2) + D_{DR}(R_2, R_1)}{2}
+d_{DRsym} = \frac{d_{DR}(R_1, R_2) + d_{DR}(R_2, R_1)}{2}
 }
 }
 
 \item{\code{"min"}}{
 \eqn{
-D_{DRsym} = \min\{D_{DR}(R_1, R_2), D_{DR}(R_2, R_1)\}
+d_{DRsym} = \min\{d_{DR}(R_1, R_2), d_{DR}(R_2, R_1)\}
 }
 }
 
 \item{\code{"max"}}{
 \eqn{
-D_{DRsym} = \max\{D_{DR}(R_1, R_2), D_{DR}(R_2, R_1)\}
+d_{DRsym} = \max\{d_{DR}(R_1, R_2), d_{DR}(R_2, R_1)\}
 }
 }
 
@@ -156,27 +156,28 @@ id_edr_traj <- vapply(strsplit(labels(dTraj), "_"), function(x){
 # 1.1) without symmetrizing the matrix and using state dissimilarities
 dEDR <- dist_edr(d = dStates, d.type = "dStates",
                  trajectories = id_traj, states = id_state, edr = id_edr,
-                 metric = "DDR", symmetrize = NULL)
+                 metric = "dDR", symmetrize = NULL)
 
 # 1.2) without symmetrizing the matrix and using trajectory dissimilarities
 dEDR <- dist_edr(d = dTraj, d.type = "dTraj", edr = id_edr_traj,
-                 metric = "DDR", symmetrize = NULL)
+                 metric = "dDR", symmetrize = NULL)
 
 # 2) symmetrizing by averaging elements on and below the diagonal
 dEDR <- dist_edr(d = dTraj, d.type = "dTraj", edr = id_edr_traj,
-                 metric = "DDR", symmetrize = "mean")
+                 metric = "dDR", symmetrize = "mean")
 # 3) symmetrizing by using the minimum dissimilarity between two EDRs
 dEDR <- dist_edr(d = dTraj, d.type = "dTraj", edr = id_edr_traj,
-                 metric = "DDR", symmetrize = "min")
+                 metric = "dDR", symmetrize = "min")
 # 4) symmetrizing by using the lower triangular part of the asymmetric matrix
 dEDR <- dist_edr(d = dTraj, d.type = "dTraj", edr = id_edr_traj,
-                 metric = "DDR", symmetrize = "lower")
+                 metric = "dDR", symmetrize = "lower")
 
 }
 \references{
-Sánchez-Pinillos, M., Kéfi, S., De Cáceres, M., Dakos, V. Ecological Dynamic
-Regimes: Identification, characterization, and comparison
+Sánchez-Pinillos, M., Kéfi, S., De Cáceres, M., Dakos, V. 2023. Ecological Dynamic
+Regimes: Identification, characterization, and comparison. \emph{Ecological Monographs}
+\url{https://doi.org/10.1002/ecm.####}
 }
 \author{
-Martina Sánchez-Pinillos, CNRS, Univ. Montpellier
+Martina Sánchez-Pinillos
 }

@@ -10,7 +10,7 @@ test_that("dissimilarity of an EDR to itself is zero", {
   dTraj <- ecotraj::trajectoryDistances(d = dStates,
                                         sites = trajectories,
                                         surveys = states)
-  metrics <- c("DDR", "minDist", "maxDist")
+  metrics <- c("dDR", "minDist", "maxDist")
 
   dEDR_traj <- lapply(setNames(metrics, metrics), function(imetric){
     dist_edr(d = as.matrix(dTraj), d.type = "dTraj",
@@ -28,7 +28,7 @@ test_that("dissimilarity of an EDR to itself is zero", {
 
   expect_equal(dEDR_traj, dEDR_states)
 
-  expect_equal(unique(diag(dEDR_traj[["DDR"]])), 0)
+  expect_equal(unique(diag(dEDR_traj[["dDR"]])), 0)
   expect_equal(unique(diag(dEDR_traj[["minDist"]])), 0)
   expect_equal(unique(diag(dEDR_traj[["maxDist"]])), 0)
 
@@ -48,7 +48,7 @@ test_that("symmetrize argument works", {
 
   dEDR_asym <- dist_edr(d = as.matrix(dTraj), d.type = "dTraj",
                         edr = c(rep(1:3, each = 30), rep(4, 15)),
-                        metric = "DDR",
+                        metric = "dDR",
                         symmetrize = NULL)
   dEDR_asym_low <- dEDR_asym[lower.tri(dEDR_asym)]
   dEDR_asym_upp <- t(dEDR_asym)[lower.tri(dEDR_asym)]
@@ -57,7 +57,7 @@ test_that("symmetrize argument works", {
   dEDR <- lapply(setNames(symmetrization, symmetrization), function(isym){
     dist_edr(d = as.matrix(dTraj), d.type = "dTraj",
              edr = c(rep(1:3, each = 30), rep(4, 15)),
-             metric = "DDR",
+             metric = "dDR",
              symmetrize = isym)
   })
 
@@ -66,14 +66,14 @@ test_that("symmetrize argument works", {
                            trajectories = paste0(abun$EDR, "_", abun$traj),
                            states = abun$state,
                            edr = c(rep(1:3, each = 150), rep(4, 15*5)),
-                           metric = "DDR",
+                           metric = "dDR",
                            symmetrize = NULL)
   dEDR_st <- lapply(setNames(symmetrization, symmetrization), function(isym){
     dist_edr(d = as.matrix(dStates), d.type = "dStates",
              trajectories = paste0(abun$EDR, "_", abun$traj),
              states = abun$state,
              edr = c(rep(1:3, each = 150), rep(4, 15*5)),
-             metric = "DDR",
+             metric = "dDR",
              symmetrize = isym)
   })
   expect_equal(dEDR_asym_st, dEDR_asym)
@@ -111,7 +111,7 @@ test_that("symmetrize argument works", {
 
 })
 
-test_that("the properties of DDR are fit", {
+test_that("the properties of dDR are fit", {
   EDR2_bis <- EDR_data$EDR2$abundance
   EDR2_bis$EDR <- 4
   EDR3_sbst <- EDR_data$EDR3$abundance[traj %in% 1:15]
@@ -127,13 +127,13 @@ test_that("the properties of DDR are fit", {
                                         surveys = abun$state)
   dEDR <- dist_edr(d = as.matrix(dTraj), d.type = "dTraj",
                    edr = c(rep(1:4, each = 30), rep(5, 15)),
-                   metric = "DDR",
+                   metric = "dDR",
                    symmetrize = NULL)
   dEDR_st <- dist_edr(d = as.matrix(dStates), d.type = "dStates",
                       trajectories = paste0(abun$EDR, "_", abun$traj),
                       states = abun$state,
                       edr = c(rep(1:4, each = 150), rep(5, 15*5)),
-                      metric = "DDR",
+                      metric = "dDR",
                       symmetrize = NULL)
   expect_equal(dEDR, dEDR_st)
 

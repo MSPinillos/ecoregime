@@ -762,7 +762,7 @@ Let's see how this is reflected in a dissimilarity matrix generated with `dist_e
 # Compute the dissimilarities between EDRs
 EDR_dissim <- dist_edr(d = traj_dissim_allEDR, d.type = "dTraj",
                        edr = rep(c("EDR1", "EDR2", "EDR3"), each = 10), 
-                       metric = "DDR")
+                       metric = "dDR")
 round(EDR_dissim, 2)
 
 ```
