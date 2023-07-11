@@ -97,3 +97,20 @@ test_that("plots states leading to circular trajectories", {
 
 })
 
+test_that("plot trajectories with different colors", {
+  skip_on_cran()
+  # Empty test that returns Skip and Warning
+  d <- as.matrix(EDR_data$EDR1$state_dissim)
+  trajectories <- EDR_data$EDR1$abundance$traj
+  states <- EDR_data$EDR1$abundance$state
+
+  retra <- retra_edr(d = d, trajectories = trajectories,
+                     states = states, minSegs = 5)
+
+  plot(retra, d = d, trajectories = trajectories, states = states,
+       traj.colors = 1:length(unique(trajectories)))
+})
+
+
+
+
