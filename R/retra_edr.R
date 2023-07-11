@@ -117,7 +117,7 @@
 #'
 #' @export
 #'
-#' @examples
+#' @examplesIf rlang::is.installed("vegan")
 #' # Example 1 -----------------------------------------------------------------
 #' # Identify representative trajectories from state dissimilarities
 #'
@@ -137,7 +137,7 @@
 #' # Identify representative trajectories from segment dissimilarities
 #'
 #' # Calculate segment dissimilarities using the Hausdorff distance
-#' dSegs <- ecotraj:: segmentDistances(d = d, sites = trajectories,
+#' dSegs <- ecotraj::segmentDistances(d = d, sites = trajectories,
 #'                                     surveys = states,
 #'                                     distance.type = "Hausdorff")
 #' dSegs <- dSegs$Dseg
