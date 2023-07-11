@@ -102,7 +102,6 @@
 #'
 #' @export
 #'
-#' @examplesIf rlang::is.installed("vegan")
 #' # Load species abundances and compile in a data frame
 #' abun1 <- EDR_data$EDR1$abundance
 #' abun2 <- EDR_data$EDR2$abundance

@@ -117,7 +117,7 @@
 #'
 #' @export
 #'
-#' @examplesIf rlang::is.installed("vegan")
+#' @examples
 #' # Example 1 -----------------------------------------------------------------
 #' # Identify representative trajectories from state dissimilarities
 #'
