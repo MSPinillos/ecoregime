@@ -1,3 +1,3 @@
-# ecoregime 0.1.0
+# ecoregime 0.1.1
 
 * Initial CRAN submission.
