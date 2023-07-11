@@ -6,14 +6,15 @@ Authors@R:
            email = "martina.sanchez.pinillos@gmail.com", 
            role = c("aut", "cre", "cph"), 
            comment = c(ORCID = "0000-0002-1499-4507"))
-Description: A toolbox for implementing the EDR framework (Sánchez-Pinillos et
-    al. 2023) to characterize and compare groups of ecological trajectories in  
-    multidimensional spaces defined by state variables. The package includes the 
-    RETRA-EDR algorithm to identify representative trajectories, functions to 
-    generate, summarize, and visualize representative trajectories, and several 
-    metrics to quantify the distribution and heterogeneity of trajectories in an 
-    ecological dynamic regime and quantify the dissimilarity between two or 
-    more ecological dynamic regimes.
+Description: A toolbox for implementing the Ecological Dynamic Regime framework 
+    (Sánchez-Pinillos et al., 2023 <https://doi.org/10.1002/ecm.####>) to 
+    characterize and compare groups of ecological trajectories in multidimensional 
+    spaces defined by state variables. The package includes the RETRA-EDR algorithm 
+    to identify representative trajectories, functions to generate, summarize, 
+    and visualize representative trajectories, and several metrics to quantify 
+    the distribution and heterogeneity of trajectories in an ecological dynamic 
+    regime and quantify the dissimilarity between two or more ecological dynamic 
+    regimes.
 License: GPL (>= 3)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
