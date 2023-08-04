@@ -132,8 +132,8 @@ Borg, I., & Groenen, P. J. F. (2005). Modern Multidimensional Scaling (2nd ed.).
 Springer.
 
 Sánchez-Pinillos, M., Kéfi, S., De Cáceres, M., Dakos, V. 2023. Ecological Dynamic
-Regimes: Identification, characterization, and comparison. \emph{Ecological Monographs}
-\url{https://doi.org/10.1002/ecm.####}
+Regimes: Identification, characterization, and comparison. \emph{Ecological Monographs}.
+\url{https://doi.org/10.1002/ecm.1589}
 }
 \seealso{
 \code{\link[=retra_edr]{retra_edr()}} for identifying representative trajectories in EDRs applying

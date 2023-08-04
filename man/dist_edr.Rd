@@ -175,8 +175,8 @@ dEDR <- dist_edr(d = dTraj, d.type = "dTraj", edr = id_edr_traj,
 }
 \references{
 Sánchez-Pinillos, M., Kéfi, S., De Cáceres, M., Dakos, V. 2023. Ecological Dynamic
-Regimes: Identification, characterization, and comparison. \emph{Ecological Monographs}
-\url{https://doi.org/10.1002/ecm.####}
+Regimes: Identification, characterization, and comparison. \emph{Ecological Monographs}.
+\url{https://doi.org/10.1002/ecm.1589}
 }
 \author{
 Martina Sánchez-Pinillos

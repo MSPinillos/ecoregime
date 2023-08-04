@@ -101,8 +101,8 @@
 #' Monographs.
 #'
 #' Sánchez-Pinillos, M., Kéfi, S., De Cáceres, M., Dakos, V. 2023. Ecological Dynamic
-#' Regimes: Identification, characterization, and comparison. *Ecological Monographs*
-#' <https://doi.org/10.1002/ecm.####>
+#' Regimes: Identification, characterization, and comparison. *Ecological Monographs*.
+#' <https://doi.org/10.1002/ecm.1589>
 #'
 #'
 #' @seealso

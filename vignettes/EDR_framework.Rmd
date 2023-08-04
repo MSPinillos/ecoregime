@@ -29,7 +29,7 @@ EDRs are composed of multiple ecological trajectories showing similar processes 
 
 The **EDR framework** is a set of algorithms and metrics aiming to characterize and compare EDRs composed of ecological trajectories in multidimensional state spaces. You can find more information in the following publication, including the formal definition of the EDR concept, the methodological details of the framework, and some illustrative examples with artificial and real data sets:
 
-- Sánchez-Pinillos M., Kéfi, S., De Cáceres, M., Dakos, V. 2023. Ecological Dynamic Regimes: Identification, characterization, and comparison. *Ecological Monographs*
+- Sánchez-Pinillos M., Kéfi, S., De Cáceres, M., Dakos, V. 2023. Ecological Dynamic Regimes: Identification, characterization, and comparison. *Ecological Monographs*. https://doi.org/10.1002/ecm.1589
 
 ### 1.2. About this vignette
 

@@ -23,7 +23,7 @@ knitr::opts_chunk$set(
 
 `ecoregime` implements the EDR framework to characterize and compare groups of ecological trajectories in multidimensional spaces defined by ecosystem state variables. The EDR framework was introduced in:
 
-Sánchez-Pinillos, M., Kéfi, S., De Cáceres, M., Dakos, V. 2023. Ecological Dynamic Regimes: Identification, characterization, and comparison. *Ecological Monographs* <https://doi.org/10.1002/ecm.####>
+Sánchez-Pinillos, M., Kéfi, S., De Cáceres, M., Dakos, V. 2023. Ecological Dynamic Regimes: Identification, characterization, and comparison. *Ecological Monographs*. <https://doi.org/10.1002/ecm.1589>
 
 ## Installation
 
@@ -111,8 +111,8 @@ d <- vegan::vegdist(abun[, -c(1:3)])
 
 # Compute dissimilarities between EDRs:
 dist_edr(d = d, d.type = "dStates",
-                 trajectories = abun$traj, states = abun$state, edr = abun$EDR,
-                 metric = "DDR", symmetrize = NULL)
+         trajectories = abun$traj, states = abun$state, edr = abun$EDR,
+         metric = "dDR", symmetrize = NULL)
 
 ```
 

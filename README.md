@@ -16,9 +16,7 @@ ecosystem state variables. The EDR framework was introduced in:
 
 Sánchez-Pinillos, M., Kéfi, S., De Cáceres, M., Dakos, V. 2023.
 Ecological Dynamic Regimes: Identification, characterization, and
-comparison. *Ecological Monographs*
-<a href="https://doi.org/10.1002/ecm.####"
-class="uri">https://doi.org/10.1002/ecm.####</a>
+comparison. *Ecological Monographs*. <https://doi.org/10.1002/ecm.1589>
 
 ## Installation
 
@@ -116,8 +114,8 @@ d <- vegan::vegdist(abun[, -c(1:3)])
 
 # Compute dissimilarities between EDRs:
 dist_edr(d = d, d.type = "dStates",
-                 trajectories = abun$traj, states = abun$state, edr = abun$EDR,
-                 metric = "DDR", symmetrize = NULL)
+         trajectories = abun$traj, states = abun$state, edr = abun$EDR,
+         metric = "dDR", symmetrize = NULL)
 #>           1         2         3
 #> 1 0.0000000 0.5895458 0.3458250
 #> 2 0.5700499 0.0000000 0.4907364
@@ -130,8 +128,7 @@ To cite `ecoregime` in publications use:
 
 Sánchez-Pinillos M, Kéfi S, De Cáceres M, Dakos V (2023). “Ecological
 dynamic regimes: Identification, characterization, and comparison.”
-*Ecological Monographs*. <a href="https://doi.org/10.1002/ecm.####"
-class="uri">https://doi.org/10.1002/ecm.####</a>.
+*Ecological Monographs*. <https://doi.org/10.1002/ecm.1589>.
 
 Sánchez-Pinillos M (2023). *ecoregime: Analysis of Ecological Dynamic
 Regimes*. <https://doi.org/10.5281/zenodo.7584943>.
