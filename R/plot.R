@@ -178,11 +178,11 @@ plot.RETRA <- function (x, d, trajectories, states, select_RT = NULL,
 
   # Coordinates MDS
   if (inherits(d, "dist") || isSymmetric(as.matrix(d))) {
-    warning(cat("Representative trajectories will be displayed in an ordination space generated through multidimensional scaling (MDS). You can avoid this step by providing state coordinates in the 'd' argument.", "\n"))
+    # warning(cat("Representative trajectories will be displayed in an ordination space generated through multidimensional scaling (MDS).", "\n"))
     statesMDS <- data.frame(smacof::mds(delta = d, ndim = ncol(d)-1,
                                         itmax = 300, verbose = F)$conf)
   } else {
-    warning(cat("Representative trajectories will be displayed considering the coordinates provided in 'd'."))
+    # warning(cat("Representative trajectories will be displayed considering the coordinates provided in 'd'."))
     statesMDS <- data.frame(d)
   }
   statesMDS$ID <- paste0(trajectories, "_", states)
@@ -249,7 +249,7 @@ plot.RETRA <- function (x, d, trajectories, states, select_RT = NULL,
       traj.colors = rep(traj.colors, length(unique(trajectories)))
     }
     if (length(traj.colors) < length(unique(trajectories))) {
-      warning("'traj.colors' has a shorter length than the number of trajectories and only the first element will be used.")
+      warning("'traj.colors' has a shorter length than the number of trajectories. Only the first element will be used.")
       traj.colors = rep(traj.colors[1], length(unique(trajectories)))
     }
   }
