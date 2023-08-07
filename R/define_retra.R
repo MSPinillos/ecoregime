@@ -132,17 +132,17 @@
 #' selected_segs <- old_retra$T2$Segments[4:length(old_retra$T2$Segments)]
 #'
 #' # Identify the individual trajectories for each state...
-#' selected_segs   # each value represents traj[st1-st2]
-#' selected_traj <- rep(c(15, 4, 4, 1, 14), each = 2) # This is "traj" in traj[st1-st2]
+#' selected_segs
+#' selected_traj <- rep(c(15, 4, 4, 1, 14), each = 2)
 #'
 #' # ...and the states (in the same order as the representative trajectory).
-#' selected_states <- c(1, 2, 2, 3, 3, 4, 1, 2, 2, 3) # This is "st1, st2" in traj[st1-st2]
+#' selected_states <- c(1, 2, 2, 3, 3, 4, 1, 2, 2, 3)
 #'
 #' # Generate the data frame with the format indicated in the documentation
-#' df <- data.frame(RT = rep("A", length(selected_states)), # name of the new trajectory as "A"
+#' df <- data.frame(RT = rep("A", length(selected_states)),
 #'                  RT_traj = selected_traj,
 #'                  RT_states = as.integer(selected_states),
-#'                  RT_retra = rep("T2", length(selected_states))) # it could be "T3" too
+#'                  RT_retra = rep("T2", length(selected_states)))
 #'
 #' # Remove duplicates (trajectory 4, state 3)
 #' df <- unique(df)
@@ -175,14 +175,14 @@
 #' # Define two representative trajectories from individual trajectories in EDR1.
 #'
 #' # Define trajectory "A" from states in trajectories 3 and 4
-#' data_A <- data.frame(RT = rep("A", 4), # name of the new representative trajectory
-#'                      RT_traj = c(3, 3, 4, 4), # identifier of the original trajectories
-#'                      RT_states = c(1:2, 4:5)) # states in the original trajectories
+#' data_A <- data.frame(RT = rep("A", 4),
+#'                      RT_traj = c(3, 3, 4, 4),
+#'                      RT_states = c(1:2, 4:5))
 #'
 #' # Define trajectory "B" from states in trajectories 5, 6, and 7
-#' data_B <- data.frame(RT = rep("B", 5), # name of the new representative trajectory
-#'                      RT_traj = c(5, 5, 7, 6, 6), # identifier of the original trajectories
-#'                      RT_states = c(1, 2, 4, 4, 5)) # states in the original trajectories
+#' data_B <- data.frame(RT = rep("B", 5),
+#'                      RT_traj = c(5, 5, 7, 6, 6),
+#'                      RT_states = c(1, 2, 4, 4, 5))
 #'
 #' # Compile data for both trajectories in a data frame
 #' df <- rbind(data_A, data_B)
