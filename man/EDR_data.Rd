@@ -49,6 +49,6 @@ and \code{\link[ecotraj:trajectorymetrics]{ecotraj::trajectoryDistances()}}, res
 \references{
 Sánchez-Pinillos, M., Kéfi, S., De Cáceres, M., Dakos, V. 2023. Ecological Dynamic
 Regimes: Identification, characterization, and comparison. \emph{Ecological Monographs}.
-\url{https://doi.org/10.1002/ecm.1589}
+\url{doi:10.1002/ecm.1589}
 }
 \keyword{datasets}
