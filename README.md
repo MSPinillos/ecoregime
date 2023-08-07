@@ -58,13 +58,13 @@ regimes.
 ``` r
 library(ecoregime)
 
-# Calculate state dissimilarities from a matrix of species abundances
-abundance <- data.frame(EDR_data$EDR1$abundance)
-d <- vegan::vegdist(abundance[, -c(1:3)])
+# Calculate state dissimilarities from a matrix of state variables (e.g., species abundances)
+variables <- data.frame(EDR_data$EDR1$abundance)
+d <- vegan::vegdist(variables[, -c(1:3)])
 
 # Identify the trajectory (or site) and states in d
-trajectories <- abundance$traj
-states <- as.integer(abundance$state)
+trajectories <- variables$traj
+states <- as.integer(variables$state)
 
 # Compute RETRA-EDR
 RT <- retra_edr(d = d, trajectories = trajectories, states = states,
@@ -74,7 +74,6 @@ RT <- retra_edr(d = d, trajectories = trajectories, states = states,
 plot(x = RT, d = d, trajectories = trajectories, states = states, select_RT = "T2",
      traj.colors = "lightblue", RT.colors = "orange", sel.color = "darkgreen",
      link.lty = 1, asp = 1, main = "Representative trajectories - EDR")
-#> Representative trajectories will be displayed in an ordination space generated through multidimensional scaling (MDS). You can avoid this step by providing state coordinates in the 'd' argument.
 ```
 
 <img src="man/figures/README-plotEDR-1.png" width="100%" />
@@ -104,18 +103,18 @@ Compare ecological dynamic regimes.
 
 ``` r
 # Load species abundances and compile in a data frame
-abun1 <- EDR_data$EDR1$abundance
-abun2 <- EDR_data$EDR2$abundance
-abun3 <- EDR_data$EDR3$abundance
-abun <- data.frame(rbind(abun1, abun2, abun3))
+variables1 <- EDR_data$EDR1$abundance
+variables2 <- EDR_data$EDR2$abundance
+variables3 <- EDR_data$EDR3$abundance
+all_variables <- data.frame(rbind(variables1, variables2, variables3))
 
 # Calculate dissimilarities between every pair of states
-d <- vegan::vegdist(abun[, -c(1:3)])
+d <- vegan::vegdist(all_variables[, -c(1:3)])
 
 # Compute dissimilarities between EDRs:
 dist_edr(d = d, d.type = "dStates",
-         trajectories = abun$traj, states = abun$state, edr = abun$EDR,
-         metric = "dDR", symmetrize = NULL)
+         trajectories = all_variables$traj, states = all_variables$state, 
+         edr = all_variables$EDR, metric = "dDR", symmetrize = NULL)
 #>           1         2         3
 #> 1 0.0000000 0.5895458 0.3458250
 #> 2 0.5700499 0.0000000 0.4907364
