@@ -13,7 +13,7 @@ A toolbox for implementing the Ecological Dynamic Regime framework (Sánchez-Pin
 \seealso{
 Useful links:
 \itemize{
-  \item \url{https://github.com/MSPinillos/ecoregime}
+  \item \url{https://mspinillos.github.io/ecoregime/}
   \item Report bugs at \url{https://github.com/MSPinillos/ecoregime/issues}
 }
 
