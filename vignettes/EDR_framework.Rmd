@@ -199,13 +199,13 @@ plot(traj_mds$D1, traj_mds$D2,
 
 ### 3.1. Identifying EDRs from clustering analyses
 
-Identifying EDRs involves finding groups of ecological trajectories showing dynamical patterns more similar between each other than with any other ecological trajectory in the trajectory space. In this sense, it is possible to use the trajectory dissimilarity matrix (**$D_T$**) to identify EDRs through clustering. However, the application of clustering analyses to trajectory data is not always straightforward. Depending on the characteristics of your data, your goals, and the system that you are evaluating, the choice of the clustering algorithm may have important consequences.
+Identifying EDRs involves finding groups of ecological trajectories showing dynamic patterns more similar between each other than with any other ecological trajectory in the trajectory space. In this sense, it is possible to use the trajectory dissimilarity matrix (**$D_T$**) to identify EDRs through clustering. However, applying clustering analyses to trajectory data is not always straightforward. Depending on the characteristics of your data, your goals, and the system that you are evaluating, the choice of the clustering algorithm may have important consequences.
 
 Currently, this is out of the scope of `ecoregime` but you can find more details in the paper introducing the EDR framework (Sánchez-Pinillos et al., 2023)
 
 ### 3.2. Defining EDRs based on ecological properties
 
-Clustering analyses are not the only way to define EDRs. As I stated before, the ecological trajectories of our simulated data can be considered part of the same EDR for having similar dynamical patterns. Thus, you could define groups of trajectories that you want to evaluate for sharing similar aspects in the state variables. For example, you could consider groups of trajectories with the same number of observations in which the state variables change following similar patterns.  
+Clustering analyses are not the only way to define EDRs. As I stated before, the ecological trajectories of our simulated data can be considered part of the same EDR for having similar dynamic patterns. Thus, you could define groups of trajectories that you want to evaluate for sharing similar aspects in the state variables. For example, you could consider groups of trajectories with the same number of observations in which the state variables change following similar patterns.  
 
 ## 4. Representative trajectories
 
@@ -233,7 +233,7 @@ for (i in seq_along(ID_sampling)) {
          col = "red", pch = ID_sampling[i], lty = 2)
 }
 
-legend("bottomleft", legend = c("sp1", "sp2"), col = 1:2, lty = 1:2)
+legend("bottomleft", legend = c("sp1", "sp2"), col = 1:2, lty = 1:2, bg = "white")
 
 
 ```
@@ -249,7 +249,7 @@ cor(state_mds$D1, abundance$sp2)
 
 ```
 
-These analyses are fine for extremely simple systems as the ones simulated in our toy data. However, when we want to apply these or similar approaches to empirical data, finding clear dynamical patterns becomes more difficult. In real ecosystems, we usually have to deal with a great heterogeneity, multiple variables interacting between each other, and noise. As a consequence, we need robust tools able to summarize a great variety of trajectories in multidimensional spaces. That is precisely what RETRA-EDR pursues.
+These analyses are fine for extremely simple systems as the one simulated in our toy data. However, when we want to apply these or similar approaches to empirical data, finding clear dynamical patterns becomes more difficult. In real ecosystems, we usually have to deal with a great heterogeneity, multiple variables interacting between each other, and noise. As a consequence, we need robust tools able to summarize a great variety of trajectories in multidimensional spaces. That is precisely what RETRA-EDR pursues.
 
 ### 4.1. Identifying representative trajectories with RETRA-EDR
 
@@ -271,41 +271,6 @@ Let's apply `retra_edr()` to our data. As the EDR only contains 10 trajectories,
 repr_traj <- retra_edr(d = state_dissim, trajectories = rep(ID_sampling, each = 3),
                    states = rep(ID_obs, 10), minSegs = 2)
 
-
-```
-
-TIP! Have you calculated segment dissimilarities before? If so, you could save time.
-
-```{R RETRA-EDR_segs}
-# Calculate segment dissimilarities: retra_edr() uses ecotraj::segmentDistance()
-seg_dissim <- ecotraj::segmentDistances(d = state_dissim, 
-                                        sites = rep(ID_sampling, each = 3),
-                                        surveys = rep(ID_obs, 10))
-seg_dissim <- seg_dissim$Dseg
-
-## --> TIP! If you use segmentDistance(), you can use the labels of the returned 
-## --> distance object to define 'traj_Segs', 'state1_Segs', and 'state2_Segs'
-## --> in retra_edr()
-head(labels(seg_dissim))
-
-# Apply retra_edr()
-repr_traj_fromSegs <- retra_edr(d = state_dissim, 
-                                trajectories = rep(ID_sampling, each = 3),
-                                states = rep(ID_obs, 10), minSegs = 2,
-                                # Segment dissimilarities
-                                dSegs = seg_dissim,
-                                # Trajectories in dSegs: two segments/traj
-                                traj_Segs = rep(ID_sampling, each = 2),
-                                # 1st state of each segment: 1 or 2
-                                state1_Segs = rep(1:2, 10),
-                                # 2nd state of each segment: 2 or 3
-                                state2_Segs = rep(2:3, 10))
-
-
-# Check that we obtain the same results
-if (all.equal(repr_traj, repr_traj_fromSegs)) {
-  print("'repr_traj' is equal to 'repr_traj_fromSegs'!")
-}
 
 ```
 
@@ -368,13 +333,13 @@ new_traj_df <- data.frame(
   # name of the new trajectories (as many times as the number of states)
   RT = c(rep("T1.1", 4), rep("T2.1", 5), rep("T1.2", 2)),
   # name of the trajectories (sampling units)
-  RT_traj = c(rep("B", 2), rep("I", 2), # for the first trajectory (T1)
+  RT_traj = c(rep("B", 2), rep("I", 2), # for the first trajectory (T1.1)
               rep("C", 3), rep("I", 2), # for the second trajectory (T2.1)
-              rep("E", 2)), # for the third trajectory (T2.2)
+              rep("E", 2)), # for the third trajectory (T1.2)
   # states in each sampling unit 
-  RT_states = c(1:2, 2:3, # for the first trajectory (T1)
+  RT_states = c(1:2, 2:3, # for the first trajectory (T1.1)
                 1:3, 2:3, # for the second trajectory (T2.1)
-                2:3), # for the third trajectory (T2.2)
+                2:3), # for the third trajectory (T1.2)
   # representative trajectories obtained in retra_edr()
   RT_retra = c(rep("T1", 4), rep("T2", 5), 
                rep("T1", 2)) # The last segment belong to both (T1, T2), choose one
@@ -510,7 +475,7 @@ legend("topright", c("T1", "T2"), col = c("blue", "black"), lty = 1)
 
 ## 5. Distribution and heterogeneity of ecological trajectories in EDRs
 
-Representative trajectories aim to summarize the main dynamical patterns of ecological systems in a given EDR. As a complement, you can compute additional metrics to understand the internal structure of the EDR.
+Representative trajectories aim to summarize the main dynamic patterns of ecological systems in a given EDR. As a complement, you can compute additional metrics to understand the internal structure of the EDR.
 
 ### 5.1. Dynamic dispersion (dDis)
 
@@ -631,9 +596,9 @@ dEve(d = traj_dissim, d.type = "dTraj", trajectories = ID_sampling,
 
 ## 6. Comparing EDRs
 
-Representative trajectories and the metrics of dynamic dispersion, beta diversity, and evenness will allow you to characterize EDRs based on their dynamical patterns and the distribution of ecological trajectories. Therefore, you can compare two or more EDRs based on these features, saying "this EDR is dominated by these dynamics, whereas the dynamics in this other EDR are different" or "the trajectories in this EDR are more diverse than in this other EDR". But what if you want to quantify how different two EDRs are? This is a common situation. Perhaps, you want to compare EDRs of ecosystems under different environmental conditions, for example, forest communities dominated by the same species that grow under different climatic conditions. Perhaps, you want to use simulated data to assess the effects of the introduction of certain species in the EDRs. 
+Representative trajectories and the metrics of dynamic dispersion, beta diversity, and evenness will allow you to characterize EDRs based on their dynamic patterns and the distribution of ecological trajectories. Therefore, you can compare two or more EDRs based on these features, saying "this EDR is dominated by these dynamics, whereas the dynamics in this other EDR are different" or "the trajectories in this EDR are more diverse than in this other EDR". But what if you want to quantify how different two EDRs are? This is a common situation. Perhaps, you want to compare EDRs of ecosystems under different environmental conditions, for example, forest communities dominated by the same species that grow under different climatic conditions. Perhaps, you want to use simulated data to assess the effects of the introduction of certain species in the EDRs. 
 
-Of course, comparing EDR characteristics will provide you with very valuable information, but if you want "a number", you will have to calculate the **dissimilarities between EDRs**. You can do it in `ecoregime`.
+Of course, comparing EDR characteristics will provide you with very valuable information, but if you want "a number", you will have to calculate the **dissimilarities between EDRs**. You can do it using `ecoregime`.
 
 Let's generate two more EDRs to be compared with the previous one. 
 
