@@ -168,9 +168,6 @@ dEDR <- dist_edr(d = dTraj, d.type = "dTraj", edr = id_edr_traj,
 # 3) symmetrizing by using the minimum dissimilarity between two EDRs
 dEDR <- dist_edr(d = dTraj, d.type = "dTraj", edr = id_edr_traj,
                  metric = "dDR", symmetrize = "min")
-# 4) symmetrizing by using the lower triangular part of the asymmetric matrix
-dEDR <- dist_edr(d = dTraj, d.type = "dTraj", edr = id_edr_traj,
-                 metric = "dDR", symmetrize = "lower")
 
 }
 \references{
