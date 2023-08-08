@@ -39,12 +39,10 @@ belonging to three different EDRs.
 Artificial data was generated following the procedure explained in Box 1 in
 Sánchez-Pinillos et al. (2023) In particular, the initial state of each community was
 defined using a hypothetical environmental space with optimal locations for
-12 species (\code{\link[coenocliner:coenocline]{coenocliner::coenocline()}}). Community dynamics were simulated
-using a general Lotka-Volterra model (\code{\link[primer:lvcompg]{primer::lvcompg()}}).
+12 species. Community dynamics were simulated using a general Lotka-Volterra model.
 
-State dissimilarities were calculated through \code{\link[vegan:vegdist]{vegan::vegdist()}}. Segment and
-trajectory dissimilarities were calculated through \code{\link[ecotraj:trajectorymetrics]{ecotraj::segmentDistances()}}
-and \code{\link[ecotraj:trajectorymetrics]{ecotraj::trajectoryDistances()}}, respectively
+State dissimilarities were calculated using the Bray-Curtis metric. Segment and
+trajectory dissimilarities were calculated using the package 'ecotraj'.
 }
 \references{
 Sánchez-Pinillos, M., Kéfi, S., De Cáceres, M., Dakos, V. 2023. Ecological Dynamic
