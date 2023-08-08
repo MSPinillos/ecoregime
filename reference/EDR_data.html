@@ -90,11 +90,9 @@ between every pair of community trajectories in <code>abundance</code> (see Deta
     <p>Artificial data was generated following the procedure explained in Box 1 in
 Sánchez-Pinillos et al. (2023) In particular, the initial state of each community was
 defined using a hypothetical environmental space with optimal locations for
-12 species (<code>coenocliner::coenocline()</code>). Community dynamics were simulated
-using a general Lotka-Volterra model (<code><a href="https://rdrr.io/pkg/primer/man/lvcompg.html" class="external-link">primer::lvcompg()</a></code>).</p>
-<p>State dissimilarities were calculated through <code><a href="https://rdrr.io/pkg/vegan/man/vegdist.html" class="external-link">vegan::vegdist()</a></code>. Segment and
-trajectory dissimilarities were calculated through <code><a href="https://emf-creaf.github.io/ecotraj/reference/trajectorymetrics.html" class="external-link">ecotraj::segmentDistances()</a></code>
-and <code><a href="https://emf-creaf.github.io/ecotraj/reference/trajectorymetrics.html" class="external-link">ecotraj::trajectoryDistances()</a></code>, respectively</p>
+12 species. Community dynamics were simulated using a general Lotka-Volterra model.</p>
+<p>State dissimilarities were calculated using the Bray-Curtis metric. Segment and
+trajectory dissimilarities were calculated using the package 'ecotraj'.</p>
     </div>
     <div class="section level2">
     <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
