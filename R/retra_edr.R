@@ -280,7 +280,6 @@ retra_edr <- function (d, trajectories, states, minSegs,
   }
 
   if (is.null(coordSegs)) {
-    set.seed(123)
     coordSegs <- smacof::mds(delta = dSegs, ndim = ndim, itmax = 300)
     coordSegs <- coordSegs$conf
   }
