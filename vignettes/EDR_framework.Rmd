@@ -268,6 +268,10 @@ Let's apply `retra_edr()` to our data. As the EDR only contains 10 trajectories,
 
 ```{r RETRA-EDR}
 
+# Use set.seed to obtain reproducible results of the segment space in RETRA-EDR
+set.seed(123)
+
+# Apply RETRA-EDR
 repr_traj <- retra_edr(d = state_dissim, trajectories = rep(ID_sampling, each = 3),
                    states = rep(ID_obs, 10), minSegs = 2)
 
