@@ -469,6 +469,10 @@ contains 10 trajectories, we will assign a value of <code>minSegs</code>
 relatively low.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
+<span><span class="co"># Use set.seed to obtain reproducible results of the segment space in RETRA-EDR</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">123</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Apply RETRA-EDR</span></span>
 <span><span class="va">repr_traj</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/retra_edr.html">retra_edr</a></span><span class="op">(</span>d <span class="op">=</span> <span class="va">state_dissim</span>, trajectories <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="va">ID_sampling</span>, each <span class="op">=</span> <span class="fl">3</span><span class="op">)</span>,</span>
 <span>                   states <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="va">ID_obs</span>, <span class="fl">10</span><span class="op">)</span>, minSegs <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
 <p>RETRA-EDR has returned two representative trajectories. We can
