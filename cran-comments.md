@@ -1,11 +1,7 @@
-## Resubmission
-
-This is a resubmission. In this version I have:
-
-* Removed set.seed() within the function retra_edr()
-
 ## R CMD check results
 
-0 errors | 0 warnings | 1 note
+0 errors | 0 warnings | 0 notes
 
-* New submission.
+* New release to debug `dist_edr()`.
+
+* There are currently no downstream dependencies for this package.
