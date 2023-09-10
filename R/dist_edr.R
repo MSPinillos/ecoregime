@@ -197,33 +197,34 @@ dist_edr <- function(d, d.type, trajectories = NULL, states = NULL, edr, metric 
 
   # Trajectory dissimilarity
   if(d.type == "dStates"){
-    edr.df <- unique(data.frame(traj = paste0(edr, "_", trajectories), edr = edr))
-    edr <- edr.df$edr
     dTrajmat <- as.matrix(ecotraj::trajectoryDistances(d = d,
                                                        sites = paste0(edr, "_", trajectories),
                                                        surveys = states,...))
+    edr.df <- unique(data.frame(traj = paste0(edr, "_", trajectories), edr = edr))
+    edr <- edr.df$edr
   }
   if(d.type == "dTraj") {
     dTrajmat <- as.matrix(d)
   }
 
   # Nb edr and trajectories/edr
-  ID_edr <- unique(edr)
+  ID_edr <- as.character(unique(edr))
   Ntraj_edr <- table(edr)
 
   # Empty matrix to compile regime distances
   dReg <- matrix(0, ncol = length(ID_edr), nrow = length(ID_edr), dimnames = list(ID_edr, ID_edr))
 
+  for (iR1 in ID_edr) {
 
-  for (iR1 in seq_along(ID_edr)) {                      # R1
-
-    for (iR2 in seq_along(ID_edr)) {                    # R2
+    for (iR2 in ID_edr) {
       minD_T1R2 <- numeric()
 
-      for (T1 in 1:Ntraj_edr[iR1]) {        # for each T1i, find the minimum distance to R2; min{DSDSP(T1i, T21), ..., DSDSP(T1i, T2m)}
-        iT1 <- sum(Ntraj_edr[1:iR1]) - Ntraj_edr[iR1] + T1                         # index of T1i in dTraj
-        T2 <- (sum(Ntraj_edr[1:iR2]) - Ntraj_edr[iR2] + 1):sum(Ntraj_edr[1:iR2])  # indices of all T21,..., T2m in dTraj
-        minD_T1R2 <- c(minD_T1R2, min(dTrajmat[iT1, T2]))            # min{DSDSP(T1i, T21), ..., DSDSP(T1i, T2m)}
+      # for each T1i, find the minimum distance to R2; min{D(T1i, T21), ..., D(T1i, T2m)}
+      for (iT1 in which(edr == iR1)) {
+        # Indices of the trajectories in R2
+        T2 <- which(edr == iR2)
+        # min{D(T1i, T21), ..., D(T1i, T2m)}
+        minD_T1R2 <- c(minD_T1R2, min(dTrajmat[iT1, T2]))
       }
       if(metric == "dDR"){
         dReg[iR1, iR2] <- sum(minD_T1R2)/(Ntraj_edr[iR1])           # dDR(R1, R2)
@@ -240,24 +241,24 @@ dist_edr <- function(d, d.type, trajectories = NULL, states = NULL, edr, metric 
   # Symmetrize dDR if required
   if (!is.null(symmetrize)) {
     if (symmetrize == "mean") {
-      for (iR1 in seq_along(ID_edr)) {
-        for (iR2 in seq_along(ID_edr)) {
+      for (iR1 in ID_edr) {
+        for (iR2 in ID_edr) {
           dReg[iR1, iR2] <- mean(c(dReg[iR1, iR2], dReg[iR2, iR1]))
           dReg[iR2, iR1] <- dReg[iR1, iR2]
         }
       }
     }
     if (symmetrize == "min") {
-      for (iR1 in seq_along(ID_edr)) {
-        for (iR2 in seq_along(ID_edr)) {
+      for (iR1 in ID_edr) {
+        for (iR2 in ID_edr) {
           dReg[iR1, iR2] <- min(c(dReg[iR1, iR2], dReg[iR2, iR1]))
           dReg[iR2, iR1] <- dReg[iR1, iR2]
         }
       }
     }
     if (symmetrize == "max") {
-      for (iR1 in seq_along(ID_edr)) {
-        for (iR2 in seq_along(ID_edr)) {
+      for (iR1 in ID_edr) {
+        for (iR2 in ID_edr) {
           dReg[iR1, iR2] <- max(c(dReg[iR1, iR2], dReg[iR2, iR1]))
           dReg[iR2, iR1] <- dReg[iR1, iR2]
         }

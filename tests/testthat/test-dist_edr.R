@@ -145,6 +145,58 @@ test_that("the properties of dDR are fit", {
                 dEDR[2, 5] >= dEDR[2, 3])
 })
 
+test_that("trajectories can be disordered", {
+  abun <- rbind(EDR_data$EDR1$abundance,
+                EDR_data$EDR2$abundance,
+                EDR_data$EDR3$abundance)
+  abun <- abun[order(abun$sp1), ]
+  dStates <- vegan::vegdist(abun[, -c(1:3)])
+  trajectories <- paste0(abun$EDR, "_", abun$traj)
+  states <- abun$state
+
+  dTraj <- ecotraj::trajectoryDistances(d = dStates,
+                                        sites = trajectories,
+                                        surveys = states)
+
+  dEDR <- dist_edr(d = as.matrix(dTraj), d.type = "dTraj",
+                   edr = unique(abun[, c("EDR", "traj")])$EDR,
+                   metric = "dDR",
+                   symmetrize = NULL)
+  dEDR_st <- dist_edr(d = as.matrix(dStates), d.type = "dStates",
+                      trajectories = paste0(abun$EDR, "_", abun$traj),
+                      states = abun$state,
+                      edr = abun$EDR,
+                      metric = "dDR",
+                      symmetrize = NULL)
+
+  abun_or <- rbind(EDR_data$EDR1$abundance,
+                   EDR_data$EDR2$abundance,
+                   EDR_data$EDR3$abundance)
+  dStates_or <- vegan::vegdist(abun_or[, -c(1:3)])
+  trajectories_or <- paste0(abun_or$EDR, "_", abun_or$traj)
+  states_or <- abun_or$state
+
+  dTraj_or <- ecotraj::trajectoryDistances(d = dStates_or,
+                                           sites = trajectories_or,
+                                           surveys = states_or)
+
+  dEDR_or <- dist_edr(d = as.matrix(dTraj_or), d.type = "dTraj",
+                      edr = unique(abun_or[, c("EDR", "traj")])$EDR,
+                      metric = "dDR",
+                      symmetrize = NULL)
+  dEDR_st_or <- dist_edr(d = as.matrix(dStates_or), d.type = "dStates",
+                         trajectories = paste0(abun_or$EDR, "_", abun_or$traj),
+                         states = abun_or$state,
+                         edr = abun_or$EDR,
+                         metric = "dDR",
+                         symmetrize = NULL)
+
+  expect_equal(dEDR, dEDR_st)
+  expect_equal(dEDR_or, dEDR_st_or)
+  expect_equal(dEDR[as.character(1:3), as.character(1:3)], dEDR_st_or)
+
+})
+
 test_that("returns errors", {
   abun <- rbind(EDR_data$EDR1$abundance,
                 EDR_data$EDR2$abundance,
