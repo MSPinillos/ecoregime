@@ -259,6 +259,8 @@ of each sampling unit:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Multidimensional scaling</span></span>
 <span><span class="va">state_mds</span> <span class="op">&lt;-</span> <span class="fu">smacof</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/smacof/man/smacofSym.html" class="external-link">smacofSym</a></span><span class="op">(</span><span class="va">state_dissim</span>, ndim <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning in rgl.init(initValue, onlyNULL): RGL: unable to open X11 display</span></span>
+<span><span class="co">#&gt; Warning: 'rgl.init' failed, running with 'rgl.useNULL = TRUE'.</span></span>
 <span><span class="va">state_mds</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span><span class="va">state_mds</span><span class="op">$</span><span class="va">conf</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Define different colors for each trajectory</span></span>
