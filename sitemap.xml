@@ -10,6 +10,9 @@
     <loc>https://mspinillos.github.io/ecoregime/articles/EDR_framework.html</loc>
   </url>
   <url>
+    <loc>https://mspinillos.github.io/ecoregime/articles/Resilience.html</loc>
+  </url>
+  <url>
     <loc>https://mspinillos.github.io/ecoregime/articles/index.html</loc>
   </url>
   <url>
@@ -31,6 +34,9 @@
     <loc>https://mspinillos.github.io/ecoregime/reference/define_retra.html</loc>
   </url>
   <url>
+    <loc>https://mspinillos.github.io/ecoregime/reference/deviation_metrics.html</loc>
+  </url>
+  <url>
     <loc>https://mspinillos.github.io/ecoregime/reference/dist_edr.html</loc>
   </url>
   <url>
@@ -44,6 +50,9 @@
   </url>
   <url>
     <loc>https://mspinillos.github.io/ecoregime/reference/retra_edr.html</loc>
+  </url>
+  <url>
+    <loc>https://mspinillos.github.io/ecoregime/reference/state_to_trajectory.html</loc>
   </url>
   <url>
     <loc>https://mspinillos.github.io/ecoregime/reference/summary.RETRA.html</loc>

@@ -6,14 +6,15 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta name="description" content="A toolbox for implementing the Ecological Dynamic Regime framework 
-    (Sánchez-Pinillos et al., 2023 &lt;doi:10.1002/ecm.1589&gt;) to 
-    characterize and compare groups of ecological trajectories in multidimensional 
-    spaces defined by state variables. The package includes the RETRA-EDR algorithm 
-    to identify representative trajectories, functions to generate, summarize, 
-    and visualize representative trajectories, and several metrics to quantify 
-    the distribution and heterogeneity of trajectories in an ecological dynamic 
-    regime and quantify the dissimilarity between two or more ecological dynamic 
-    regimes.">
+    (Sánchez-Pinillos et al., 2023 &lt;doi:10.1002/ecm.1589&gt;) to characterize and compare groups of ecological 
+    trajectories in multidimensional spaces defined by state variables. The package 
+    includes the RETRA-EDR algorithm to identify representative trajectories, 
+    functions to generate, summarize, and visualize representative trajectories, 
+    and several metrics to quantify the distribution and heterogeneity of trajectories 
+    in an ecological dynamic regime and quantify the dissimilarity between two or 
+    more ecological dynamic regimes. The package also includes a set of functions 
+    to assess ecological resilience based on ecological dynamic regimes 
+    (Sánchez-Pinillos et al., 2024 &lt;doi:10.1016/j.biocon.2023.110409&gt;).">
 <title>Analysis of Ecological Dynamic Regimes • ecoregime</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
@@ -22,19 +23,20 @@
 <link rel="apple-touch-icon" type="image/png" sizes="76x76" href="apple-touch-icon-76x76.png">
 <link rel="apple-touch-icon" type="image/png" sizes="60x60" href="apple-touch-icon-60x60.png">
 <script src="deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="deps/bootstrap-5.2.2/bootstrap.min.css" rel="stylesheet">
-<script src="deps/bootstrap-5.2.2/bootstrap.bundle.min.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
+<link href="deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
+<script src="deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- bootstrap-toc --><script src="https://cdn.jsdelivr.net/gh/afeld/bootstrap-toc@v1.0.1/dist/bootstrap-toc.min.js" integrity="sha256-4veVQbu7//Lk5TSmc7YV48MxtMy98e26cf5MrgZYnwo=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Analysis of Ecological Dynamic Regimes">
 <meta property="og:description" content="A toolbox for implementing the Ecological Dynamic Regime framework 
-    (Sánchez-Pinillos et al., 2023 &lt;doi:10.1002/ecm.1589&gt;) to 
-    characterize and compare groups of ecological trajectories in multidimensional 
-    spaces defined by state variables. The package includes the RETRA-EDR algorithm 
-    to identify representative trajectories, functions to generate, summarize, 
-    and visualize representative trajectories, and several metrics to quantify 
-    the distribution and heterogeneity of trajectories in an ecological dynamic 
-    regime and quantify the dissimilarity between two or more ecological dynamic 
-    regimes.">
+    (Sánchez-Pinillos et al., 2023 &lt;doi:10.1002/ecm.1589&gt;) to characterize and compare groups of ecological 
+    trajectories in multidimensional spaces defined by state variables. The package 
+    includes the RETRA-EDR algorithm to identify representative trajectories, 
+    functions to generate, summarize, and visualize representative trajectories, 
+    and several metrics to quantify the distribution and heterogeneity of trajectories 
+    in an ecological dynamic regime and quantify the dissimilarity between two or 
+    more ecological dynamic regimes. The package also includes a set of functions 
+    to assess ecological resilience based on ecological dynamic regimes 
+    (Sánchez-Pinillos et al., 2024 &lt;doi:10.1016/j.biocon.2023.110409&gt;).">
 <meta property="og:image" content="https://mspinillos.github.io/ecoregime/logo.png">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
@@ -65,6 +67,7 @@
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
     <a class="dropdown-item" href="articles/EDR_framework.html">Ecological Dynamic Regime framework</a>
+    <a class="dropdown-item" href="articles/Resilience.html">Ecological resilience to pulse disturbances</a>
   </div>
 </li>
 <li class="nav-item">
@@ -101,7 +104,15 @@
 <!-- badges: start -->
 
 <p><code>ecoregime</code> implements the EDR framework to characterize and compare groups of ecological trajectories in multidimensional spaces defined by ecosystem state variables. The EDR framework was introduced in:</p>
-<p>Sánchez-Pinillos, M., Kéfi, S., De Cáceres, M., Dakos, V. 2023. Ecological Dynamic Regimes: Identification, characterization, and comparison. <em>Ecological Monographs</em>. <a href="doi:10.1002/ecm.1589" class="uri">doi:10.1002/ecm.1589</a></p>
+<ul>
+<li>Sánchez-Pinillos, M., Kéfi, S., De Cáceres, M., Dakos, V. 2023. Ecological Dynamic Regimes: Identification, characterization, and comparison. <em>Ecological Monographs</em>. <a href="doi:10.1002/ecm.1589" class="uri">doi:10.1002/ecm.1589</a>
+</li>
+</ul>
+<p><code>ecoregime</code> can be used to assess ecological resilience using ecological dynamic regimes as the system’s reference. This approach was introduced in:</p>
+<ul>
+<li>Sánchez-Pinillos M., Dakos, V., Kéfi, S. 2024. Ecological dynamic regimes: A key concept for assessing ecological resilience. <em>Biological Conservation</em>. <a href="doi:10.1016/j.biocon.2023.110409" class="uri">doi:10.1016/j.biocon.2023.110409</a>
+</li>
+</ul>
 </div>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
@@ -113,7 +124,7 @@
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># install.packages("devtools")</span></span>
 <span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"MSPinillos/ecoregime"</span><span class="op">)</span></span></code></pre></div>
-<p>You can get an overview about its functionality and the workflow of the EDR framework in the package documentation and vignette.</p>
+<p>You can get an overview about its functionality and the workflow of the EDR framework in the package documentation and vignettes.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Force the inclusion of the vignette in the installation</span></span>
 <span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"MSPinillos/ecoregime"</span>, </span>
@@ -125,7 +136,8 @@
 <span></span>
 <span><span class="co"># Access the documentation and vignette</span></span>
 <span><span class="op">?</span><span class="va">ecoregime</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/vignette.html" class="external-link">vignette</a></span><span class="op">(</span><span class="st">"EDR_framework"</span>, package <span class="op">=</span> <span class="st">"ecoregime"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/vignette.html" class="external-link">vignette</a></span><span class="op">(</span><span class="st">"EDR_framework"</span>, package <span class="op">=</span> <span class="st">"ecoregime"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/vignette.html" class="external-link">vignette</a></span><span class="op">(</span><span class="st">"Resilience"</span>, package <span class="op">=</span> <span class="st">"ecoregime"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a>
@@ -135,7 +147,7 @@
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://mspinillos.github.io/ecoregime/">ecoregime</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Calculate state dissimilarities from a matrix of state variables (e.g., species abundances)</span></span>
-<span><span class="va">variables</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span><span class="va">EDR_data</span><span class="op">$</span><span class="va">EDR1</span><span class="op">$</span><span class="va">abundance</span><span class="op">)</span></span>
+<span><span class="va">variables</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span><span class="va">EDR_data</span><span class="op">$</span><span class="va">EDR3</span><span class="op">$</span><span class="va">abundance</span><span class="op">)</span></span>
 <span><span class="va">d</span> <span class="op">&lt;-</span> <span class="fu">vegan</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/vegan/man/vegdist.html" class="external-link">vegdist</a></span><span class="op">(</span><span class="va">variables</span><span class="op">[</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Identify the trajectory (or site) and states in d</span></span>
@@ -147,7 +159,7 @@
 <span>                 minSegs <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Plot representative trajectories of the EDR</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">RT</span>, d <span class="op">=</span> <span class="va">d</span>, trajectories <span class="op">=</span> <span class="va">trajectories</span>, states <span class="op">=</span> <span class="va">states</span>, select_RT <span class="op">=</span> <span class="st">"T2"</span>,</span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">RT</span>, d <span class="op">=</span> <span class="va">d</span>, trajectories <span class="op">=</span> <span class="va">trajectories</span>, states <span class="op">=</span> <span class="va">states</span>, select_RT <span class="op">=</span> <span class="st">"T4"</span>,</span>
 <span>     traj.colors <span class="op">=</span> <span class="st">"lightblue"</span>, RT.colors <span class="op">=</span> <span class="st">"orange"</span>, sel.color <span class="op">=</span> <span class="st">"darkgreen"</span>,</span>
 <span>     link.lty <span class="op">=</span> <span class="fl">1</span>, asp <span class="op">=</span> <span class="fl">1</span>, main <span class="op">=</span> <span class="st">"Representative trajectories - EDR"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="reference/figures/README-plotEDR-1.png" width="100%"></p>
@@ -156,17 +168,17 @@
 <code class="sourceCode R"><span><span class="co"># Dynamic dispersion considering trajectory "1" as a reference</span></span>
 <span><span class="fu"><a href="reference/EDR_metrics.html">dDis</a></span><span class="op">(</span>d <span class="op">=</span> <span class="va">d</span>, d.type <span class="op">=</span> <span class="st">"dStates"</span>, trajectories <span class="op">=</span> <span class="va">trajectories</span>, states <span class="op">=</span> <span class="va">states</span>, reference <span class="op">=</span> <span class="st">"1"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; dDis (ref. 1) </span></span>
-<span><span class="co">#&gt;      0.267622</span></span>
+<span><span class="co">#&gt;     0.4083905</span></span>
 <span></span>
 <span><span class="co"># Dynamic beta diversity</span></span>
 <span><span class="fu"><a href="reference/EDR_metrics.html">dBD</a></span><span class="op">(</span>d <span class="op">=</span> <span class="va">d</span>, d.type <span class="op">=</span> <span class="st">"dStates"</span>, trajectories <span class="op">=</span> <span class="va">trajectories</span>, states <span class="op">=</span> <span class="va">states</span><span class="op">)</span></span>
 <span><span class="co">#&gt;        dBD </span></span>
-<span><span class="co">#&gt; 0.03969095</span></span>
+<span><span class="co">#&gt; 0.07946371</span></span>
 <span></span>
 <span><span class="co"># Dynamic evenness</span></span>
 <span><span class="fu"><a href="reference/EDR_metrics.html">dEve</a></span><span class="op">(</span>d <span class="op">=</span> <span class="va">d</span>, d.type <span class="op">=</span> <span class="st">"dStates"</span>, trajectories <span class="op">=</span> <span class="va">trajectories</span>, states <span class="op">=</span> <span class="va">states</span><span class="op">)</span></span>
-<span><span class="co">#&gt;      dEve </span></span>
-<span><span class="co">#&gt; 0.7100773</span></span></code></pre></div>
+<span><span class="co">#&gt;     dEve </span></span>
+<span><span class="co">#&gt; 0.842375</span></span></code></pre></div>
 <p>Compare ecological dynamic regimes.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Load species abundances and compile in a data frame</span></span>
@@ -183,15 +195,69 @@
 <span>         trajectories <span class="op">=</span> <span class="va">all_variables</span><span class="op">$</span><span class="va">traj</span>, states <span class="op">=</span> <span class="va">all_variables</span><span class="op">$</span><span class="va">state</span>, </span>
 <span>         edr <span class="op">=</span> <span class="va">all_variables</span><span class="op">$</span><span class="va">EDR</span>, metric <span class="op">=</span> <span class="st">"dDR"</span>, symmetrize <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
 <span><span class="co">#&gt;           1         2         3</span></span>
-<span><span class="co">#&gt; 1 0.0000000 0.5895458 0.3458250</span></span>
-<span><span class="co">#&gt; 2 0.5700499 0.0000000 0.4907364</span></span>
-<span><span class="co">#&gt; 3 0.4033212 0.6068221 0.0000000</span></span></code></pre></div>
+<span><span class="co">#&gt; 1 0.0000000 0.5895458 0.6467200</span></span>
+<span><span class="co">#&gt; 2 0.5700499 0.0000000 0.2768759</span></span>
+<span><span class="co">#&gt; 3 0.6317846 0.5050273 0.0000000</span></span></code></pre></div>
+<p>Assess ecological resilience to pulse disturbances.</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Species abundances for disturbed communities</span></span>
+<span><span class="va">disturbed</span> <span class="op">&lt;-</span> <span class="va">EDR_data</span><span class="op">$</span><span class="va">EDR3_disturbed</span><span class="op">$</span><span class="va">abundance</span><span class="op">[</span><span class="va">disturbed_states</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span>, <span class="fl">14</span><span class="op">)</span><span class="op">]</span></span>
+<span></span>
+<span><span class="co"># Species abundances for disturbed and reference communities</span></span>
+<span><span class="va">variables</span><span class="op">$</span><span class="va">disturbed_states</span> <span class="op">&lt;-</span> <span class="fl">0</span></span>
+<span><span class="va">disturbed_ref</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="va">variables</span>, <span class="va">disturbed</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Calculate dissimilarities between every pair of states</span></span>
+<span><span class="va">d</span> <span class="op">&lt;-</span> <span class="fu">vegan</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/vegan/man/vegdist.html" class="external-link">vegdist</a></span><span class="op">(</span><span class="va">disturbed_ref</span><span class="op">[</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span>, <span class="fl">16</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Use one or more representative trajectories as the reference</span></span>
+<span><span class="va">RT_ref</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/define_retra.html">define_retra</a></span><span class="op">(</span><span class="va">RT</span><span class="op">$</span><span class="va">T4</span><span class="op">$</span><span class="va">Segments</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Resistance</span></span>
+<span><span class="fu"><a href="reference/deviation_metrics.html">resistance</a></span><span class="op">(</span>d <span class="op">=</span> <span class="va">d</span>, trajectories <span class="op">=</span> <span class="va">disturbed_ref</span><span class="op">$</span><span class="va">traj</span>, states <span class="op">=</span> <span class="va">disturbed_ref</span><span class="op">$</span><span class="va">state</span>,</span>
+<span>           disturbed_trajectories <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">disturbed</span><span class="op">$</span><span class="va">traj</span><span class="op">)</span>,</span>
+<span>           disturbed_states <span class="op">=</span> <span class="va">disturbed</span><span class="op">[</span><span class="va">disturbed_states</span> <span class="op">==</span> <span class="fl">1</span><span class="op">]</span><span class="op">$</span><span class="va">state</span><span class="op">)</span></span>
+<span><span class="co">#&gt;   disturbed_trajectories        Rt</span></span>
+<span><span class="co">#&gt; 1                     31 0.9578947</span></span>
+<span><span class="co">#&gt; 2                     32 0.8117647</span></span>
+<span><span class="co">#&gt; 3                     33 0.6928105</span></span>
+<span></span>
+<span><span class="co"># Amplitude</span></span>
+<span><span class="fu"><a href="reference/deviation_metrics.html">amplitude</a></span><span class="op">(</span>d <span class="op">=</span> <span class="va">d</span>, trajectories <span class="op">=</span> <span class="va">disturbed_ref</span><span class="op">$</span><span class="va">traj</span>, states <span class="op">=</span> <span class="va">disturbed_ref</span><span class="op">$</span><span class="va">state</span>,</span>
+<span>          disturbed_trajectories <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">disturbed</span><span class="op">$</span><span class="va">traj</span><span class="op">)</span>,</span>
+<span>          disturbed_states <span class="op">=</span> <span class="va">disturbed</span><span class="op">[</span><span class="va">disturbed_states</span> <span class="op">==</span> <span class="fl">1</span><span class="op">]</span><span class="op">$</span><span class="va">state</span>,</span>
+<span>          reference <span class="op">=</span> <span class="va">RT_ref</span><span class="op">)</span></span>
+<span><span class="co">#&gt;   disturbed_trajectories reference     A_abs     A_rel</span></span>
+<span><span class="co">#&gt; 1                     31      newT 0.0275000 0.6531250</span></span>
+<span><span class="co">#&gt; 2                     32      newT 0.1187553 0.6308877</span></span>
+<span><span class="co">#&gt; 3                     33      newT 0.2675325 0.8709036</span></span>
+<span></span>
+<span><span class="co"># Recovery</span></span>
+<span><span class="fu"><a href="reference/deviation_metrics.html">recovery</a></span><span class="op">(</span>d <span class="op">=</span> <span class="va">d</span>, trajectories <span class="op">=</span> <span class="va">disturbed_ref</span><span class="op">$</span><span class="va">traj</span>, states <span class="op">=</span> <span class="va">disturbed_ref</span><span class="op">$</span><span class="va">state</span>,</span>
+<span>         disturbed_trajectories <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">disturbed</span><span class="op">$</span><span class="va">traj</span><span class="op">)</span>,</span>
+<span>         disturbed_states <span class="op">=</span> <span class="va">disturbed</span><span class="op">[</span><span class="va">disturbed_states</span> <span class="op">==</span> <span class="fl">1</span><span class="op">]</span><span class="op">$</span><span class="va">state</span>,</span>
+<span>         reference <span class="op">=</span> <span class="va">RT_ref</span><span class="op">)</span></span>
+<span><span class="co">#&gt;   disturbed_trajectories states reference      Rc_abs     Rc_rel</span></span>
+<span><span class="co">#&gt; 1                     31     16      newT -0.46424129 -0.6288659</span></span>
+<span><span class="co">#&gt; 2                     32     17      newT  0.07232084  0.1065781</span></span>
+<span><span class="co">#&gt; 3                     33     19      newT  0.24753247  0.6885903</span></span>
+<span></span>
+<span><span class="co"># Net change</span></span>
+<span><span class="fu"><a href="reference/deviation_metrics.html">net_change</a></span><span class="op">(</span>d <span class="op">=</span> <span class="va">d</span>, trajectories <span class="op">=</span> <span class="va">disturbed_ref</span><span class="op">$</span><span class="va">traj</span>, states <span class="op">=</span> <span class="va">disturbed_ref</span><span class="op">$</span><span class="va">state</span>,</span>
+<span>           disturbed_trajectories <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">disturbed</span><span class="op">$</span><span class="va">traj</span><span class="op">)</span>,</span>
+<span>           disturbed_states <span class="op">=</span> <span class="va">disturbed</span><span class="op">[</span><span class="va">disturbed_states</span> <span class="op">==</span> <span class="fl">1</span><span class="op">]</span><span class="op">$</span><span class="va">state</span>,</span>
+<span>           reference <span class="op">=</span> <span class="va">RT_ref</span><span class="op">)</span></span>
+<span><span class="co">#&gt;   disturbed_trajectories states reference     NC_abs    NC_rel</span></span>
+<span><span class="co">#&gt; 1                     31     16      newT 0.49174129 0.7357633</span></span>
+<span><span class="co">#&gt; 2                     32     17      newT 0.04643449 0.1132549</span></span>
+<span><span class="co">#&gt; 3                     33     19      newT 0.02000000 0.5000000</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="citation">Citation<a class="anchor" aria-label="anchor" href="#citation"></a>
 </h2>
 <p>To cite <code>ecoregime</code> in publications use:</p>
-<p>Sánchez-Pinillos M, Kéfi S, De Cáceres M, Dakos V (2023). “Ecological dynamic regimes: Identification, characterization, and comparison.” <em>Ecological Monographs</em>. <a href="https://doi.org/10.1002/ecm.1589" class="external-link uri">https://doi.org/10.1002/ecm.1589</a>.</p>
+<p>Sánchez-Pinillos M, Kéfi S, De Cáceres M, Dakos V (2023). “Ecological dynamic regimes: Identification, characterization, and comparison.” <em>Ecological Monographs</em>, e1589. <a href="https://doi.org/10.1002/ecm.1589" class="external-link uri">https://doi.org/10.1002/ecm.1589</a>.</p>
+<p>Sánchez-Pinillos M, Dakos V, Kéfi S (2024). “Ecological dynamic regimes: A key concept for assessing ecological resilience.” <em>Biological Conservation</em>, 110409. <a href="https://doi.org/10.1016/j.biocon.2023.110409" class="external-link uri">https://doi.org/10.1016/j.biocon.2023.110409</a>.</p>
 <p>Sánchez-Pinillos M (2023). <em>ecoregime: Analysis of Ecological Dynamic Regimes</em>. <a href="https://doi.org/10.5281/zenodo.7584943" class="external-link uri">https://doi.org/10.5281/zenodo.7584943</a>.</p>
 </div>
 <div class="section level2">
@@ -235,7 +301,9 @@
 <div class="dev-status">
 <h2 data-toc-skip>Dev status</h2>
 <ul class="list-unstyled">
+<li><a href="https://CRAN.R-project.org/package=ecoregime" class="external-link"><img src="https://www.r-pkg.org/badges/version/ecoregime" alt="CRAN status"></a></li>
 <li><a href="https://github.com/MSPinillos/ecoregime/actions/workflows/R-CMD-check.yaml" class="external-link"><img src="https://github.com/MSPinillos/ecoregime/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a></li>
+<li><a href="https://app.codecov.io/gh/MSPinillos/ecoregime?branch=master" class="external-link"><img src="https://codecov.io/gh/MSPinillos/ecoregime/branch/master/graph/badge.svg" alt="Codecov test coverage"></a></li>
 </ul>
 </div>
 
