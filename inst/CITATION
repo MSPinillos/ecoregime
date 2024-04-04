@@ -10,9 +10,23 @@ bibentry(
     person("Vasilis", "Dakos")),
   year = "2023",
   journal = "Ecological Monographs",
-  number = " ",
-  pages = " ",
+  number = "93(4)",
+  pages = "e1589",
   url = "https://doi.org/10.1002/ecm.1589"
+)
+
+bibentry(
+  bibtype = "Article",
+  title = "Ecological dynamic regimes: A key concept for assessing ecological resilience",
+  author = c(
+    person("Martina", "Sánchez-Pinillos"),
+    person("Vasilis", "Dakos"),
+    person("Sonia", "Kéfi")),
+  year = "2024",
+  journal = "Biological Conservation",
+  number = "289",
+  pages = "110409",
+  url = "https://doi.org/10.1016/j.biocon.2023.110409"
 )
 
 bibentry(
