@@ -377,7 +377,7 @@ dEve <- function(d, d.type, trajectories, states = NULL, w.type = "none", w.valu
       warning("'w.values' has length 1. Equal weights will be assigned to all trajectories.")
       w.type = "none"
     } else if (length(w.values) != Ntraj){
-      stop("The length of 'w.values' needs to be equal to the number of trajectories to be evaluated (excluding the reference trajectory).")
+      stop("The length of 'w.values' needs to be equal to the number of trajectories to be evaluated.")
     }
     if(!is.numeric(w.values)){
       stop("'w.values' needs to be numeric")
