@@ -111,6 +111,21 @@ test_that("plot trajectories with different colors", {
        traj.colors = 1:length(unique(trajectories)))
 })
 
+test_that("plots selected RT, trajectories, and links in one color (each)", {
+  skip_on_cran()
+  # Empty test that returns Skip and Warning
+  d <- as.matrix(EDR_data$EDR1$state_dissim)
+  trajectories <- EDR_data$EDR1$abundance$traj
+  states <- EDR_data$EDR1$abundance$state
 
+  retra <- retra_edr(d = d, trajectories = trajectories,
+                     states = states, minSegs = 5)
+
+  plot(retra, d = d, trajectories = trajectories, states = states,
+       select_RT = "T3", sel.color = "orange",
+       traj.colors = "lightblue",
+       link.color = "red", link.lty = NULL)
+
+})
 
 
