@@ -199,6 +199,21 @@ test_that("dDis returns errors", {
                         reference = "1",
                         w.type = "length"),
                regexp = "If w.type = \"length\", 'd' needs to contain dissimilarities")
+  expect_error(dDis(d = dTraj, d.type = "dTraj",
+                    trajectories = labels(dTraj),
+                    reference = "1",
+                    w.type = "size"),
+               regexp = "If w.type = \"size\", 'd' needs to contain dissimilarities")
+  expect_warning(dDis(d = dTraj, d.type = "dTraj",
+                      trajectories = labels(dTraj),
+                      reference = "1",
+                      w.values = 0.1, w.type = "precomputed"),
+                 regexp = "'w.values' has length 1")
+  expect_error(dDis(d = dTraj, d.type = "dTraj",
+                    trajectories = labels(dTraj),
+                    reference = "1",
+                    w.values = labels(dTraj)[-1], w.type = "precomputed"),
+               regexp = "'w.values' needs to be numeric")
 
 })
 
@@ -255,6 +270,18 @@ test_that("dEve returns errors", {
                         trajectories = labels(dTraj),
                         w.type = "size"),
                regexp = "If w.type = \"size\", 'd' needs to contain dissimilarities")
+  expect_error(dEve(d = dTraj, d.type = "dTraj",
+                    trajectories = labels(dTraj),
+                    w.type = "length"),
+               regexp = "If w.type = \"length\", 'd' needs to contain dissimilarities")
+  expect_warning(dEve(d = dTraj, d.type = "dTraj",
+                      trajectories = labels(dTraj),
+                      w.values = 0.1, w.type = "precomputed"),
+                 regexp = "'w.values' has length 1")
+  expect_error(dEve(d = dTraj, d.type = "dTraj",
+                    trajectories = labels(dTraj),
+                    w.values = labels(dTraj), w.type = "precomputed"),
+               regexp = "'w.values' needs to be numeric")
 
 
 })
