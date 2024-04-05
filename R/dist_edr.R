@@ -148,7 +148,7 @@
 #' # 2) symmetrizing by averaging elements on and below the diagonal and using
 #' # trajectory dissimilarities
 #' dEDR <- dist_edr(d = dTraj, d.type = "dTraj", edr = id_edr_traj,
-#'                  metric = "dDR", symmetrize = NULL)
+#'                  metric = "dDR", symmetrize = "mean")
 #'
 #'
 dist_edr <- function(d, d.type, trajectories = NULL, states = NULL, edr, metric = "dDR", symmetrize = NULL, ...){

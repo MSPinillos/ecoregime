@@ -161,7 +161,7 @@ dEDR <- dist_edr(d = dStates, d.type = "dStates",
 # 2) symmetrizing by averaging elements on and below the diagonal and using
 # trajectory dissimilarities
 dEDR <- dist_edr(d = dTraj, d.type = "dTraj", edr = id_edr_traj,
-                 metric = "dDR", symmetrize = NULL)
+                 metric = "dDR", symmetrize = "mean")
 
 
 }
