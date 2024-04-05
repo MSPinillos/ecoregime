@@ -1,4 +1,4 @@
-# ecoregime 0.2.0
+# ecoregime (development version)
 
 ## New features
 
