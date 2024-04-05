@@ -252,11 +252,6 @@ define_retra <- function(data, d = NULL, trajectories = NULL, states = NULL, ret
     if (length(trajectories) != nrow(as.matrix(d))) {
       stop("The length of 'trajectories' must be equal to both dimensions in 'd'.")
     }
-    if (any(length(grep("-", trajectories)) > 0,
-            length(grep("\\[", trajectories)) > 0,
-            length(grep("\\]", trajectories)) > 0)) {
-      stop("Avoid using '-', '[', ']' in the values of 'trajectories'.")
-    }
     if (length(states) != nrow(as.matrix(d))) {
       stop("The length of 'states' must be equal to both dimensions in 'd'.")
     }
