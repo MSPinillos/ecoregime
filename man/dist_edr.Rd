@@ -153,16 +153,18 @@ id_edr_traj <- vapply(strsplit(labels(dTraj), "_"), function(x){
                 }, character(1))
 
 # Compute dissimilarities between EDRs:
-# 1) without symmetrizing the matrix and using state dissimilarities
+# 1.1) without symmetrizing the matrix and using state dissimilarities
 dEDR <- dist_edr(d = dStates, d.type = "dStates",
                  trajectories = id_traj, states = id_state, edr = id_edr,
                  metric = "dDR", symmetrize = NULL)
 
-# 2) symmetrizing by averaging elements on and below the diagonal and using
-# trajectory dissimilarities
+# 1.2) without symmetrizing the matrix and using trajectory dissimilarities
 dEDR <- dist_edr(d = dTraj, d.type = "dTraj", edr = id_edr_traj,
                  metric = "dDR", symmetrize = NULL)
 
+# 2) symmetrizing by averaging elements on and below the diagonal
+dEDR <- dist_edr(d = dTraj, d.type = "dTraj", edr = id_edr_traj,
+                 metric = "dDR", symmetrize = "mean")
 
 }
 \references{
