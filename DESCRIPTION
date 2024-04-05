@@ -18,7 +18,7 @@ Description: A toolbox for implementing the Ecological Dynamic Regime framework
 License: GPL (>= 3)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.1
 URL: https://mspinillos.github.io/ecoregime/, https://github.com/MSPinillos/ecoregime
 BugReports: https://github.com/MSPinillos/ecoregime/issues
 Depends: 
