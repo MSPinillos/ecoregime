@@ -8,7 +8,7 @@
 \description{
 \if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
 
-A toolbox for implementing the Ecological Dynamic Regime framework (Sánchez-Pinillos et al., 2023 \doi{10.1002/ecm.1589}) to characterize and compare groups of ecological trajectories in multidimensional spaces defined by state variables. The package includes the RETRA-EDR algorithm to identify representative trajectories, functions to generate, summarize, and visualize representative trajectories, and several metrics to quantify the distribution and heterogeneity of trajectories in an ecological dynamic regime and quantify the dissimilarity between two or more ecological dynamic regimes. The package also includes a set of functions to assess ecological resilience based on ecological dynamic regimes (Sánchez-Pinillos et al., 2024 \doi{10.1016/j.biocon.2023.110409}).
+A toolbox for implementing the Ecological Dynamic Regime framework (Sánchez-Pinillos et al., 2023 \doi{10.1002/ecm.1589}) to characterize and compare groups of ecological trajectories in multidimensional spaces defined by state variables. The package includes the RETRA-EDR algorithm to identify representative trajectories, functions to generate, summarize, and visualize representative trajectories, and several metrics to quantify the distribution and heterogeneity of trajectories in an ecological dynamic regime and quantify the dissimilarity between two or more ecological dynamic regimes.
 }
 \seealso{
 Useful links:
