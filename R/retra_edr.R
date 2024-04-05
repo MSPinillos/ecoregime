@@ -402,8 +402,7 @@ retra_edr <- function (d, trajectories, states, minSegs,
 
 
     # ID of the medoid segment in each leaf
-    id_medoid[[ipartition]] <- GDAtools::medoids(D = leaf_dSegs[[ipartition]],
-                                                 cl = rep(1, nrow(leaves[[ipartition]])))
+    id_medoid[[ipartition]] <- which.min(colMeans(as.matrix(leaf_dSegs[[ipartition]])))
 
     # Extract the information of medoids
     medoids[[ipartition]] <- leaves[[ipartition]][id_medoid[[ipartition]], ]

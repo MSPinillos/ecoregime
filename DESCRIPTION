@@ -29,7 +29,6 @@ Imports:
     ape,
     data.table,
     ecotraj,
-    GDAtools,
     graphics,
     methods,
     shape,
