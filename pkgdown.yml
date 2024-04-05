@@ -3,7 +3,7 @@ pkgdown: 2.0.7
 pkgdown_sha: ~
 articles:
   EDR_framework: EDR_framework.html
-last_built: 2024-04-05T18:38Z
+last_built: 2024-04-05T18:51Z
 urls:
   reference: https://mspinillos.github.io/ecoregime/reference
   article: https://mspinillos.github.io/ecoregime/articles
