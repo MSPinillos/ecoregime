@@ -13,7 +13,7 @@ vignette: >
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>", eval = FALSE
+  comment = "#>"
 )
 ```
 
@@ -108,7 +108,6 @@ The choice of the dissimilarity metric used to generate **$D_O$** depends on the
 In our example, we will use `vegan` to calculate Bray-Curtis dissimilarities and generate **$D_O$**.
 
 ```{r state_dissim}
-
 # Generate a matrix containing dissimilarities between states
 state_dissim <- vegan::vegdist(abundance[, c("sp1", "sp2")], method = "bray")
 as.matrix(state_dissim)[1:6, 1:6]
@@ -137,7 +136,6 @@ plot(state_mds$D1, state_mds$D2,
 To see how ecological trajectories are distributed in the state space, we just need to link the states of each sampling unit in chronological order. 
 
 ```{r traj_state_mds, fig = TRUE, fig.height = 5, fig.width = 5, fig.align = "center"}
-
 ## -->> This code shows you the process step by step. You could directly use 
 ## -->> ecotraj::trajectoryPlot()
 
@@ -166,7 +164,6 @@ for (isampling in seq(1, 30, 3)) {
 The **trajectory space** is a multidimensional space defined by the dissimilarities between trajectories (i.e., the whole sequence of states for each sampling unit). Analogously to the state space, you need to generate a dissimilarity matrix (**$D_T$**) and the metric that you use will affect the subsequent analyses. Although there are multiple metrics, there are no formal analyses evaluating their performance in ecological applications. Here, I suggest the directed segment path dissimilarity (De Cáceres et al., 2019, *Ecol. Monogr.*, https://doi.org/10.1002/ecm.1350), but you could use any other dissimilarity metric.
 
 ```{r traj_dissim, fig = TRUE, fig.height = 5, fig.width = 5, fig.align = "center"}
-
 # Generate a matrix containing dissimilarities between trajectories
 traj_dissim <- ecotraj::trajectoryDistances(state_dissim, 
                                             sites = rep(ID_sampling, each = 3),
@@ -267,7 +264,6 @@ I will not explain the details of RETRA-EDR in this vignette (you can find them 
 Let's apply `retra_edr()` to our data. As the EDR only contains 10 trajectories, we will assign a value of `minSegs` relatively low.
 
 ```{r RETRA-EDR}
-
 # Use set.seed to obtain reproducible results of the segment space in RETRA-EDR
 set.seed(123)
 
@@ -331,7 +327,6 @@ Let's say that we want to split *T1* and *T2* from the last segment (`"E[2-3]"`)
 There are two ways of defining our "new" trajectories. The first one consists in providing all the details in a data frame:
 
 ```{r define_retra_df}
-
 # Generate a data frame indicating the states forming the new trajectories
 new_traj_df <- data.frame(
   # name of the new trajectories (as many times as the number of states)
@@ -357,7 +352,6 @@ The second one consists in providing a list with the sequences of segments defin
 
 
 ```{r define_retra_ls}
-
 # List including the sequence of segments for each new trajectory
 new_traj_ls <- list(
   # First part of T1 excluding the last segment
