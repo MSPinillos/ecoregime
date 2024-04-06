@@ -11,6 +11,7 @@ vignette: >
 ---
 
 ```{r, include = FALSE}
+library(knitr)
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
@@ -60,7 +61,7 @@ Let me define a simple example that I will use along this vignette. Imagine that
 
 I will use the Lotka-Volterra model to generate some artificial data and illustrate our example. I will define the parameters of the model to generate trajectories leading to the competitive exclusion of *sp2* by *sp1* regardless of the initial state. As such, all sampling units will have analogous trajectories that can be considered part of the same EDR.
 
-```{r data, eval=requireNamespace("primer")}
+```{r data}
 # ID of the sampling units and observations
 ID_sampling <- LETTERS[1:10]
 ID_obs <- 1:3
