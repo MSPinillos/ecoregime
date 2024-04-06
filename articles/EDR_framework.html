@@ -140,24 +140,7 @@ it:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://mspinillos.github.io/ecoregime/">ecoregime</a></span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/citation.html" class="external-link">citation</a></span><span class="op">(</span><span class="st">"ecoregime"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; To cite 'ecoregime' in publications use:</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;   Sánchez-Pinillos M, Kéfi S, De Cáceres M, Dakos V (2023). "Ecological</span></span>
-<span><span class="co">#&gt;   dynamic regimes: Identification, characterization, and comparison."</span></span>
-<span><span class="co">#&gt;   _Ecological Monographs_, e1589. &lt;https://doi.org/10.1002/ecm.1589&gt;.</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;   Sánchez-Pinillos M, Dakos V, Kéfi S (2024). "Ecological dynamic</span></span>
-<span><span class="co">#&gt;   regimes: A key concept for assessing ecological resilience."</span></span>
-<span><span class="co">#&gt;   _Biological Conservation_, 110409.</span></span>
-<span><span class="co">#&gt;   &lt;https://doi.org/10.1016/j.biocon.2023.110409&gt;.</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;   Sánchez-Pinillos M (2023). _ecoregime: Analysis of Ecological Dynamic</span></span>
-<span><span class="co">#&gt;   Regimes_. &lt;https://doi.org/10.5281/zenodo.7584943&gt;.</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; To see these entries in BibTeX format, use 'print(&lt;citation&gt;,</span></span>
-<span><span class="co">#&gt; bibtex=TRUE)', 'toBibtex(.)', or set</span></span>
-<span><span class="co">#&gt; 'options(citation.bibtex.max=999)'.</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/citation.html" class="external-link">citation</a></span><span class="op">(</span><span class="st">"ecoregime"</span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
@@ -195,8 +178,6 @@ considered part of the same EDR.</p>
 <span></span>
 <span><span class="co"># We can use primer and deSolve to run the simulations</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">primer</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Loading required package: deSolve</span></span>
-<span><span class="co">#&gt; Loading required package: ggplot2</span></span>
 <span><span class="va">simulated_abun</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">initial</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">isampling</span><span class="op">)</span><span class="op">{</span></span>
 <span>  <span class="co"># Initial abundance in the sampling unit i</span></span>
 <span>  <span class="va">initialN</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">initial</span><span class="op">$</span><span class="va">sp1</span><span class="op">[</span><span class="va">isampling</span><span class="op">]</span>, <span class="va">initial</span><span class="op">$</span><span class="va">sp2</span><span class="op">[</span><span class="va">isampling</span><span class="op">]</span><span class="op">)</span></span>
@@ -218,14 +199,7 @@ data. For each sampling unit (<code>sampling_unit</code>) and
 observation (<code>time</code>), we know the relative abundance of two
 species (<code>sp1</code> and <code>sp2</code>).</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">abundance</span><span class="op">)</span></span>
-<span><span class="co">#&gt;   sampling_unit time       sp1        sp2</span></span>
-<span><span class="co">#&gt; 1             A    1 0.2320000 0.76800000</span></span>
-<span><span class="co">#&gt; 2             A    2 0.4222631 0.57773693</span></span>
-<span><span class="co">#&gt; 3             A    3 0.6354107 0.36458929</span></span>
-<span><span class="co">#&gt; 4             B    1 0.6370968 0.36290323</span></span>
-<span><span class="co">#&gt; 5             B    2 0.8078814 0.19211857</span></span>
-<span><span class="co">#&gt; 6             B    3 0.9066680 0.09333198</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">abundance</span><span class="op">)</span></span></code></pre></div>
 <p>Next, we need to define the <strong>state space</strong> in which
 ecological trajectories live. The state space is a multidimensional
 resemblance space defined by the dissimilarities between every pair of
@@ -248,14 +222,7 @@ Bray-Curtis dissimilarities and generate <strong><span class="math inline">\(D_O
 <code class="sourceCode R"><span></span>
 <span><span class="co"># Generate a matrix containing dissimilarities between states</span></span>
 <span><span class="va">state_dissim</span> <span class="op">&lt;-</span> <span class="fu">vegan</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/vegan/man/vegdist.html" class="external-link">vegdist</a></span><span class="op">(</span><span class="va">abundance</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sp1"</span>, <span class="st">"sp2"</span><span class="op">)</span><span class="op">]</span>, method <span class="op">=</span> <span class="st">"bray"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">state_dissim</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">6</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">6</span><span class="op">]</span></span>
-<span><span class="co">#&gt;           1         2           3           4          5          6</span></span>
-<span><span class="co">#&gt; 1 0.0000000 0.1902631 0.403410706 0.405096774 0.57588143 0.67466802</span></span>
-<span><span class="co">#&gt; 2 0.1902631 0.0000000 0.213147639 0.214833707 0.38561836 0.48440495</span></span>
-<span><span class="co">#&gt; 3 0.4034107 0.2131476 0.000000000 0.001686068 0.17247072 0.27125731</span></span>
-<span><span class="co">#&gt; 4 0.4050968 0.2148337 0.001686068 0.000000000 0.17078465 0.26957124</span></span>
-<span><span class="co">#&gt; 5 0.5758814 0.3856184 0.172470722 0.170784654 0.00000000 0.09878659</span></span>
-<span><span class="co">#&gt; 6 0.6746680 0.4844050 0.271257312 0.269571243 0.09878659 0.00000000</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">state_dissim</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">6</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">6</span><span class="op">]</span></span></code></pre></div>
 <p>We can visualize the state space using ordination methods. Here, I
 apply multidimensional scaling (mMDS; <code>smacof</code>) to the
 dissimilarity matrix <strong><span class="math inline">\(D_O\)</span></strong> and plot the distribution of
@@ -265,8 +232,6 @@ of each sampling unit:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Multidimensional scaling</span></span>
 <span><span class="va">state_mds</span> <span class="op">&lt;-</span> <span class="fu">smacof</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/smacof/man/smacofSym.html" class="external-link">smacofSym</a></span><span class="op">(</span><span class="va">state_dissim</span>, ndim <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning in rgl.init(initValue, onlyNULL): RGL: unable to open X11 display</span></span>
-<span><span class="co">#&gt; Warning: 'rgl.init' failed, running with 'rgl.useNULL = TRUE'.</span></span>
 <span><span class="va">state_mds</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span><span class="va">state_mds</span><span class="op">$</span><span class="va">conf</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Define different colors for each trajectory</span></span>
@@ -278,7 +243,6 @@ of each sampling unit:</p>
 <span>     pch <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="va">ID_sampling</span>, each <span class="op">=</span> <span class="fl">3</span><span class="op">)</span>, <span class="co"># use different symbols for each sampling unit</span></span>
 <span>     xlab <span class="op">=</span> <span class="st">"Axis 1"</span>, ylab <span class="op">=</span> <span class="st">"Axis 2"</span>,</span>
 <span>     main <span class="op">=</span> <span class="st">"State space"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="EDR_framework_files/figure-html/state_mds-1.png" width="480" style="display: block; margin: auto;"></p>
 <p>To see how ecological trajectories are distributed in the state
 space, we just need to link the states of each sampling unit in
 chronological order.</p>
@@ -305,7 +269,6 @@ chronological order.</p>
 <span>         <span class="va">state_mds</span><span class="op">[</span><span class="va">isampling</span> <span class="op">+</span> <span class="fl">2</span>, <span class="fl">1</span><span class="op">]</span>, <span class="va">state_mds</span><span class="op">[</span><span class="va">isampling</span> <span class="op">+</span> <span class="fl">2</span>, <span class="fl">2</span><span class="op">]</span>,</span>
 <span>         col <span class="op">=</span> <span class="va">traj.colors</span><span class="op">[</span><span class="fl">1</span><span class="op">+</span><span class="op">(</span><span class="va">isampling</span><span class="op">-</span><span class="fl">1</span><span class="op">)</span><span class="op">/</span><span class="fl">3</span><span class="op">]</span>, arr.adj <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
 <span><span class="op">}</span></span></code></pre></div>
-<p><img src="EDR_framework_files/figure-html/traj_state_mds-1.png" width="480" style="display: block; margin: auto;"></p>
 <p>The <strong>trajectory space</strong> is a multidimensional space
 defined by the dissimilarities between trajectories (i.e., the whole
 sequence of states for each sampling unit). Analogously to the state
@@ -322,14 +285,7 @@ other dissimilarity metric.</p>
 <span>                                            sites <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="va">ID_sampling</span>, each <span class="op">=</span> <span class="fl">3</span><span class="op">)</span>,</span>
 <span>                                            surveys <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="va">ID_obs</span>, <span class="fl">10</span><span class="op">)</span>, distance.type <span class="op">=</span> <span class="st">"DSPD"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">traj_dissim</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">6</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">6</span><span class="op">]</span></span>
-<span><span class="co">#&gt;           A          B         C          D         E         F</span></span>
-<span><span class="co">#&gt; A 0.0000000 0.30509564 0.1084426 0.27711311 0.5425424 0.2600516</span></span>
-<span><span class="co">#&gt; B 0.3050956 0.00000000 0.1409823 0.02576483 0.1520544 0.6244592</span></span>
-<span><span class="co">#&gt; C 0.1084426 0.14098231 0.0000000 0.11299979 0.3784291 0.4231264</span></span>
-<span><span class="co">#&gt; D 0.2771131 0.02576483 0.1129998 0.00000000 0.1756016 0.6031298</span></span>
-<span><span class="co">#&gt; E 0.5425424 0.15205442 0.3784291 0.17560156 0.0000000 0.8146293</span></span>
-<span><span class="co">#&gt; F 0.2600516 0.62445921 0.4231264 0.60312977 0.8146293 0.0000000</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">traj_dissim</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">6</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">6</span><span class="op">]</span></span></code></pre></div>
 <p>In contrast to the state space, in the trajectory space, each
 trajectory is represented by one point:</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
@@ -343,7 +299,6 @@ trajectory is represented by one point:</p>
 <span>     pch <span class="op">=</span> <span class="va">ID_sampling</span>, <span class="co"># use different symbols for each sampling unit</span></span>
 <span>     xlab <span class="op">=</span> <span class="st">"Axis 1"</span>, ylab <span class="op">=</span> <span class="st">"Axis 2"</span>,</span>
 <span>     main <span class="op">=</span> <span class="st">"Trajectory space"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="EDR_framework_files/figure-html/traj_mds-1.png" width="480" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level2">
 <h2 id="defining-edrs">3. Defining EDRs<a class="anchor" aria-label="anchor" href="#defining-edrs"></a>
@@ -407,17 +362,14 @@ abundances over time to see this pattern:</p>
 <span><span class="op">}</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/legend.html" class="external-link">legend</a></span><span class="op">(</span><span class="st">"bottomleft"</span>, legend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sp1"</span>, <span class="st">"sp2"</span><span class="op">)</span>, col <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, lty <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, bg <span class="op">=</span> <span class="st">"white"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="EDR_framework_files/figure-html/sp_variation-1.png" width="480" style="display: block; margin: auto;"></p>
 <p>Or we can test the correlations between the first axis of the state
 space and the species abundances along the trajectories.</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Correlation of the first axis of the state space with the abundance of sp1</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">cor</a></span><span class="op">(</span><span class="va">state_mds</span><span class="op">$</span><span class="va">D1</span>, <span class="va">abundance</span><span class="op">$</span><span class="va">sp1</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 1</span></span>
 <span></span>
 <span><span class="co"># Correlation of the first axis of the state space with the abundance of sp2</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">cor</a></span><span class="op">(</span><span class="va">state_mds</span><span class="op">$</span><span class="va">D1</span>, <span class="va">abundance</span><span class="op">$</span><span class="va">sp2</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] -1</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">cor</a></span><span class="op">(</span><span class="va">state_mds</span><span class="op">$</span><span class="va">D1</span>, <span class="va">abundance</span><span class="op">$</span><span class="va">sp2</span><span class="op">)</span></span></code></pre></div>
 <p>These analyses are fine for extremely simple systems as the one
 simulated in our toy data. However, when we want to apply these or
 similar approaches to empirical data, finding clear dynamical patterns
@@ -486,13 +438,7 @@ relatively low.</p>
 <p>RETRA-EDR has returned two representative trajectories. We can
 summarize their attributes using <code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code>:</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">repr_traj</span><span class="op">)</span></span>
-<span><span class="co">#&gt;    ID Size    Length   Avg_link   Sum_link Avg_density Max_density Avg_depth</span></span>
-<span><span class="co">#&gt; T1 T1    6 0.3577606 0.02996245 0.05992491           3           3  3.666667</span></span>
-<span><span class="co">#&gt; T2 T2    7 0.6048257 0.03925918 0.07851836           3           3  3.500000</span></span>
-<span><span class="co">#&gt;    Max_depth</span></span>
-<span><span class="co">#&gt; T1         4</span></span>
-<span><span class="co">#&gt; T2         4</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">repr_traj</span><span class="op">)</span></span></code></pre></div>
 <p>The output of <code><a href="../reference/retra_edr.html">retra_edr()</a></code> is an object of class
 <code>RETRA</code>. We can extract specific attributes as we do with
 lists.</p>
@@ -509,12 +455,7 @@ trajectories (<em>B</em>, <em>I</em>, and <em>E</em>).</li>
 last state of <em>C</em> and the second state of <em>I</em>.</li>
 </ul>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">repr_traj</span>, <span class="st">"[["</span>, <span class="st">"Segments"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; $T1</span></span>
-<span><span class="co">#&gt; [1] "B[1-2]" "I[2-3]" "E[2-3]"</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $T2</span></span>
-<span><span class="co">#&gt; [1] "C[1-2]" "C[2-3]" "I[2-3]" "E[2-3]"</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">repr_traj</span>, <span class="st">"[["</span>, <span class="st">"Segments"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="visualizing-representative-trajectories-in-the-state-space">4.2. Visualizing representative trajectories in the state space<a class="anchor" aria-label="anchor" href="#visualizing-representative-trajectories-in-the-state-space"></a>
@@ -541,7 +482,6 @@ space using the function <code><a href="https://rdrr.io/r/graphics/plot.default.
 <span><span class="co"># Add a legend</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/legend.html" class="external-link">legend</a></span><span class="op">(</span><span class="st">"bottomright"</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"T1"</span>, <span class="st">"T2"</span>, <span class="st">"Link"</span><span class="op">)</span>, </span>
 <span>       col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"blue"</span>, <span class="st">"black"</span>, <span class="st">"red"</span><span class="op">)</span>, lty <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="EDR_framework_files/figure-html/plot_retra-1.png" width="480" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level3">
 <h3 id="defining-representative-trajectories-based-on-trajectory-features">4.3. Defining representative trajectories based on trajectory
@@ -576,19 +516,7 @@ consists in providing all the details in a data frame:</p>
 <span>               <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"T1"</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span> <span class="co"># The last segment belong to both (T1, T2), choose one</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">new_traj_df</span></span>
-<span><span class="co">#&gt;      RT RT_traj RT_states RT_retra</span></span>
-<span><span class="co">#&gt; 1  T1.1       B         1       T1</span></span>
-<span><span class="co">#&gt; 2  T1.1       B         2       T1</span></span>
-<span><span class="co">#&gt; 3  T1.1       I         2       T1</span></span>
-<span><span class="co">#&gt; 4  T1.1       I         3       T1</span></span>
-<span><span class="co">#&gt; 5  T2.1       C         1       T2</span></span>
-<span><span class="co">#&gt; 6  T2.1       C         2       T2</span></span>
-<span><span class="co">#&gt; 7  T2.1       C         3       T2</span></span>
-<span><span class="co">#&gt; 8  T2.1       I         2       T2</span></span>
-<span><span class="co">#&gt; 9  T2.1       I         3       T2</span></span>
-<span><span class="co">#&gt; 10 T1.2       E         2       T1</span></span>
-<span><span class="co">#&gt; 11 T1.2       E         3       T1</span></span></code></pre></div>
+<span><span class="va">new_traj_df</span></span></code></pre></div>
 <p>The second one consists in providing a list with the sequences of
 segments defining each trajectory. This is particularly useful when we
 want to select a subset in the output of RETRA-EDR:</p>
@@ -604,15 +532,7 @@ want to select a subset in the output of RETRA-EDR:</p>
 <span>  <span class="st">"E[2-3]"</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">new_traj_ls</span></span>
-<span><span class="co">#&gt; [[1]]</span></span>
-<span><span class="co">#&gt; [1] "B[1-2]" "I[2-3]"</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; [[2]]</span></span>
-<span><span class="co">#&gt; [1] "C[1-2]" "C[2-3]" "I[2-3]"</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; [[3]]</span></span>
-<span><span class="co">#&gt; [1] "E[2-3]"</span></span></code></pre></div>
+<span><span class="va">new_traj_ls</span></span></code></pre></div>
 <p>In any case, <code><a href="../reference/define_retra.html">define_retra()</a></code> will return the same
 output</p>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
@@ -634,8 +554,7 @@ output</p>
 <span></span>
 <span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/all.equal.html" class="external-link">all.equal</a></span><span class="op">(</span><span class="va">new_repr_traj</span>, <span class="va">new_repr_traj_ls</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="st">"Yes, both are equal!"</span><span class="op">)</span></span>
-<span><span class="op">}</span></span>
-<span><span class="co">#&gt; [1] "Yes, both are equal!"</span></span></code></pre></div>
+<span><span class="op">}</span></span></code></pre></div>
 <p><code><a href="../reference/define_retra.html">define_retra()</a></code> returns an object of class
 <code>RETRA</code> that you can use to plot the new trajectories:</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
@@ -657,7 +576,6 @@ output</p>
 <span><span class="co"># Add a legend </span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/legend.html" class="external-link">legend</a></span><span class="op">(</span><span class="st">"bottomright"</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"T1.1, T2.1"</span>, <span class="st">"T1.2"</span>, <span class="st">"Link"</span><span class="op">)</span>, </span>
 <span>       col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"darkblue"</span>, <span class="st">"red"</span>, <span class="st">"darkblue"</span><span class="op">)</span>, lty <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="EDR_framework_files/figure-html/plot_newretra-1.png" width="480" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level3">
 <h3 id="variation-of-ecological-properties-along-representative-trajectories">4.4. Variation of ecological properties along representative
@@ -697,15 +615,7 @@ in the trajectory:</p>
 <span>  <span class="va">data</span> <span class="op">&lt;-</span> <span class="va">data</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html" class="external-link">order</a></span><span class="op">(</span><span class="va">data</span><span class="op">$</span><span class="va">RT_states</span><span class="op">)</span>, <span class="op">]</span></span>
 <span><span class="op">}</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">RT_diversity</span><span class="op">$</span><span class="va">T2</span></span>
-<span><span class="co">#&gt;   ID RT_states sampling_unit time       sp1        sp2    Shannon</span></span>
-<span><span class="co">#&gt; 1 C1         1             C    1 0.3761468 0.62385321 0.66214624</span></span>
-<span><span class="co">#&gt; 2 C2         2             C    2 0.5930319 0.40696810 0.67573602</span></span>
-<span><span class="co">#&gt; 3 C3         3             C    3 0.7754031 0.22459689 0.53266482</span></span>
-<span><span class="co">#&gt; 6 I2         4             I    2 0.8009390 0.19906100 0.49909794</span></span>
-<span><span class="co">#&gt; 7 I3         5             I    3 0.9044378 0.09556219 0.31522122</span></span>
-<span><span class="co">#&gt; 4 E2         6             E    2 0.9574203 0.04257971 0.17605768</span></span>
-<span><span class="co">#&gt; 5 E3         7             E    3 0.9809725 0.01902749 0.09422978</span></span></code></pre></div>
+<span><span class="va">RT_diversity</span><span class="op">$</span><span class="va">T2</span></span></code></pre></div>
 <p>Then, we can evaluate the variation of species diversity along the
 representative trajectories graphically:</p>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
@@ -719,7 +629,6 @@ representative trajectories graphically:</p>
 <span>      col <span class="op">=</span> <span class="st">"black"</span><span class="op">)</span></span>
 <span><span class="co"># Add a legend</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/legend.html" class="external-link">legend</a></span><span class="op">(</span><span class="st">"topright"</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"T1"</span>, <span class="st">"T2"</span><span class="op">)</span>, col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"blue"</span>, <span class="st">"black"</span><span class="op">)</span>, lty <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
-<p><img src="EDR_framework_files/figure-html/plot_sp_diversity-1.png" width="480" style="display: block; margin: auto;"></p>
 </div>
 </div>
 <div class="section level2">
@@ -762,9 +671,7 @@ we produced to calculate species diversity.</p>
 <span><span class="va">dDis_T2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/EDR_metrics.html">dDis</a></span><span class="op">(</span>d <span class="op">=</span> <span class="va">state_dissim_T2</span>, d.type <span class="op">=</span> <span class="st">"dStates"</span>, </span>
 <span>         trajectories <span class="op">=</span> <span class="va">abundance_T2</span><span class="op">$</span><span class="va">sampling_unit</span>, states <span class="op">=</span> <span class="va">abundance_T2</span><span class="op">$</span><span class="va">time</span>, </span>
 <span>         reference <span class="op">=</span> <span class="st">"T2"</span><span class="op">)</span></span>
-<span><span class="va">dDis_T2</span></span>
-<span><span class="co">#&gt; dDis (ref. T2) </span></span>
-<span><span class="co">#&gt;      0.1463935</span></span></code></pre></div>
+<span><span class="va">dDis_T2</span></span></code></pre></div>
 <p>Instead of using the representative trajectory as the reference, we
 could use any other trajectory of the EDR to quantify how “immersed” it
 is in the EDR. Let’s compare <em>dDis</em> for trajectories of the
@@ -784,11 +691,7 @@ generated for the original data:</p>
 <span>         reference <span class="op">=</span> <span class="st">"F"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">dDis_I</span></span>
-<span><span class="co">#&gt; dDis (ref. I) </span></span>
-<span><span class="co">#&gt;     0.1847822</span></span>
-<span><span class="va">dDis_F</span></span>
-<span><span class="co">#&gt; dDis (ref. F) </span></span>
-<span><span class="co">#&gt;     0.5809146</span></span></code></pre></div>
+<span><span class="va">dDis_F</span></span></code></pre></div>
 <p>As expected, the dispersion when trajectory <em>F</em> is taken as
 the reference is larger than for trajectory <em>I</em>, indicating that
 <em>F</em> is more isolated than <em>I</em> within the EDR.</p>
@@ -819,11 +722,7 @@ weight each trajectory by the initial abundance of <em>sp2</em>:</p>
 <span>         trajectories <span class="op">=</span> <span class="va">ID_sampling</span>, reference <span class="op">=</span> <span class="st">"F"</span>, </span>
 <span>         w.type <span class="op">=</span> <span class="st">"precomputed"</span>, w.values <span class="op">=</span> <span class="va">initial_sp2</span><span class="op">[</span><span class="op">-</span><span class="va">ind_F</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="va">dDis_I_w</span></span>
-<span><span class="co">#&gt; dDis (ref. I) </span></span>
-<span><span class="co">#&gt;     0.2517555</span></span>
-<span><span class="va">dDis_F_w</span></span>
-<span><span class="co">#&gt; dDis (ref. F) </span></span>
-<span><span class="co">#&gt;     0.4742493</span></span></code></pre></div>
+<span><span class="va">dDis_F_w</span></span></code></pre></div>
 <p>In comparison with the previous results, <em>dDis</em> has increased
 and decreased for <em>I</em> and <em>F</em>, respectively, as a result
 of the greater abundance of <em>sp2</em> in <em>F</em> than in
@@ -851,9 +750,7 @@ dynamical patterns of all trajectories are very similar.</p>
 <div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Calculate dBD</span></span>
 <span><span class="fu"><a href="../reference/EDR_metrics.html">dBD</a></span><span class="op">(</span>d <span class="op">=</span> <span class="va">state_dissim</span>, d.type <span class="op">=</span> <span class="st">"dStates"</span>, </span>
-<span>    trajectories <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="va">ID_sampling</span>, each <span class="op">=</span> <span class="fl">3</span><span class="op">)</span>, states <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="va">ID_obs</span>, <span class="fl">10</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt;        dBD </span></span>
-<span><span class="co">#&gt; 0.06252172</span></span></code></pre></div>
+<span>    trajectories <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="va">ID_sampling</span>, each <span class="op">=</span> <span class="fl">3</span><span class="op">)</span>, states <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="va">ID_obs</span>, <span class="fl">10</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="dynamic-evenness-deve">5.3. Dynamic evenness (dEve)<a class="anchor" aria-label="anchor" href="#dynamic-evenness-deve"></a>
@@ -866,9 +763,7 @@ trajectories within the EDR.</p>
 <code><a href="../reference/EDR_metrics.html">dEve()</a></code>:</p>
 <div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Calculate dEve</span></span>
-<span><span class="fu"><a href="../reference/EDR_metrics.html">dEve</a></span><span class="op">(</span>d <span class="op">=</span> <span class="va">traj_dissim</span>, d.type <span class="op">=</span> <span class="st">"dTraj"</span>, trajectories <span class="op">=</span> <span class="va">ID_sampling</span><span class="op">)</span></span>
-<span><span class="co">#&gt;      dEve </span></span>
-<span><span class="co">#&gt; 0.5827095</span></span></code></pre></div>
+<span><span class="fu"><a href="../reference/EDR_metrics.html">dEve</a></span><span class="op">(</span>d <span class="op">=</span> <span class="va">traj_dissim</span>, d.type <span class="op">=</span> <span class="st">"dTraj"</span>, trajectories <span class="op">=</span> <span class="va">ID_sampling</span><span class="op">)</span></span></code></pre></div>
 <p>Like <em>dDis</em>, <em>dEve</em> can also be calculated using
 different weights for the individual trajectories of the EDR. In that
 case, <em>dEve</em> is equivalent to the functional evenness index
@@ -880,9 +775,7 @@ increases.</p>
 <div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Calculate dEve weighting trajectories by the initial abundance of sp2</span></span>
 <span><span class="fu"><a href="../reference/EDR_metrics.html">dEve</a></span><span class="op">(</span>d <span class="op">=</span> <span class="va">traj_dissim</span>, d.type <span class="op">=</span> <span class="st">"dTraj"</span>, trajectories <span class="op">=</span> <span class="va">ID_sampling</span>,</span>
-<span>         w.type <span class="op">=</span> <span class="st">"precomputed"</span>, w.values <span class="op">=</span> <span class="va">initial_sp2</span><span class="op">)</span></span>
-<span><span class="co">#&gt;      dEve </span></span>
-<span><span class="co">#&gt; 0.6296034</span></span></code></pre></div>
+<span>         w.type <span class="op">=</span> <span class="st">"precomputed"</span>, w.values <span class="op">=</span> <span class="va">initial_sp2</span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
@@ -1018,7 +911,6 @@ only has one species in common with the other EDRs.</p>
 <span></span>
 <span><span class="co"># Add a legend</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/legend.html" class="external-link">legend</a></span><span class="op">(</span><span class="st">"bottomleft"</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"EDR"</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span>, col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">state.colorsEDRs</span><span class="op">)</span>, lty <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
-<p><img src="EDR_framework_files/figure-html/state_mds_allEDR-1.png" width="480" style="display: block; margin: auto;"></p>
 <p>Let’s see how this is reflected in a dissimilarity matrix generated
 with <code><a href="../reference/dist_edr.html">dist_edr()</a></code>:</p>
 <div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
@@ -1026,11 +918,7 @@ with <code><a href="../reference/dist_edr.html">dist_edr()</a></code>:</p>
 <span><span class="va">EDR_dissim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dist_edr.html">dist_edr</a></span><span class="op">(</span>d <span class="op">=</span> <span class="va">traj_dissim_allEDR</span>, d.type <span class="op">=</span> <span class="st">"dTraj"</span>,</span>
 <span>                       edr <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"EDR1"</span>, <span class="st">"EDR2"</span>, <span class="st">"EDR3"</span><span class="op">)</span>, each <span class="op">=</span> <span class="fl">10</span><span class="op">)</span>, </span>
 <span>                       metric <span class="op">=</span> <span class="st">"dDR"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">EDR_dissim</span>, <span class="fl">2</span><span class="op">)</span></span>
-<span><span class="co">#&gt;      EDR1 EDR2 EDR3</span></span>
-<span><span class="co">#&gt; EDR1 0.00 0.25 0.73</span></span>
-<span><span class="co">#&gt; EDR2 0.39 0.00 0.82</span></span>
-<span><span class="co">#&gt; EDR3 0.67 0.71 0.00</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">EDR_dissim</span>, <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
 <p>As expected, the dissimilarity values between <em>EDR1</em> and
 <em>EDR2</em> are smaller than the dissimilarities between <em>EDR3</em>
 and both, <em>EDR1</em> and <em>EDR2</em>.</p>
