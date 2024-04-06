@@ -13,8 +13,7 @@ vignette: >
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>",
-  cache = TRUE
+  comment = "#>"
 )
 ```
 
@@ -67,7 +66,7 @@ ID_sampling <- LETTERS[1:10]
 ID_obs <- 1:3
 
 # Define initial species abundances
-# set.seed(123)
+set.seed(123)
 initial <- data.frame(sampling_units = ID_sampling, 
                    sp1 = round(runif(10), 2), 
                    sp2 = round(runif(10), 2))
