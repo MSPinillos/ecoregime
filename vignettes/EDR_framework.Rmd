@@ -1,9 +1,7 @@
 ---
 title: "Ecological Dynamic Regime framework"
 author: "Martina Sánchez-Pinillos"
-output: 
-  rmarkdown::html_vignette:
-    toc: TRUE
+output: rmarkdown::html_vignette:
 vignette: >
   %\VignetteIndexEntry{Ecological Dynamic Regime framework}
   %\VignetteEngine{knitr::rmarkdown}
