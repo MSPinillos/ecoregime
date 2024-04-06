@@ -7,9 +7,9 @@
 
 <!-- badges: start -->
 
+[![R-CMD-check](https://github.com/MSPinillos/ecoregime/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/MSPinillos/ecoregime/actions/workflows/R-CMD-check.yaml)
 [![CRAN
 status](https://www.r-pkg.org/badges/version/ecoregime)](https://CRAN.R-project.org/package=ecoregime)
-[![R-CMD-check](https://github.com/MSPinillos/ecoregime/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/MSPinillos/ecoregime/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 `ecoregime` implements the EDR framework to characterize and compare
