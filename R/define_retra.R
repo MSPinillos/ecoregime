@@ -125,10 +125,14 @@
 #' old_retra <- retra_edr(d = d, trajectories = trajectories, states = states,
 #'                        minSegs = 5)
 #'
+#' # retra_edr() returns three representative trajectories
+#' old_retra
+#'
 #' # Keep the last five segments of trajectories "T2" and "T3"
 #' selected_segs <- old_retra$T2$Segments[4:length(old_retra$T2$Segments)]
 #'
 #' # Identify the individual trajectories for each state...
+#' selected_segs
 #' selected_traj <- rep(c(15, 4, 4, 1, 14), each = 2)
 #'
 #' # ...and the states (in the same order as the representative trajectory).
