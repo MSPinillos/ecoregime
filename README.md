@@ -9,6 +9,7 @@
 
 [![CRAN
 status](https://www.r-pkg.org/badges/version/ecoregime)](https://CRAN.R-project.org/package=ecoregime)
+[![R-hub](https://github.com/MSPinillos/ecoregime/actions/workflows/rhub.yaml/badge.svg)](https://github.com/MSPinillos/ecoregime/actions/workflows/rhub.yaml)
 <!-- badges: end -->
 
 `ecoregime` implements the EDR framework to characterize and compare
