@@ -7,9 +7,9 @@ test_that("dissimilarity of an EDR to itself is zero", {
   trajectories <- paste0(abun$EDR, "_", abun$traj)
   states <- abun$state
 
-  dTraj <- ecotraj::trajectoryDistances(d = dStates,
-                                        sites = trajectories,
-                                        surveys = states)
+  dTraj <- ecotraj::trajectoryDistances(ecotraj::defineTrajectories(d = dStates,
+                                                                    sites = trajectories,
+                                                                    surveys = states))
   metrics <- c("dDR", "minDist", "maxDist")
 
   dEDR_traj <- lapply(setNames(metrics, metrics), function(imetric){
@@ -42,9 +42,9 @@ test_that("symmetrize argument works", {
                 EDR_data$EDR3$abundance,
                 EDR4)
   dStates <- vegan::vegdist(abun[, -c(1:3)])
-  dTraj <- ecotraj::trajectoryDistances(d = dStates,
-                                        sites = paste0(abun$EDR, "_", abun$traj),
-                                        surveys = abun$state)
+  dTraj <- ecotraj::trajectoryDistances(ecotraj::defineTrajectories(d = dStates,
+                                                                    sites = paste0(abun$EDR, "_", abun$traj),
+                                                                    surveys = abun$state))
 
   dEDR_asym <- dist_edr(d = as.matrix(dTraj), d.type = "dTraj",
                         edr = c(rep(1:3, each = 30), rep(4, 15)),
@@ -122,9 +122,9 @@ test_that("the properties of dDR are fit", {
                 EDR_data$EDR3$abundance,
                 EDR2_bis, EDR3_sbst)
   dStates <- vegan::vegdist(abun[, -c(1:3)])
-  dTraj <- ecotraj::trajectoryDistances(d = dStates,
-                                        sites = paste0(abun$EDR, "_", abun$traj),
-                                        surveys = abun$state)
+  dTraj <- ecotraj::trajectoryDistances(ecotraj::defineTrajectories(d = dStates,
+                                                                    sites = paste0(abun$EDR, "_", abun$traj),
+                                                                    surveys = abun$state))
   dEDR <- dist_edr(d = as.matrix(dTraj), d.type = "dTraj",
                    edr = c(rep(1:4, each = 30), rep(5, 15)),
                    metric = "dDR",
@@ -154,9 +154,9 @@ test_that("trajectories can be disordered", {
   trajectories <- paste0(abun$EDR, "_", abun$traj)
   states <- abun$state
 
-  dTraj <- ecotraj::trajectoryDistances(d = dStates,
-                                        sites = trajectories,
-                                        surveys = states)
+  dTraj <- ecotraj::trajectoryDistances(ecotraj::defineTrajectories(d = dStates,
+                                                                    sites = trajectories,
+                                                                    surveys = states))
 
   dEDR <- dist_edr(d = as.matrix(dTraj), d.type = "dTraj",
                    edr = unique(abun[, c("EDR", "traj")])$EDR,
@@ -176,9 +176,9 @@ test_that("trajectories can be disordered", {
   trajectories_or <- paste0(abun_or$EDR, "_", abun_or$traj)
   states_or <- abun_or$state
 
-  dTraj_or <- ecotraj::trajectoryDistances(d = dStates_or,
-                                           sites = trajectories_or,
-                                           surveys = states_or)
+  dTraj_or <- ecotraj::trajectoryDistances(ecotraj::defineTrajectories(d = dStates_or,
+                                                                       sites = trajectories_or,
+                                                                       surveys = states_or))
 
   dEDR_or <- dist_edr(d = as.matrix(dTraj_or), d.type = "dTraj",
                       edr = unique(abun_or[, c("EDR", "traj")])$EDR,
@@ -205,9 +205,9 @@ test_that("returns errors", {
   trajectories <- paste0(abun$EDR, "_", abun$traj)
   states <- abun$state
 
-  dTraj <- ecotraj::trajectoryDistances(d = dStates,
-                                        sites = trajectories,
-                                        surveys = states)
+  dTraj <- ecotraj::trajectoryDistances(ecotraj::defineTrajectories(d = dStates,
+                                                                    sites = trajectories,
+                                                                    surveys = states))
 
   expect_error(dist_edr(d = as.data.frame(as.matrix(dTraj)), d.type = "dTraj",
                         edr = rep(1:3, each = 30)),

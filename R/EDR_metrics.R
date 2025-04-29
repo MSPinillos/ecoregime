@@ -225,9 +225,9 @@ dDis <- function(d, d.type, trajectories, states = NULL, reference, w.type = "no
     if (d.type == "dTraj") {
       stop("If w.type = \"length\", 'd' needs to contain dissimilarities between trajectory states (i.e., d.type =\"dStates\").")
     } else {
-      trajL = ecotraj::trajectoryLengths(d = as.matrix(d)[trajectories %in% noRef, trajectories %in% noRef],
-                                         sites = noRef, surveys = noRef_states)
-      w.values = trajL$Trajectory
+      trajL = ecotraj::trajectoryLengths(ecotraj::defineTrajectories(d = as.matrix(d)[trajectories %in% noRef, trajectories %in% noRef],
+                                                                     sites = noRef, surveys = noRef_states))
+      w.values = trajL$Path
     }
   }
 
@@ -243,8 +243,9 @@ dDis <- function(d, d.type, trajectories, states = NULL, reference, w.type = "no
 
   # If d = "dStates", calculate trajectory dissimilarities
   if (d.type == "dStates") {
-    trajD.Ref = as.matrix(ecotraj::trajectoryDistances(d = d, sites = trajectories,
-                                                       surveys = states,...))
+    trajD.Ref = as.matrix(ecotraj::trajectoryDistances(ecotraj::defineTrajectories(d = d, sites = trajectories,
+                                                                                   surveys = states)
+                                                       ,...))
   } else if (d.type == "dTraj") {
     trajD.Ref = as.matrix(d)
     dimnames(trajD.Ref) <- list(trajectories, trajectories)
@@ -302,7 +303,8 @@ dBD <- function(d, d.type, trajectories, states = NULL, ...){
 
   # Trajectory dissimilarity
   if(d.type == "dStates"){
-    trajD <- as.dist(ecotraj::trajectoryDistances(d = d, sites = trajectories, surveys = states,...))
+    trajD <- as.dist(ecotraj::trajectoryDistances(ecotraj::defineTrajectories(d = d, sites = trajectories, surveys = states),
+                                                  ...))
   }
   if(d.type == "dTraj") {
     trajD <- as.dist(d)
@@ -363,7 +365,8 @@ dEve <- function(d, d.type, trajectories, states = NULL, w.type = "none", w.valu
 
   # Trajectory dissimilarity
   if(d.type == "dStates"){
-    trajD <- as.matrix(ecotraj::trajectoryDistances(d = as.matrix(d), sites = trajectories, surveys = states,...))
+    trajD <- as.matrix(ecotraj::trajectoryDistances(ecotraj::defineTrajectories(d = as.matrix(d), sites = trajectories, surveys = states),
+                                                    ...))
   }
   if(d.type == "dTraj") {
     trajD <- as.matrix(d)
@@ -392,8 +395,10 @@ dEve <- function(d, d.type, trajectories, states = NULL, w.type = "none", w.valu
     if (d.type == "dTraj") {
       stop("If w.type = \"length\", 'd' needs to contain dissimilarities between trajectory states (i.e., d.type =\"dStates\").")
     } else {
-      trajL = ecotraj::trajectoryLengths(d = d, sites = trajectories, surveys = states)
-      w.values = trajL$Trajectory
+      trajL = ecotraj::trajectoryLengths(ecotraj::defineTrajectories(d = d,
+                                                                     sites = trajectories,
+                                                                     surveys = states))
+      w.values = trajL$Path
     }
   }
 
