@@ -42,6 +42,7 @@ Suggests:
     RColorBrewer,
     rmarkdown,
     testthat (>= 3.0.0),
-    vegan
+    vegan,
+    viridis
 Config/testthat/edition: 3
 VignetteBuilder: knitr
