@@ -9,6 +9,7 @@
 
 [![CRAN
 status](https://www.r-pkg.org/badges/version/ecoregime)](https://CRAN.R-project.org/package=ecoregime)
+[![](http://cranlogs.r-pkg.org/badges/grand-total/ecoregime)](https://cran.r-project.org/package=ecoregime)
 [![R-hub](https://github.com/MSPinillos/ecoregime/actions/workflows/rhub.yaml/badge.svg)](https://github.com/MSPinillos/ecoregime/actions/workflows/rhub.yaml)
 <!-- badges: end -->
 
