@@ -39,7 +39,7 @@ resulting dissimilarity matrix (\code{"mean"}, \code{"min"}, \verb{"max}, \code{
 If \code{NULL} (default), the matrix is not symmetrized.}
 
 \item{...}{Only if \code{d.type} = \code{"dStates"}. Further arguments to calculate
-trajectory dissimilarities. See \code{\link[ecotraj:trajectorymetrics]{ecotraj::trajectoryDistances()}}.}
+trajectory dissimilarities. See \code{\link[ecotraj:trajectoryComparison]{ecotraj::trajectoryDistances()}}.}
 }
 \value{
 Matrix including the dissimilarities between every pair of EDRs.
@@ -143,8 +143,8 @@ id_edr <- vapply(strsplit(labels(dStates), "_"), function(x){
                 }, character(1))
 
 # Calculate dissimilarities between every pair of trajectories
-dTraj <- ecotraj::trajectoryDistances(d = dStates, sites = id_traj,
-                                      surveys = id_state,
+dTraj <- ecotraj::trajectoryDistances(ecotraj::defineTrajectories(d = dStates, sites = id_traj,
+                                                                  surveys = id_state),
                                       distance.type = "DSPD")
 
 # Use labels in dTraj to identify EDRs

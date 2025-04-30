@@ -140,9 +140,9 @@ RT1 <- retra_edr(d = d, trajectories = trajectories, states = states,
 # Identify representative trajectories from segment dissimilarities
 
 # Calculate segment dissimilarities using the Hausdorff distance
-dSegs <- ecotraj::segmentDistances(d = d, sites = trajectories,
-                                    surveys = states,
-                                    distance.type = "Hausdorff")
+dSegs <- ecotraj::segmentDistances(ecotraj::defineTrajectories(d = d, sites = trajectories,
+                                                               surveys = states),
+                                   distance.type = "Hausdorff")
 dSegs <- dSegs$Dseg
 
 # Identify the trajectory (or site) and states in dSegs:

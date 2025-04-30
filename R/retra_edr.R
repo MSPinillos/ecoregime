@@ -137,9 +137,9 @@
 #' # Identify representative trajectories from segment dissimilarities
 #'
 #' # Calculate segment dissimilarities using the Hausdorff distance
-#' dSegs <- ecotraj::segmentDistances(d = d, sites = trajectories,
-#'                                     surveys = states,
-#'                                     distance.type = "Hausdorff")
+#' dSegs <- ecotraj::segmentDistances(ecotraj::defineTrajectories(d = d, sites = trajectories,
+#'                                                                surveys = states),
+#'                                    distance.type = "Hausdorff")
 #' dSegs <- dSegs$Dseg
 #'
 #' # Identify the trajectory (or site) and states in dSegs:
@@ -231,8 +231,8 @@ retra_edr <- function (d, trajectories, states, minSegs,
     if (nrow(coordSegs) != sum(table(trajectories) - 1)) {
       stop("The number of rows in 'coordSegs' do not coincide with the total number of segments expected from 'trajectories'.")
     }
-    if (ncol(coordSegs) > nrow(coordSegs)) {
-      stop("The number of columns in 'coordSegs' (axes of the ordination space) cannot be greater than the number of rows (trajectory segments)")
+    if (ncol(coordSegs) >= nrow(coordSegs)) {
+      stop("The number of columns in 'coordSegs' (axes of the ordination space) cannot be greater than the number of rows (trajectory segments) - 1")
     }
     if (any(nrow(coordSegs) != length(traj_Segs),
             nrow(coordSegs) != length(state1_Segs),
@@ -256,8 +256,8 @@ retra_edr <- function (d, trajectories, states, minSegs,
     stop("'minSegs' must be an integer in the range 1:(nSegs-1) (nSegs = total number of trajectory segments).")
   }
   if (!is.null(Dim)) {
-    if (Dim %% 1 != 0 | !(Dim %in% 1:sum(table(trajectories) - 1))) {
-      stop("'Dim' must be an integer in the range 1:nSegs (nSegs = total number of trajectory segments).")
+    if (Dim %% 1 != 0 | !(Dim %in% 1:(sum(table(trajectories) - 1)-1))) {
+      stop("'Dim' must be an integer in the range 1:(nSegs-1) (nSegs = total number of trajectory segments).")
     }
   }
 
@@ -265,17 +265,13 @@ retra_edr <- function (d, trajectories, states, minSegs,
 
   # Calculate segment distances
   if (all(is.null(dSegs), is.null(coordSegs))){
-    dSegs <- ecotraj::segmentDistances(d = d, sites = trajectories, surveys = states)
+    dSegs <- ecotraj::segmentDistances(ecotraj::defineTrajectories(d = d, sites = trajectories, surveys = states))
     dSegs <- dSegs$Dseg
   }
 
   # Calculate the coordinates in a MDS
   if (is.null(Dim)) {
-    Dim <- sum(table(trajectories) - 1)
-  }
-  if (Dim == sum(table(trajectories) - 1)) {
-    ndim <- Dim - 1
-  } else {
+    Dim <- sum(table(trajectories) - 1) - 1
     ndim <- Dim
   }
 
@@ -449,7 +445,7 @@ retra_edr <- function (d, trajectories, states, minSegs,
     d_medoids <- d[idst, idst]
 
     # Calculate segment dissimilarities for the medoids
-    dSegs_medoids <- ecotraj::segmentDistances(d = d_medoids, sites = trajectories[idst], surveys = states[idst])
+    dSegs_medoids <-  ecotraj::segmentDistances(ecotraj::defineTrajectories(d = d_medoids, sites = trajectories[idst], surveys = states[idst]))
     dSegs_medoids <- as.matrix(dSegs_medoids$Dinifin)[medoids_nms, medoids_nms]
 
     # Identify the minimum distance between initial and final segment states

@@ -57,7 +57,7 @@ trajectory states and \code{d.type} = \code{"dStates"}.
 equal to the number of trajectories containing the weight of each trajectory.}
 
 \item{...}{Only if \code{d.type} = \code{"dStates"}. Further arguments to calculate
-trajectory dissimilarities. See \code{\link[ecotraj:trajectorymetrics]{ecotraj::trajectoryDistances()}}.}
+trajectory dissimilarities. See \code{\link[ecotraj:trajectoryComparison]{ecotraj::trajectoryDistances()}}.}
 }
 \value{
 \itemize{
