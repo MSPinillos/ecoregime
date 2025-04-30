@@ -1,4 +1,13 @@
-# ecoregime (development version)
+# ecoregime 0.2.1
+
+## Bugfixes
+
+* Fixed errors due to incompatibilities with ecotraj 1.0.0
+
+## New features
+
+* `plot_edr()` represents EDR trajectories and states according to pre-defined 
+colors or variables
 
 # ecoregime 0.2.0
 
