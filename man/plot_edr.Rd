@@ -2,7 +2,7 @@
 % Please edit documentation in R/plot_edr.R
 \name{plot_edr}
 \alias{plot_edr}
-\title{Plot EDR trajectories and states}
+\title{Plot Ecological Dynamic Regimes}
 \usage{
 plot_edr(
   x,

@@ -1,4 +1,4 @@
-#' Plot EDR trajectories and states
+#' Plot Ecological Dynamic Regimes
 #'
 #' @description
 #' Represents EDR trajectories in the state space. Trajectories and/or states can
