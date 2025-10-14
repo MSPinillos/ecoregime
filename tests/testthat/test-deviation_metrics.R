@@ -114,273 +114,6 @@ test_that("returns expected results when method = 'nearest_state' and 'd' is not
 
 })
 
-test_that("returns expected results when method = 'projection' and 'd' is metric", {
-  coord <-  data.frame(x = c(5, 9, 13, 23,
-                             5, 13, 13,
-                             20, 9, 13,
-                             5, 9, 9,
-                             14, 16, 19,
-                             14, 16, 19),
-                       y = c(2, 5, 2, 2,
-                             8, 8, 20,
-                             4, 7, 4,
-                             4, 10, 6,
-                             8, 12, 12,
-                             12, 20, 14))
-  d <- as.matrix(dist(coord))
-  trajectories <- c(rep("R1", 4),
-                    rep("R2", 3),
-                    rep("T1", 3),
-                    rep("T2", 3),
-                    rep("T3", 3),
-                    rep("T4", 3))
-  states <- as.integer(c(1:4, rep(1:3, 5)))
-  reference <- define_retra(data = list(c("R1[1-2]", "R1[2-3]", "R1[3-4]"),
-                                        c("R2[1-2]", "R2[2-3]")))
-
-  disturbed_trajectories <- paste0("T", 1:4)
-  disturbed_states <- rep(2, 4)
-  predisturbed_states = rep(1, 4)
-
-  stt <- data.table::data.table(state_to_trajectory(d = d, trajectories = trajectories, states = states,
-                                                    target_states = 8:length(trajectories), reference = reference,
-                                                    method = "projection"))
-
-  expected_values <- list(
-
-    Rt = data.frame(disturbed_trajectories = disturbed_trajectories,
-                    Rt = c(1-d[8,9], 1-d[11,12], 1-d[14,15], 1-d[17,18])),
-
-    A = data.frame(disturbed_trajectories = rep(disturbed_trajectories, each = length(reference)),
-                   reference = rep(c("newT.1", "newT.2"), length(disturbed_trajectories)),
-                   A_abs = c(NA,
-                             NA,
-                             NA,
-                             stt[target_state == 12 & reference == "newT.2"]$distance - stt[target_state == 11 & reference == "newT.2"]$distance,
-                             stt[target_state == 15 & reference == "newT.1"]$distance - stt[target_state == 14 & reference == "newT.1"]$distance,
-                             stt[target_state == 15 & reference == "newT.2"]$distance - stt[target_state == 14 & reference == "newT.2"]$distance,
-                             stt[target_state == 18 & reference == "newT.1"]$distance - stt[target_state == 17 & reference == "newT.1"]$distance,
-                             stt[target_state == 18 & reference == "newT.2"]$distance - stt[target_state == 17 & reference == "newT.2"]$distance),
-
-                   A_rel = c(NA,
-                             NA,
-                             NA,
-                             (stt[target_state == 12 & reference == "newT.2"]$distance - stt[target_state == 11 & reference == "newT.2"]$distance) / d[11,12],
-                             (stt[target_state == 15 & reference == "newT.1"]$distance - stt[target_state == 14 & reference == "newT.1"]$distance) / d[14,15],
-                             (stt[target_state == 15 & reference == "newT.2"]$distance - stt[target_state == 14 & reference == "newT.2"]$distance) / d[14,15],
-                             (stt[target_state == 18 & reference == "newT.1"]$distance - stt[target_state == 17 & reference == "newT.1"]$distance) / d[17,18],
-                             (stt[target_state == 18 & reference == "newT.2"]$distance - stt[target_state == 17 & reference == "newT.2"]$distance) / d[17,18])),
-
-    Rc = data.frame(disturbed_trajectories = rep(disturbed_trajectories, each = length(reference)),
-                    states = rep(3, length(reference)*length(disturbed_trajectories)),
-                    reference = rep(c("newT.1", "newT.2"), length(disturbed_trajectories)),
-                    Rc_abs = c(NA,
-                               stt[target_state == 9 & reference == "newT.2"]$distance - stt[target_state == 10 & reference == "newT.2"]$distance,
-                               NA,
-                               stt[target_state == 12 & reference == "newT.2"]$distance - stt[target_state == 13 & reference == "newT.2"]$distance,
-                               stt[target_state == 15 & reference == "newT.1"]$distance - stt[target_state == 16 & reference == "newT.1"]$distance,
-                               stt[target_state == 15 & reference == "newT.2"]$distance - stt[target_state == 16 & reference == "newT.2"]$distance,
-                               stt[target_state == 18 & reference == "newT.1"]$distance - stt[target_state == 19 & reference == "newT.1"]$distance,
-                               stt[target_state == 18 & reference == "newT.2"]$distance - stt[target_state == 19 & reference == "newT.2"]$distance),
-
-                    Rc_rel = c(NA,
-                               (stt[target_state == 9 & reference == "newT.2"]$distance - stt[target_state == 10 & reference == "newT.2"]$distance) / d[9,10],
-                               NA,
-                               (stt[target_state == 12 & reference == "newT.2"]$distance - stt[target_state == 13 & reference == "newT.2"]$distance) / d[12,13],
-                               (stt[target_state == 15 & reference == "newT.1"]$distance - stt[target_state == 16 & reference == "newT.1"]$distance) / d[15,16],
-                               (stt[target_state == 15 & reference == "newT.2"]$distance - stt[target_state == 16 & reference == "newT.2"]$distance) / d[15,16],
-                               (stt[target_state == 18 & reference == "newT.1"]$distance - stt[target_state == 19 & reference == "newT.1"]$distance) / d[18,19],
-                               (stt[target_state == 18 & reference == "newT.2"]$distance - stt[target_state == 19 & reference == "newT.2"]$distance) / d[18,19])),
-
-    NC = data.frame(disturbed_trajectories = rep(disturbed_trajectories, each = length(reference)),
-                    states = rep(3, length(reference)*length(disturbed_trajectories)),
-                    reference = rep(c("newT.1", "newT.2"), length(disturbed_trajectories)),
-                    NC_abs = c(- stt[target_state == 8 & reference == "newT.1"]$distance + stt[target_state == 10 & reference == "newT.1"]$distance,
-                               NA,
-                               NA,
-                               - stt[target_state == 11 & reference == "newT.2"]$distance + stt[target_state == 13 & reference == "newT.2"]$distance,
-                               - stt[target_state == 14 & reference == "newT.1"]$distance + stt[target_state == 16 & reference == "newT.1"]$distance,
-                               - stt[target_state == 14 & reference == "newT.2"]$distance + stt[target_state == 16 & reference == "newT.2"]$distance,
-                               - stt[target_state == 17 & reference == "newT.1"]$distance + stt[target_state == 19 & reference == "newT.1"]$distance,
-                               - stt[target_state == 17 & reference == "newT.2"]$distance + stt[target_state == 19 & reference == "newT.2"]$distance),
-
-                    NC_rel = c((- stt[target_state == 8 & reference == "newT.1"]$distance + stt[target_state == 10 & reference == "newT.1"]$distance) / d[8,10],
-                               NA,
-                               NA,
-                               (- stt[target_state == 11 & reference == "newT.2"]$distance + stt[target_state == 13 & reference == "newT.2"]$distance) / d[11,13],
-                               (- stt[target_state == 14 & reference == "newT.1"]$distance + stt[target_state == 16 & reference == "newT.1"]$distance) / d[14,16],
-                               (- stt[target_state == 14 & reference == "newT.2"]$distance + stt[target_state == 16 & reference == "newT.2"]$distance) / d[14,16],
-                               (- stt[target_state == 17 & reference == "newT.1"]$distance + stt[target_state == 19 & reference == "newT.1"]$distance) / d[17,19],
-                               (- stt[target_state == 17 & reference == "newT.2"]$distance + stt[target_state == 19 & reference == "newT.2"]$distance) / d[17,19]))
-  )
-
-  calculated_values <- list(
-    Rt = resistance(d, trajectories = trajectories, states = states,
-                    disturbed_trajectories = disturbed_trajectories,
-                    disturbed_states = disturbed_states,
-                    predisturbed_states = predisturbed_states),
-
-    A = amplitude(d, trajectories = trajectories, states = states,
-                  disturbed_trajectories = disturbed_trajectories,
-                  disturbed_states = disturbed_states,
-                  predisturbed_states = predisturbed_states,
-                  reference = reference, method = "projection"),
-
-    Rc = recovery(d, trajectories = trajectories, states = states,
-                  disturbed_trajectories = disturbed_trajectories,
-                  disturbed_states = disturbed_states,
-                  reference = reference, method = "projection"),
-
-    NC = net_change(d = d, trajectories = trajectories, states = states,
-                    disturbed_trajectories = disturbed_trajectories,
-                    disturbed_states = disturbed_states,
-                    predisturbed_states = predisturbed_states,
-                    reference = reference, method = "projection")
-  )
-
-  expect_equal(expected_values$Rt, calculated_values$Rt)
-  expect_equal(expected_values$A, calculated_values$A)
-  expect_equal(expected_values$Rc, calculated_values$Rc)
-  expect_equal(expected_values$NC, calculated_values$NC)
-
-})
-
-test_that("returns expected results when method = 'projection' and 'd' is not metric", {
-  coord <-  data.frame(x = c(5, 9, 13, 23,
-                             5, 13, 13,
-                             20, 9, 13,
-                             5, 9, 9,
-                             14, 16, 19,
-                             14, 16, 19),
-                       y = c(2, 5, 2, 2,
-                             8, 8, 20,
-                             4, 7, 4,
-                             4, 10, 6,
-                             8, 12, 12,
-                             12, 20, 14))
-  d <- as.matrix(vegan::vegdist(coord))
-
-  trajectories <- c(rep("R1", 4),
-                    rep("R2", 3),
-                    rep("T1", 3),
-                    rep("T2", 3),
-                    rep("T3", 3),
-                    rep("T4", 3))
-  states <- as.integer(c(1:4, rep(1:3, 5)))
-  reference <- define_retra(data = list(c("R1[1-2]", "R1[2-3]", "R1[3-4]"),
-                                        c("R2[1-2]", "R2[2-3]")))
-
-  disturbed_trajectories <- paste0("T", 1:4)
-  disturbed_states <- rep(2, 4)
-  predisturbed_states = rep(1, 4)
-
-  coordStates <- smacof::mds(d, ndim = nrow(d) - 1)$conf
-  euc <- as.matrix(dist(coordStates))
-  stt <- data.table::data.table(state_to_trajectory(d = euc, trajectories = trajectories, states = states,
-                                                    target_states = as.integer(8:length(trajectories)), reference = reference,
-                                                    method = "projection", coordStates = coordStates))
-
-
-  expected_values <- list(
-
-    Rt = data.frame(disturbed_trajectories = disturbed_trajectories,
-                    Rt = c(1-d[8,9], 1-d[11,12], 1-d[14,15], 1-d[17,18])),
-
-    A = data.frame(disturbed_trajectories = rep(disturbed_trajectories, each = length(reference)),
-                   reference = rep(c("newT.1", "newT.2"), length(disturbed_trajectories)),
-                   A_abs = c(NA,
-                             NA,
-                             NA,
-                             NA,
-                             stt[target_state == 15 & reference == "newT.1"]$distance - stt[target_state == 14 & reference == "newT.1"]$distance,
-                             stt[target_state == 15 & reference == "newT.2"]$distance - stt[target_state == 14 & reference == "newT.2"]$distance,
-                             stt[target_state == 18 & reference == "newT.1"]$distance - stt[target_state == 17 & reference == "newT.1"]$distance,
-                             NA),
-
-                   A_rel = c(NA,
-                             NA,
-                             NA,
-                             NA,
-                             (stt[target_state == 15 & reference == "newT.1"]$distance - stt[target_state == 14 & reference == "newT.1"]$distance) / euc[14,15],
-                             (stt[target_state == 15 & reference == "newT.2"]$distance - stt[target_state == 14 & reference == "newT.2"]$distance) / euc[14,15],
-                             (stt[target_state == 18 & reference == "newT.1"]$distance - stt[target_state == 17 & reference == "newT.1"]$distance) / euc[17,18],
-                             NA)),
-
-    Rc = data.frame(disturbed_trajectories = rep(disturbed_trajectories, each = length(reference)),
-                    states = rep(3, length(reference)*length(disturbed_trajectories)),
-                    reference = rep(c("newT.1", "newT.2"), length(disturbed_trajectories)),
-                    Rc_abs = c(NA,
-                               NA,
-                               NA,
-                               stt[target_state == 12 & reference == "newT.2"]$distance - stt[target_state == 13 & reference == "newT.2"]$distance,
-                               stt[target_state == 15 & reference == "newT.1"]$distance - stt[target_state == 16 & reference == "newT.1"]$distance,
-                               stt[target_state == 15 & reference == "newT.2"]$distance - stt[target_state == 16 & reference == "newT.2"]$distance,
-                               stt[target_state == 18 & reference == "newT.1"]$distance - stt[target_state == 19 & reference == "newT.1"]$distance,
-                               NA),
-
-                    Rc_rel = c(NA,
-                               NA,
-                               NA,
-                               (stt[target_state == 12 & reference == "newT.2"]$distance - stt[target_state == 13 & reference == "newT.2"]$distance) / euc[12,13],
-                               (stt[target_state == 15 & reference == "newT.1"]$distance - stt[target_state == 16 & reference == "newT.1"]$distance) / euc[15,16],
-                               (stt[target_state == 15 & reference == "newT.2"]$distance - stt[target_state == 16 & reference == "newT.2"]$distance) / euc[15,16],
-                               (stt[target_state == 18 & reference == "newT.1"]$distance - stt[target_state == 19 & reference == "newT.1"]$distance) / euc[18,19],
-                               NA)),
-
-    NC = data.frame(disturbed_trajectories = rep(disturbed_trajectories, each = length(reference)),
-                    states = rep(3, length(reference)*length(disturbed_trajectories)),
-                    reference = rep(c("newT.1", "newT.2"), length(disturbed_trajectories)),
-                    NC_abs = c(- stt[target_state == 8 & reference == "newT.1"]$distance + stt[target_state == 10 & reference == "newT.1"]$distance,
-                               NA,
-                               NA,
-                               NA,
-                               - stt[target_state == 14 & reference == "newT.1"]$distance + stt[target_state == 16 & reference == "newT.1"]$distance,
-                               - stt[target_state == 14 & reference == "newT.2"]$distance + stt[target_state == 16 & reference == "newT.2"]$distance,
-                               - stt[target_state == 17 & reference == "newT.1"]$distance + stt[target_state == 19 & reference == "newT.1"]$distance,
-                               - stt[target_state == 17 & reference == "newT.2"]$distance + stt[target_state == 19 & reference == "newT.2"]$distance),
-
-                    NC_rel = c((- stt[target_state == 8 & reference == "newT.1"]$distance + stt[target_state == 10 & reference == "newT.1"]$distance) / euc[8,10],
-                               NA,
-                               NA,
-                               NA,
-                               (- stt[target_state == 14 & reference == "newT.1"]$distance + stt[target_state == 16 & reference == "newT.1"]$distance) / euc[14,16],
-                               (- stt[target_state == 14 & reference == "newT.2"]$distance + stt[target_state == 16 & reference == "newT.2"]$distance) / euc[14,16],
-                               (- stt[target_state == 17 & reference == "newT.1"]$distance + stt[target_state == 19 & reference == "newT.1"]$distance) / euc[17,19],
-                               (- stt[target_state == 17 & reference == "newT.2"]$distance + stt[target_state == 19 & reference == "newT.2"]$distance) / euc[17,19]))
-  )
-
-  suppressWarnings(calculated_values <- list(
-    Rt = resistance(d, trajectories = trajectories, states = states,
-                    disturbed_trajectories = disturbed_trajectories,
-                    disturbed_states = disturbed_states,
-                    predisturbed_states = predisturbed_states),
-
-    A = amplitude(d, trajectories = trajectories, states = states,
-                  disturbed_trajectories = disturbed_trajectories,
-                  disturbed_states = disturbed_states,
-                  predisturbed_states = predisturbed_states,
-                  reference = reference, method = "projection"),
-
-    Rc = recovery(d, trajectories = trajectories, states = states,
-                  disturbed_trajectories = disturbed_trajectories,
-                  disturbed_states = disturbed_states,
-                  reference = reference, method = "projection"),
-
-    NC = net_change(d = d, trajectories = trajectories, states = states,
-                    disturbed_trajectories = disturbed_trajectories,
-                    disturbed_states = disturbed_states,
-                    predisturbed_states = predisturbed_states,
-                    reference = reference, method = "projection")
-  ))
-
-  expect_equal(expected_values$Rt, calculated_values$Rt)
-  expect_equal(expected_values$A, calculated_values$A)
-  expect_equal(expected_values$Rc, calculated_values$Rc)
-  expect_equal(expected_values$NC, calculated_values$NC)
-
-})
-
-
 test_that("returns expected results when method = 'mixed' and 'd' is metric", {
   coord <-  data.frame(x = c(5, 9, 13, 23,
                              5, 13, 13,
@@ -644,6 +377,81 @@ test_that("returns expected results when method = 'mixed' and 'd' is not metric"
   expect_equal(expected_values$A, calculated_values$A)
   expect_equal(expected_values$Rc, calculated_values$Rc)
   expect_equal(expected_values$NC, calculated_values$NC)
+
+})
+
+test_that("returns the same results when method = 'projection' and method = 'mixed'", {
+  coord <-  data.frame(x = c(5, 9, 13, 23,
+                             5, 13, 13,
+                             20, 9, 13,
+                             5, 9, 9,
+                             14, 16, 19,
+                             14, 16, 19),
+                       y = c(2, 5, 2, 2,
+                             8, 8, 20,
+                             4, 7, 4,
+                             4, 10, 6,
+                             8, 12, 12,
+                             12, 20, 14))
+  d <- as.matrix(vegan::vegdist(coord))
+
+  trajectories <- c(rep("R1", 4),
+                    rep("R2", 3),
+                    rep("T1", 3),
+                    rep("T2", 3),
+                    rep("T3", 3),
+                    rep("T4", 3))
+  states <- as.integer(c(1:4, rep(1:3, 5)))
+  reference <- define_retra(data = list(c("R1[1-2]", "R1[2-3]", "R1[3-4]"),
+                                        c("R2[1-2]", "R2[2-3]")))
+
+  disturbed_trajectories <- paste0("T", 1:4)
+  disturbed_states <- rep(2, 4)
+  predisturbed_states = rep(1, 4)
+
+  suppressWarnings(calculated_projection <- list(
+    A = amplitude(d, trajectories = trajectories, states = states,
+                  disturbed_trajectories = disturbed_trajectories,
+                  disturbed_states = disturbed_states,
+                  predisturbed_states = predisturbed_states,
+                  reference = reference, method = "projection"),
+
+    Rc = recovery(d, trajectories = trajectories, states = states,
+                  disturbed_trajectories = disturbed_trajectories,
+                  disturbed_states = disturbed_states,
+                  reference = reference, method = "projection"),
+
+    NC = net_change(d = d, trajectories = trajectories, states = states,
+                    disturbed_trajectories = disturbed_trajectories,
+                    disturbed_states = disturbed_states,
+                    predisturbed_states = predisturbed_states,
+                    reference = reference, method = "projection")
+  ))
+
+
+
+  suppressWarnings(calculated_mixed <- list(
+    A = amplitude(d, trajectories = trajectories, states = states,
+                  disturbed_trajectories = disturbed_trajectories,
+                  disturbed_states = disturbed_states,
+                  predisturbed_states = predisturbed_states,
+                  reference = reference, method = "mixed"),
+
+    Rc = recovery(d, trajectories = trajectories, states = states,
+                  disturbed_trajectories = disturbed_trajectories,
+                  disturbed_states = disturbed_states,
+                  reference = reference, method = "mixed"),
+
+    NC = net_change(d = d, trajectories = trajectories, states = states,
+                    disturbed_trajectories = disturbed_trajectories,
+                    disturbed_states = disturbed_states,
+                    predisturbed_states = predisturbed_states,
+                    reference = reference, method = "mixed")
+  ))
+
+  expect_equal(calculated_projection$A, calculated_mixed$A)
+  expect_equal(calculated_projection$Rc, calculated_mixed$Rc)
+  expect_equal(calculated_projection$NC, calculated_mixed$NC)
 
 })
 
