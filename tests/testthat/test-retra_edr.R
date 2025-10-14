@@ -96,6 +96,16 @@ test_that("minSegs and eps work", {
 
 })
 
+test_that("does not return an error when !is.null(Dim)", {
+  d <- EDR_data$EDR1$state_dissim
+  trajectories <- EDR_data$EDR1$abundance$traj
+  states <- EDR_data$EDR1$abundance$state
+  nSegs <- sum(table(trajectories) - 1)
+
+  expect_no_error(retra_edr(d = d, trajectories = trajectories, states = states,
+                            minSegs = 5, Dim = 3))
+})
+
 test_that("attributes are correct when there is only a segment", {
   d <- EDR_data$EDR1$state_dissim
   trajectories <- EDR_data$EDR1$abundance$traj
@@ -111,6 +121,25 @@ test_that("attributes are correct when there is only a segment", {
   expect_equal(retra_minSegsMAX$T1$Link_distance, NA)
   expect_equal(retra_minSegsMAX$T1$Seg_density$Density, nSegs)
   expect_equal(retra_minSegsMAX$T1$Seg_density$kdTree_depth, 0)
+
+})
+
+test_that("returns the same output when states are not in order", {
+  d <- as.matrix(EDR_data$EDR1$state_dissim)
+  trajectories <- EDR_data$EDR1$abundance$traj
+  states <- EDR_data$EDR1$abundance$state
+  retra <- retra_edr(d = d, trajectories = trajectories,
+                     states = states, minSegs = 5)
+
+  order2 <- sample(1:nrow(EDR_data$EDR1$abundance), nrow(EDR_data$EDR1$abundance))
+  data2 <- EDR_data$EDR1$abundance[order2, ]
+  d2 <- as.matrix(vegan::vegdist(data2[, paste0("sp", 1:12)], method = "bray"))
+  trajectories2 <- data2$traj
+  states2 <- data2$state
+  retra2 <- retra_edr(d = d2, trajectories = trajectories2,
+                     states = states2, minSegs = 5)
+
+  expect_equal(retra, retra2)
 
 })
 
