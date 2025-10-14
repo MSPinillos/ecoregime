@@ -9,7 +9,7 @@ its distance from the trajectory and the length and direction of the trajectory.
 
     <a class="navbar-brand me-2" href="../index.html">ecoregime</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.1.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -35,7 +35,7 @@ its distance from the trajectory and the length and direction of the trajectory.
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Position of a state with respect to a trajectory</h1>
-      <small class="dont-index">Source: <a href="https://github.com/MSPinillos/ecoregime/blob/v0.2.1/R/state_to_trajectory.R" class="external-link"><code>R/state_to_trajectory.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/MSPinillos/ecoregime/blob/master/R/state_to_trajectory.R" class="external-link"><code>R/state_to_trajectory.R</code></a></small>
       <div class="d-none name"><code>state_to_trajectory.Rd</code></div>
     </div>
 
@@ -85,18 +85,18 @@ be calculated.</p></dd>
 <dt id="arg-reference">reference<a class="anchor" aria-label="anchor" href="#arg-reference"></a></dt>
 <dd><p>Vector of the same class of <code>trajectories</code> or object of class
 <code>RETRA</code> indicating the reference trajectory to calculate the relative position
-of the <code>target_states</code></p></dd>
+of the <code>target_states</code>.</p></dd>
 
 
 <dt id="arg-method">method<a class="anchor" aria-label="anchor" href="#arg-method"></a></dt>
 <dd><p>Method to calculate the distance and relative position of the
-<code>target_states</code> and the <code>reference</code>. One of <code>"nearest_state"</code>, <code>"projection"</code>
-or <code>"mixed"</code> (see Details).</p></dd>
+<code>target_states</code> and the <code>reference</code>. One of <code>"nearest_state"</code> or <code>"projection"</code>
+(see Details).</p></dd>
 
 
 <dt id="arg-coordstates">coordStates<a class="anchor" aria-label="anchor" href="#arg-coordstates"></a></dt>
 <dd><p>Matrix containing the coordinates of each state (rows) and
-axis (columns) of a metric ordination space (see Details)</p></dd>
+axis (columns) of a metric ordination space (see Details).</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -114,26 +114,22 @@ state).</p></li>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p><code>state_to_trajectory()</code> can calculate the distance and relative position of
-one or more <code>target_states</code> relative to a <code>reference</code> trajectory by three
+one or more <code>target_states</code> relative to a <code>reference</code> trajectory by two
 different methods:</p><ul><li><p><code>"nearest_state"</code> returns the dissimilarity of the <code>target_states</code> to the
 nearest state of the <code>reference</code> trajectory (<code>distance</code>) and calculates the
 relative position of the nearest state within the <code>reference</code>.</p></li>
 <li><p><code>"projection"</code> returns the dissimilarity of the <code>target_states</code> to their
 projection onto the <code>reference</code> trajectory and calculates the relative position
-of the projected state within the <code>reference</code>. This method requires <code>d</code> to be
-metric (i.e. to satisfy the triangle inequality). If <code>d</code> is not metric,
-<code>state_to_trajectory()</code> calculates the Euclidean distance within a transformed
-space generated through multidimensional scaling (Borg and Groenen, 2005). To
-use the state coordinates in a different metric space, use the <code>coordStates</code>
-argument. When the <code>target_states</code> cannot be projected onto any of the segments
-forming the <code>reference</code> trajectory, <code>state_to_trajectory()</code> returns <code>NA</code> for
-both <code>distance</code> and <code>relative_position</code>.</p></li>
-<li><p><code>"mixed"</code> calculates the dissimilarity between the <code>target_states</code> and the
-<code>reference</code> trajectory, as well as their relative position by computing its
-projection onto any of the segments of the reference (analogous to
-<code>method = "projection"</code>). For the <code>target_states</code> that cannot be projected,
-<code>state_to_trajectory()</code> uses the nearest state in the <code>reference</code> to compute
-<code>distance</code> and <code>relative_position</code> (analogous to <code>method = "nearest_state"</code>).</p></li>
+of the projected state within the <code>reference</code>. When the <code>target_states</code> cannot
+be projected onto any of the segments forming the <code>reference</code> and in cases in
+which the dissimilarity to nearest state of the <code>reference</code> is smaller than
+the dissimilarity to the projected state, <code>state_to_trajectory()</code> uses the
+nearest state in the <code>reference</code> to compute <code>distance</code> and <code>relative_position</code>.
+This method requires <code>d</code> to be metric (i.e. to satisfy the triangle inequality).
+If <code>d</code> is not metric, <code>state_to_trajectory()</code> calculates the Euclidean distance
+within a transformed space generated through multidimensional scaling (Borg
+and Groenen, 2005). To use the state coordinates in a different metric space,
+use the <code>coordStates</code> argument.</p></li>
 </ul></div>
     <div class="section level2">
     <h2 id="author">Author<a class="anchor" aria-label="anchor" href="#author"></a></h2>
