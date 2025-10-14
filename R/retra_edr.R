@@ -272,11 +272,10 @@ retra_edr <- function (d, trajectories, states, minSegs,
   # Calculate the coordinates in a MDS
   if (is.null(Dim)) {
     Dim <- sum(table(trajectories) - 1) - 1
-    ndim <- Dim
   }
 
   if (is.null(coordSegs)) {
-    coordSegs <- smacof::mds(delta = dSegs, ndim = ndim, itmax = 300)
+    coordSegs <- smacof::mds(delta = dSegs, ndim = Dim, itmax = 300)
     coordSegs <- coordSegs$conf
   }
 
