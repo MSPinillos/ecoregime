@@ -128,4 +128,22 @@ test_that("plots selected RT, trajectories, and links in one color (each)", {
 
 })
 
+test_that("plots trajectories when states are not in order", {
+  skip_on_cran()
+  # Empty test that returns Skip and Warning
+  order2 <- sample(1:nrow(EDR_data$EDR1$abundance), nrow(EDR_data$EDR1$abundance), replace = F)
+  data <- EDR_data$EDR1$abundance[order2, ]
+  d <- as.matrix(vegan::vegdist(data[, paste0("sp", 1:12)], method = "bray"))
+  trajectories <- data$traj
+  states <- data$state
+
+  retra <- retra_edr(d = d, trajectories = trajectories,
+                     states = states, minSegs = 5)
+
+  plot(retra, d = d, trajectories = trajectories, states = states,
+       select_RT = "T3", sel.color = "orange",
+       traj.colors = "lightblue",
+       link.color = "red", link.lty = NULL,
+       main = "States are not in order")
+})
 
