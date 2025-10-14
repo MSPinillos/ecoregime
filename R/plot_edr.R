@@ -202,7 +202,7 @@ plot_edr <- function(x, trajectories, states, traj.colors = NULL, state.colors =
        ylab = paste0("Axis ", axes[2]), ...)
 
   if (type == "trajectories") {
-    lapply(seq_along(st_coord.ls), function(itraj){
+    for (itraj in seq_along(st_coord.ls)) {
       istate = 1
       while (istate < nrow(st_coord.ls[[itraj]])) {
         shape::Arrows(x0 = st_coord.ls[[itraj]][istate, axes[1]], y0 = st_coord.ls[[itraj]][istate, axes[2]],
@@ -210,11 +210,11 @@ plot_edr <- function(x, trajectories, states, traj.colors = NULL, state.colors =
                       col = traj.colors[itraj], arr.adj = 1)
         istate = istate + 1
       }
-    })
+    }
   } else if (type %in% c("states", "gradient")) {
-    lapply(seq_along(st_coord.ls), function(itraj){
+    for (itraj in seq_along(st_coord.ls)) {
       istate = 1
-      if (initial == T) {
+      if (any(initial == T, nrow(st_coord.ls[[itraj]]) == 1)) {
         graphics::points(x = st_coord.ls[[itraj]][istate, axes[1]], y = st_coord.ls[[itraj]][istate, axes[2]],
                          col = state.colors.ls[[itraj]][istate], pch = 20)
       }
@@ -230,6 +230,6 @@ plot_edr <- function(x, trajectories, states, traj.colors = NULL, state.colors =
                       arr.col = state.colors.ls[[itraj]][istate+1])
         istate = istate + 1
       }
-    })
+    }
   }
 }
