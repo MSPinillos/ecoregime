@@ -30,14 +30,14 @@ be calculated.}
 
 \item{reference}{Vector of the same class of \code{trajectories} or object of class
 \code{RETRA} indicating the reference trajectory to calculate the relative position
-of the \code{target_states}}
+of the \code{target_states}.}
 
 \item{method}{Method to calculate the distance and relative position of the
-\code{target_states} and the \code{reference}. One of \code{"nearest_state"}, \code{"projection"}
-or \code{"mixed"} (see Details).}
+\code{target_states} and the \code{reference}. One of \code{"nearest_state"} or \code{"projection"}
+(see Details).}
 
 \item{coordStates}{Matrix containing the coordinates of each state (rows) and
-axis (columns) of a metric ordination space (see Details)}
+axis (columns) of a metric ordination space (see Details).}
 }
 \value{
 The function \code{state_to_trajectory()} returns a data frame of four columns
@@ -59,7 +59,7 @@ its distance from the trajectory and the length and direction of the trajectory.
 }
 \details{
 \code{state_to_trajectory()} can calculate the distance and relative position of
-one or more \code{target_states} relative to a \code{reference} trajectory by three
+one or more \code{target_states} relative to a \code{reference} trajectory by two
 different methods:
 \itemize{
 \item \code{"nearest_state"} returns the dissimilarity of the \code{target_states} to the
@@ -67,20 +67,16 @@ nearest state of the \code{reference} trajectory (\code{distance}) and calculate
 relative position of the nearest state within the \code{reference}.
 \item \code{"projection"} returns the dissimilarity of the \code{target_states} to their
 projection onto the \code{reference} trajectory and calculates the relative position
-of the projected state within the \code{reference}. This method requires \code{d} to be
-metric (i.e. to satisfy the triangle inequality). If \code{d} is not metric,
-\code{state_to_trajectory()} calculates the Euclidean distance within a transformed
-space generated through multidimensional scaling (Borg and Groenen, 2005). To
-use the state coordinates in a different metric space, use the \code{coordStates}
-argument. When the \code{target_states} cannot be projected onto any of the segments
-forming the \code{reference} trajectory, \code{state_to_trajectory()} returns \code{NA} for
-both \code{distance} and \code{relative_position}.
-\item \code{"mixed"} calculates the dissimilarity between the \code{target_states} and the
-\code{reference} trajectory, as well as their relative position by computing its
-projection onto any of the segments of the reference (analogous to
-\code{method = "projection"}). For the \code{target_states} that cannot be projected,
-\code{state_to_trajectory()} uses the nearest state in the \code{reference} to compute
-\code{distance} and \code{relative_position} (analogous to \code{method = "nearest_state"}).
+of the projected state within the \code{reference}. When the \code{target_states} cannot
+be projected onto any of the segments forming the \code{reference} and in cases in
+which the dissimilarity to nearest state of the \code{reference} is smaller than
+the dissimilarity to the projected state, \code{state_to_trajectory()} uses the
+nearest state in the \code{reference} to compute \code{distance} and \code{relative_position}.
+This method requires \code{d} to be metric (i.e. to satisfy the triangle inequality).
+If \code{d} is not metric, \code{state_to_trajectory()} calculates the Euclidean distance
+within a transformed space generated through multidimensional scaling (Borg
+and Groenen, 2005). To use the state coordinates in a different metric space,
+use the \code{coordStates} argument.
 }
 }
 \examples{

@@ -15,12 +15,12 @@
 #' be calculated.
 #' @param reference Vector of the same class of `trajectories` or object of class
 #' `RETRA` indicating the reference trajectory to calculate the relative position
-#' of the `target_states`
+#' of the `target_states`.
 #' @param method Method to calculate the distance and relative position of the
-#' `target_states` and the `reference`. One of `"nearest_state"`, `"projection"`
-#' or `"mixed"` (see Details).
+#' `target_states` and the `reference`. One of `"nearest_state"` or `"projection"`
+#' (see Details).
 #' @param coordStates Matrix containing the coordinates of each state (rows) and
-#' axis (columns) of a metric ordination space (see Details)
+#' axis (columns) of a metric ordination space (see Details).
 #'
 #' @return
 #' The function `state_to_trajectory()` returns a data frame of four columns
@@ -36,27 +36,23 @@
 #'
 #' @details
 #' `state_to_trajectory()` can calculate the distance and relative position of
-#' one or more `target_states` relative to a `reference` trajectory by three
+#' one or more `target_states` relative to a `reference` trajectory by two
 #' different methods:
 #' * `"nearest_state"` returns the dissimilarity of the `target_states` to the
 #' nearest state of the `reference` trajectory (`distance`) and calculates the
 #' relative position of the nearest state within the `reference`.
 #' * `"projection"` returns the dissimilarity of the `target_states` to their
 #' projection onto the `reference` trajectory and calculates the relative position
-#' of the projected state within the `reference`. This method requires `d` to be
-#' metric (i.e. to satisfy the triangle inequality). If `d` is not metric,
-#' `state_to_trajectory()` calculates the Euclidean distance within a transformed
-#' space generated through multidimensional scaling (Borg and Groenen, 2005). To
-#' use the state coordinates in a different metric space, use the `coordStates`
-#' argument. When the `target_states` cannot be projected onto any of the segments
-#' forming the `reference` trajectory, `state_to_trajectory()` returns `NA` for
-#' both `distance` and `relative_position`.
-#' * `"mixed"` calculates the dissimilarity between the `target_states` and the
-#' `reference` trajectory, as well as their relative position by computing its
-#' projection onto any of the segments of the reference (analogous to
-#' `method = "projection"`). For the `target_states` that cannot be projected,
-#' `state_to_trajectory()` uses the nearest state in the `reference` to compute
-#' `distance` and `relative_position` (analogous to `method = "nearest_state"`).
+#' of the projected state within the `reference`. When the `target_states` cannot
+#' be projected onto any of the segments forming the `reference` and in cases in
+#' which the dissimilarity to nearest state of the `reference` is smaller than
+#' the dissimilarity to the projected state, `state_to_trajectory()` uses the
+#' nearest state in the `reference` to compute `distance` and `relative_position`.
+#' This method requires `d` to be metric (i.e. to satisfy the triangle inequality).
+#' If `d` is not metric, `state_to_trajectory()` calculates the Euclidean distance
+#' within a transformed space generated through multidimensional scaling (Borg
+#' and Groenen, 2005). To use the state coordinates in a different metric space,
+#' use the `coordStates` argument.
 #'
 #' @author Martina Sánchez-Pinillos
 #'
@@ -243,6 +239,18 @@ state_to_trajectory <- function(d, trajectories, states, target_states, referenc
     ## PROJECTION BASED ON DISSIMILARITIES -------------------------------------
 
     if (is_metric == T) {
+      # Distance to and relative position of the nearest state
+      st_to_traj_states.ls <- lapply(target_states, function(itarget){
+        lapply(setNames(names(ref_states), names(ref_states)), function(iRT){
+          df <- data.frame(target_state = itarget,
+                           reference = iRT,
+                           distance = min(d_mat[itarget, ref_states[[iRT]]]))
+          which_state <- which.min(d_mat[itarget, ref_states[[iRT]]])
+          df$relative_position = sum(d_ref[[iRT]][1:which_state]) / sum(d_ref[[iRT]])
+          return(df)
+        })
+      })
+
       # Position of target states with respect to their projection onto the reference
       st_to_traj.ls <- lapply(seq_along(d_tar_ref), function(itarget){
         lapply(setNames(names(d_tar_ref[[itarget]]), names(d_tar_ref[[itarget]])), function(iRT){
@@ -250,6 +258,7 @@ state_to_trajectory <- function(d, trajectories, states, target_states, referenc
           d_tar_ref[[itarget]][[iRT]][, P := rowSums(d_tar_ref[[itarget]][[iRT]][, c('d1', 'd2', 'dseg')])]
           d_tar_ref[[itarget]][[iRT]][, A := sqrt(P/2 * (P/2 - d1) * (P/2 - d2) * (P/2 - dseg))]
           d_tar_ref[[itarget]][[iRT]][, st_to_seg := 2 * A / dseg]
+          # Number of segments
           d_tar_ref[[itarget]][[iRT]][, segment := 1:.N]
           # Components of d1 and d2 onto dseg (use 'abs' to avoid negative values for lack of precision)
           d_tar_ref[[itarget]][[iRT]][, d1_dseg := sqrt(abs(d1^2 - st_to_seg^2))]
@@ -257,38 +266,28 @@ state_to_trajectory <- function(d, trajectories, states, target_states, referenc
           # Select projections within segment limits and the minimum state-to-projection dissimilarity
           d_tar_ref[[itarget]][[iRT]] <- d_tar_ref[[itarget]][[iRT]][dseg - d1_dseg >= 0 & dseg - d2_dseg >= 0][which.min(st_to_seg)]
 
-          # Relative position
-          if (nrow(d_tar_ref[[itarget]][[iRT]]) > 0) {
+          # Check if the projection is within the limits and select the minimum dissimilarity
+          # to the projection or to the nearest state
+          if (nrow(d_tar_ref[[itarget]][[iRT]]) > 0 &&
+              min(d_tar_ref[[itarget]][[iRT]]$st_to_seg) < st_to_traj_states.ls[[itarget]][[iRT]]$distance) {
             d_tar_ref[[itarget]][[iRT]][, relative_position := (sum(d_ref[[iRT]][1:segment]) + d1_dseg) / sum(d_ref[[iRT]])]
           } else {
-            d_tar_ref[[itarget]][[iRT]] <- NULL
+            d_tar_ref[[itarget]][[iRT]] <- data.table::data.table(st_to_seg = st_to_traj_states.ls[[itarget]][[iRT]]$distance,
+                                                                  relative_position = st_to_traj_states.ls[[itarget]][[iRT]]$relative_position)
           }
+
           return(d_tar_ref[[itarget]][[iRT]])
+
         })
       })
 
       # Convert into a data frame
       st_to_traj <- do.call(rbind, lapply(seq_along(st_to_traj.ls), function(itarget){
         do.call(rbind, lapply(names(st_to_traj.ls[[itarget]]), function(iRT){
-          if (!is.null(st_to_traj.ls[[itarget]][[iRT]])) {
-            df <- data.frame(target_state = target_states[itarget],
-                             reference = iRT,
-                             distance = st_to_traj.ls[[itarget]][[iRT]]$st_to_seg,
-                             relative_position = st_to_traj.ls[[itarget]][[iRT]]$relative_position)
-          } else {
-            if (method == "projection") {
-              df <- data.frame(target_state = target_states[itarget],
-                               reference = iRT,
-                               distance = NA,
-                               relative_position = NA)
-            }
-            if (method == "mixed") {
-              df <- data.frame(target_state = target_states[itarget],
-                               reference = iRT,
-                               distance = min(d_mat[target_states[itarget], ref_states[[iRT]]]),
-                               relative_position = sum(d_ref[[iRT]][1:which.min(d_mat[target_states[itarget], ref_states[[iRT]]])]) / sum(d_ref[[iRT]]))
-            }
-          }
+          df <- data.frame(target_state = target_states[itarget],
+                           reference = iRT,
+                           distance = st_to_traj.ls[[itarget]][[iRT]]$st_to_seg,
+                           relative_position = st_to_traj.ls[[itarget]][[iRT]]$relative_position)
           return(df)
         }))
       }))
@@ -300,7 +299,7 @@ state_to_trajectory <- function(d, trajectories, states, target_states, referenc
 
       # Use a transformed metric space
       if (is.null(coordStates)) {
-        warning("The dissimilarity metric used in 'd' does not satisfy the triangle inequality. \nThe state space was transformed using metric multidimensional scaling.")
+        warning("The dissimilarity metric used in 'd' does not satisfy the triangle inequality. The state space was transformed using metric multidimensional scaling.")
 
         # Compute MDS and extract the state coordinates
         mds <- smacof::mds(d_mat, ndim = nrow(d_mat) - 1)
@@ -315,7 +314,7 @@ state_to_trajectory <- function(d, trajectories, states, target_states, referenc
       # projections onto the reference trajectory
       st_to_traj.ls <- lapply(setNames(target_states, target_states), function(itarget){
         lapply(setNames(names(ref_states), names(ref_states)), function(iRT){
-          # Coordinates and euclidean distances of the reference states
+          # Coordinates and euclidean distances of the reference states (segments)
           coordRef <- coordStates[ref_states[[iRT]], ]
           eucl_ref <- as.matrix(dist(coordRef))
           eucl_ref <- c(0, sapply(1:(length(ref_states[[iRT]]) - 1), function(iseg){
@@ -349,21 +348,15 @@ state_to_trajectory <- function(d, trajectories, states, target_states, referenc
                                  c("target_state", "reference", "distance", "relative_position")]
           st_to_seg <- st_to_seg[which.min(st_to_seg$distance), ]
 
-          if (nrow(st_to_seg) == 0){
-            if (method == "projection") {
-              st_to_seg <- data.frame(target_state = itarget,
-                                      reference = iRT,
-                                      distance = NA,
-                                      relative_position = NA)
-            }
-            if (method == "mixed") {
-              d_euc <- as.matrix(dist(coordStates))
-              st_to_seg <- data.frame(target_state = itarget,
-                                      reference = iRT,
-                                      distance = min(d_euc[itarget, ref_states[[iRT]]]),
-                                      relative_position = sum(eucl_ref[1:which.min(d_euc[itarget, ref_states[[iRT]]])]) / sum(eucl_ref))
-            }
-
+          # Dissimilarities to trajectory states
+          st_to_traj_state <- as.matrix(dist(coordStates[c(itarget, ref_states[[iRT]]), ]))[-1, 1]
+          # Identify the minimum distance between the nearest state and the projection
+          if (nrow(st_to_seg) == 0 ||
+              st_to_seg$distance > min(st_to_traj_state)) {
+            st_to_seg <- data.frame(target_state = itarget,
+                                    reference = iRT,
+                                    distance = min(st_to_traj_state),
+                                    relative_position = sum(eucl_ref[1:which.min(st_to_traj_state)]) / sum(eucl_ref))
           }
 
           return(st_to_seg)

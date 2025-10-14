@@ -19,16 +19,12 @@ test_that("returns expected results when 'd' is metric and reference is not 'RET
                     distance = c(3, sqrt(45), 3, 4, 5, 5),
                     relative_position = c(0, 0, 5/20, 0, 10/20, 8/20)),
     P = data.frame(target_state = rep(target_states, each = length(reference)),
-                   reference = rep(reference, length(target_states)),
-                   distance = c(NA, NA, NA, 0, 3, NA),
-                   relative_position = c(NA, NA, NA, 4/20, 14/20, NA)),
-    MX = data.frame(target_state = rep(target_states, each = length(reference)),
                     reference = rep(reference, length(target_states)),
                     distance = c(3, sqrt(45), 3, 0, 3, 5),
                     relative_position = c(0, 0, 5/20, 4/20, 14/20, 8/20))
   )
 
-  calculated_values <- lapply(setNames(c("nearest_state", "projection", "mixed"), c("NS", "P", "MX")), function(imethod){
+  calculated_values <- lapply(setNames(c("nearest_state", "projection"), c("NS", "P")), function(imethod){
     state_to_trajectory(d = d, trajectories = trajectories,
                         states = states, target_states = target_states,
                         reference = reference, method = imethod)
@@ -36,7 +32,6 @@ test_that("returns expected results when 'd' is metric and reference is not 'RET
 
   expect_equal(expected_values$NS, calculated_values$NS)
   expect_equal(expected_values$P, calculated_values$P)
-  expect_equal(expected_values$MX, calculated_values$MX)
 
 })
 
@@ -64,7 +59,7 @@ test_that("returns same results when states are not in order", {
   target_states2 <- which(trajectories2 %in% LETTERS[1:3])
 
 
-  expected_values <- lapply(setNames(c("nearest_state", "projection", "mixed"), c("NS", "P", "MX")), function(imethod){
+  expected_values <- lapply(setNames(c("nearest_state", "projection"), c("NS", "P")), function(imethod){
     df <- state_to_trajectory(d = d, trajectories = trajectories,
                               states = states, target_states = target_states,
                               reference = reference, method = imethod)
@@ -72,7 +67,7 @@ test_that("returns same results when states are not in order", {
     return(df)
   })
 
-  calculated_values <- lapply(setNames(c("nearest_state", "projection", "mixed"), c("NS", "P", "MX")), function(imethod){
+  calculated_values <- lapply(setNames(c("nearest_state", "projection"), c("NS", "P")), function(imethod){
     df <- state_to_trajectory(d = d2, trajectories = trajectories2,
                               states = states2, target_states = target_states2,
                               reference = reference, method = imethod)
@@ -84,7 +79,6 @@ test_that("returns same results when states are not in order", {
 
   expect_equal(expected_values$NS, calculated_values$NS)
   expect_equal(expected_values$P, calculated_values$P)
-  expect_equal(expected_values$MX, calculated_values$MX)
 
 })
 
@@ -111,16 +105,12 @@ test_that("returns expected results when 'd' is metric and reference is 'RETRA'"
                     distance = c(3, sqrt(45), 3, 4, 5, 5),
                     relative_position = c(0, 0, 5/20, 0, 10/20, 8/20)),
     P = data.frame(target_state = rep(target_states, each = length(reference)),
-                   reference = rep(names(reference), length(target_states)),
-                   distance = c(NA, NA, NA, 0, 3, NA),
-                   relative_position = c(NA, NA, NA, 4/20, 14/20, NA)),
-    MX = data.frame(target_state = rep(target_states, each = length(reference)),
                     reference = rep(names(reference), length(target_states)),
                     distance = c(3, sqrt(45), 3, 0, 3, 5),
                     relative_position = c(0, 0, 5/20, 4/20, 14/20, 8/20))
   )
 
-  calculated_values <- lapply(setNames(c("nearest_state", "projection", "mixed"), c("NS", "P", "MX")), function(imethod){
+  calculated_values <- lapply(setNames(c("nearest_state", "projection"), c("NS", "P")), function(imethod){
     state_to_trajectory(d = d, trajectories = trajectories,
                         states = states, target_states = target_states,
                         reference = reference, method = imethod)
@@ -128,7 +118,6 @@ test_that("returns expected results when 'd' is metric and reference is 'RETRA'"
 
   expect_equal(expected_values$NS, calculated_values$NS)
   expect_equal(expected_values$P, calculated_values$P)
-  expect_equal(expected_values$MX, calculated_values$MX)
 
 })
 
@@ -161,16 +150,6 @@ test_that("returns expected results when 'd' is not metric and coordStates is pr
                                           d[1,2]/sum(d[1,2], d[2,3], d[3,4]), d[8,9]/sum(d[8,9], d[9,10]),
                                           sum(d[1,2], d[2,3])/sum(d[1,2], d[2,3], d[3,4]), d[8,9]/sum(d[8,9], d[9,10]))),
     P = data.frame(target_state = rep(target_states, each = length(reference)),
-                   reference = rep(names(reference), length(target_states)),
-                   distance = c(NA, NA, NA,
-                                sqrt(euc[6,8]^2 - ((euc[6,8]^2 - euc[6,9]^2 + euc[8,9]^2)/(2*euc[8,9]))^2),
-                                sqrt(euc[7,2]^2 - ((euc[7,2]^2 - euc[7,3]^2 + euc[2,3]^2)/(2*euc[2,3]))^2),
-                                NA),
-                   relative_position = c(NA, NA, NA,
-                                         ((euc[6,8]^2 - euc[6,9]^2 + euc[8,9]^2)/(2*euc[8,9])) / sum(c(euc[8,9], euc[9,10])),
-                                         sum(c(euc[1,2], (euc[7,2]^2 - euc[7,3]^2 + euc[2,3]^2)/(2*euc[2,3]))) / sum(c(euc[1,2], euc[2,3], euc[3,4])),
-                                         NA)),
-    MX = data.frame(target_state = rep(target_states, each = length(reference)),
                     reference = rep(names(reference), length(target_states)),
                     distance = c(euc[5,1], euc[5,8], euc[6,2],
                                  sqrt(euc[6,8]^2 - ((euc[6,8]^2 - euc[6,9]^2 + euc[8,9]^2)/(2*euc[8,9]))^2),
@@ -182,7 +161,7 @@ test_that("returns expected results when 'd' is not metric and coordStates is pr
                                           euc[8,9]/sum(c(euc[8,9], euc[9,10]))))
   )
 
-  calculated_values <- lapply(setNames(c("nearest_state", "projection", "mixed"), c("NS", "P", "MX")), function(imethod){
+  calculated_values <- lapply(setNames(c("nearest_state", "projection"), c("NS", "P")), function(imethod){
     state_to_trajectory(d = d, trajectories = trajectories,
                         states = states, target_states = target_states,
                         reference = reference, method = imethod, coordStates = coordStates)
@@ -190,7 +169,6 @@ test_that("returns expected results when 'd' is not metric and coordStates is pr
 
   expect_equal(expected_values$NS, calculated_values$NS)
   expect_equal(expected_values$P, calculated_values$P)
-  expect_equal(expected_values$MX, calculated_values$MX)
 
 })
 
@@ -212,41 +190,24 @@ test_that("returns expected results when 'd' is not metric and coordStates is NU
   reference <- c("T1", "T2")
   euc <- as.matrix(dist(coordStates))
 
+  expected_values <- data.frame(target_state = rep(target_states, each = length(reference)),
+                                reference = rep(reference, length(target_states)),
+                                distance = c(euc[5,1],
+                                             euc[5,8], euc[6,2],
+                                             sqrt(euc[6,8]^2 - ((euc[6,8]^2 - euc[6,9]^2 + euc[8,9]^2)/(2*euc[8,9]))^2),
+                                             sqrt(euc[7,3]^2 - ((euc[7,3]^2 - euc[7,4]^2 + euc[3,4]^2)/(2*euc[3,4]))^2),
+                                             euc[7,9]),
+                                relative_position = c(0,
+                                                      0, euc[1,2]/sum(c(euc[1,2], euc[2,3], euc[3,4])),
+                                                      ((euc[6,8]^2 - euc[6,9]^2 + euc[8,9]^2)/(2*euc[8,9])) / sum(c(euc[8,9], euc[9,10])),
+                                                      sum(c(euc[1,2], euc[2,3], (euc[7,3]^2 - euc[7,4]^2 + euc[3,4]^2)/(2*euc[3,4]))) / sum(c(euc[1,2], euc[2,3], euc[3,4])),
+                                                      euc[8,9]/sum(c(euc[8,9], euc[9,10]))))
 
-  expected_values <- list(
-    P = data.frame(target_state = rep(target_states, each = length(reference)),
-                   reference = rep(reference, length(target_states)),
-                   distance = c(sqrt(euc[5,2]^2 - ((euc[5,2]^2 - euc[5,3]^2 + euc[2,3]^2)/(2*euc[2,3]))^2),
-                                NA, NA,
-                                sqrt(euc[6,8]^2 - ((euc[6,8]^2 - euc[6,9]^2 + euc[8,9]^2)/(2*euc[8,9]))^2),
-                                sqrt(euc[7,3]^2 - ((euc[7,3]^2 - euc[7,4]^2 + euc[3,4]^2)/(2*euc[3,4]))^2),
-                                NA),
-                   relative_position = c(sum(c(euc[1,2], (euc[5,2]^2 - euc[5,3]^2 + euc[2,3]^2)/(2*euc[2,3]))) / sum(c(euc[1,2], euc[2,3], euc[3,4])),
-                                         NA, NA,
-                                         ((euc[6,8]^2 - euc[6,9]^2 + euc[8,9]^2)/(2*euc[8,9])) / sum(c(euc[8,9], euc[9,10])),
-                                         sum(c(euc[1,2], euc[2,3], (euc[7,3]^2 - euc[7,4]^2 + euc[3,4]^2)/(2*euc[3,4]))) / sum(c(euc[1,2], euc[2,3], euc[3,4])),
-                                         NA)),
-    MX = data.frame(target_state = rep(target_states, each = length(reference)),
-                    reference = rep(reference, length(target_states)),
-                    distance = c(sqrt(euc[5,2]^2 - ((euc[5,2]^2 - euc[5,3]^2 + euc[2,3]^2)/(2*euc[2,3]))^2),
-                                 euc[5,8], euc[6,2],
-                                 sqrt(euc[6,8]^2 - ((euc[6,8]^2 - euc[6,9]^2 + euc[8,9]^2)/(2*euc[8,9]))^2),
-                                 sqrt(euc[7,3]^2 - ((euc[7,3]^2 - euc[7,4]^2 + euc[3,4]^2)/(2*euc[3,4]))^2),
-                                 euc[7,9]),
-                    relative_position = c(sum(c(euc[1,2], (euc[5,2]^2 - euc[5,3]^2 + euc[2,3]^2)/(2*euc[2,3]))) / sum(c(euc[1,2], euc[2,3], euc[3,4])),
-                                          0, euc[1,2]/sum(c(euc[1,2], euc[2,3], euc[3,4])),
-                                          ((euc[6,8]^2 - euc[6,9]^2 + euc[8,9]^2)/(2*euc[8,9])) / sum(c(euc[8,9], euc[9,10])),
-                                          sum(c(euc[1,2], euc[2,3], (euc[7,3]^2 - euc[7,4]^2 + euc[3,4]^2)/(2*euc[3,4]))) / sum(c(euc[1,2], euc[2,3], euc[3,4])),
-                                          euc[8,9]/sum(c(euc[8,9], euc[9,10]))))
-  )
-
-  suppressWarnings(calculated_values <- lapply(setNames(c("projection", "mixed"), c("P", "MX")), function(imethod){
-    state_to_trajectory(d = d, trajectories = trajectories,
+  suppressWarnings(calculated_values <- state_to_trajectory(d = d, trajectories = trajectories,
                         states = states, target_states = target_states,
-                        reference = reference, method = imethod, coordStates = NULL)
-  }))
-  expect_equal(expected_values$P, calculated_values$P)
-  expect_equal(expected_values$MX, calculated_values$MX)
+                        reference = reference, method = "projection", coordStates = NULL))
+
+  expect_equal(expected_values, calculated_values)
 
 })
 
@@ -284,7 +245,7 @@ test_that("returns same or different results depending on the number of target_s
                                                                     method = "projection", coordStates = NULL)))
   stt3 <- data.table::data.table(state_to_trajectory(d = d, trajectories = trajectories, states = states,
                                                      target_states = as.integer(17), reference = reference,
-                                                     method = "mixed", coordStates = NULL))
+                                                     method = "projection", coordStates = NULL))
   stt4 <- data.table::data.table(state_to_trajectory(d = d, trajectories = trajectories, states = states,
                                                      target_states = as.integer(c(8, 17)), reference = reference,
                                                      method = "nearest_state", coordStates = NULL))
@@ -292,15 +253,11 @@ test_that("returns same or different results depending on the number of target_s
                                                      target_states = as.integer(17), reference = reference,
                                                      method = "nearest_state", coordStates = NULL))
 
-  expect_warning(data.table::data.table(state_to_trajectory(d = d, trajectories = trajectories, states = states,
-                                                            target_states = as.integer(c(8, 17)), reference = reference,
-                                                            method = "projection", coordStates = NULL)))
   expect_false(isTRUE(all.equal(stt2[target_state == 17], stt3)))
   expect_equal(stt[target_state == 17], stt3)
   expect_equal(stt4[target_state == 17], stt5)
 
 })
-
 
 test_that("returns errors", {
   coord <-  data.frame(x = c(5, 9, 13, 23,
@@ -318,7 +275,6 @@ test_that("returns errors", {
   reference <- c("T1", "T2")
   retra <- define_retra(data = list(c("T1[1-2]", "T1[2-3]", "T1[3-4]"),
                                     c("T2[1-2]", "T2[2-3]")))
-
 
   expect_error(state_to_trajectory(d = list(d), trajectories = trajectories,
                                    states = states, target_states = target_states,
