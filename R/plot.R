@@ -173,6 +173,9 @@ plot.RETRA <- function (x, d, trajectories, states, select_RT = NULL,
     stop(cat("select_RT = \"", select_RT, "\"; \"", select_RT, "\" needs to be included in 'x' or 'x$RT_names'", sep = ""))
   }
 
+  # Set order
+  traj_st <- data.frame(trajectories = trajectories, states = states)
+  set_order <- order(traj_st$trajectories, traj_st$states)
 
   # STATE COORDINATES ----------------------------------------------------------
 
@@ -186,9 +189,19 @@ plot.RETRA <- function (x, d, trajectories, states, select_RT = NULL,
     statesMDS <- data.frame(d)
   }
   statesMDS$ID <- paste0(trajectories, "_", states)
-  statesMDS.ls <- lapply(unique(trajectories), function(itraj){
-    statesMDS[which(trajectories == itraj), ]
-  })
+  if (any(set_order != 1:length(trajectories))) {
+    statesMDS <- statesMDS[set_order, ]
+    statesMDS.ls <- lapply(unique(trajectories), function(itraj){
+      dt <- statesMDS[which(sort(trajectories) == itraj), ]
+    })
+  } else {
+    statesMDS.ls <- lapply(unique(trajectories), function(itraj){
+      dt <- statesMDS[which(trajectories == itraj), ]
+    })
+  }
+  # statesMDS.ls <- lapply(unique(trajectories), function(itraj){
+  #   statesMDS[which(trajectories == itraj), ]
+  # })
 
   # RT data: ID_plot, RT_ID
   RT_data <- data.frame(ID = paste0(RT_traj, "_", RT_states), RT_traj = RT_traj, RT_states = RT_states,
