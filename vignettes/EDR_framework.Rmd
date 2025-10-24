@@ -133,30 +133,14 @@ plot(state_mds$D1, state_mds$D2,
 
 ```
 
-To see how ecological trajectories are distributed in the state space, we just need to link the states of each sampling unit in chronological order. 
+To see how ecological trajectories are distributed in the state space, we just need to link the states of each sampling unit in chronological order.
 
 ```{r traj_state_mds, fig = TRUE, fig.height = 5, fig.width = 5, fig.align = "center"}
-## -->> This code shows you the process step by step. You could directly use 
-## -->> ecotraj::trajectoryPlot()
 
-# Plot the distribution of the states in the state space
-plot(state_mds$D1, state_mds$D2,
-     col = rep(traj.colors, each = 3), # use different colors for each sampling unit
-     pch = rep(ID_sampling, each = 3), # use different symbols for each sampling unit
-     xlab = "Axis 1", ylab = "Axis 2",
-     main = "State space")
-
-# Link trajectory states in chronological order
-for (isampling in seq(1, 30, 3)) {
-  # From observation 1 to observation 2
-  shape::Arrows(state_mds[isampling, 1], state_mds[isampling, 2],
-         state_mds[isampling + 1, 1], state_mds[isampling + 1, 2],
-         col = traj.colors[1+(isampling-1)/3], arr.adj = 1)
-  # From observation 2 to observation 3
-  shape::Arrows(state_mds[isampling + 1, 1], state_mds[isampling + 1, 2],
-         state_mds[isampling + 2, 1], state_mds[isampling + 2, 2],
-         col = traj.colors[1+(isampling-1)/3], arr.adj = 1)
-}
+# Plot the EDR trajectories in the state space
+plot_edr(state_mds, trajectories = abundance$sampling_unit, 
+         states = as.integer(abundance$time), 
+         traj.colors = traj.colors)
 
 
 ```
