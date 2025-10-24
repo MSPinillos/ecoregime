@@ -23,7 +23,7 @@ RoxygenNote: 7.3.3
 URL: https://mspinillos.github.io/ecoregime/, https://github.com/MSPinillos/ecoregime
 BugReports: https://github.com/MSPinillos/ecoregime/issues
 Depends: 
-    R (>= 3.4.0)
+    R (>= 4.4.0)
 LazyData: true
 Imports: 
     ape,
