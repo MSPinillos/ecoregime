@@ -266,27 +266,11 @@ represent the observations of each sampling unit:</p>
 space, we just need to link the states of each sampling unit in
 chronological order.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">## --&gt;&gt; This code shows you the process step by step. You could directly use </span></span>
-<span><span class="co">## --&gt;&gt; ecotraj::trajectoryPlot()</span></span>
-<span></span>
-<span><span class="co"># Plot the distribution of the states in the state space</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">state_mds</span><span class="op">$</span><span class="va">D1</span>, <span class="va">state_mds</span><span class="op">$</span><span class="va">D2</span>,</span>
-<span>     col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="va">traj.colors</span>, each <span class="op">=</span> <span class="fl">3</span><span class="op">)</span>, <span class="co"># use different colors for each sampling unit</span></span>
-<span>     pch <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="va">ID_sampling</span>, each <span class="op">=</span> <span class="fl">3</span><span class="op">)</span>, <span class="co"># use different symbols for each sampling unit</span></span>
-<span>     xlab <span class="op">=</span> <span class="st">"Axis 1"</span>, ylab <span class="op">=</span> <span class="st">"Axis 2"</span>,</span>
-<span>     main <span class="op">=</span> <span class="st">"State space"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Link trajectory states in chronological order</span></span>
-<span><span class="kw">for</span> <span class="op">(</span><span class="va">isampling</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">30</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="co"># From observation 1 to observation 2</span></span>
-<span>  <span class="fu">shape</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/shape/man/Arrows.html" class="external-link">Arrows</a></span><span class="op">(</span><span class="va">state_mds</span><span class="op">[</span><span class="va">isampling</span>, <span class="fl">1</span><span class="op">]</span>, <span class="va">state_mds</span><span class="op">[</span><span class="va">isampling</span>, <span class="fl">2</span><span class="op">]</span>,</span>
-<span>         <span class="va">state_mds</span><span class="op">[</span><span class="va">isampling</span> <span class="op">+</span> <span class="fl">1</span>, <span class="fl">1</span><span class="op">]</span>, <span class="va">state_mds</span><span class="op">[</span><span class="va">isampling</span> <span class="op">+</span> <span class="fl">1</span>, <span class="fl">2</span><span class="op">]</span>,</span>
-<span>         col <span class="op">=</span> <span class="va">traj.colors</span><span class="op">[</span><span class="fl">1</span><span class="op">+</span><span class="op">(</span><span class="va">isampling</span><span class="op">-</span><span class="fl">1</span><span class="op">)</span><span class="op">/</span><span class="fl">3</span><span class="op">]</span>, arr.adj <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
-<span>  <span class="co"># From observation 2 to observation 3</span></span>
-<span>  <span class="fu">shape</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/shape/man/Arrows.html" class="external-link">Arrows</a></span><span class="op">(</span><span class="va">state_mds</span><span class="op">[</span><span class="va">isampling</span> <span class="op">+</span> <span class="fl">1</span>, <span class="fl">1</span><span class="op">]</span>, <span class="va">state_mds</span><span class="op">[</span><span class="va">isampling</span> <span class="op">+</span> <span class="fl">1</span>, <span class="fl">2</span><span class="op">]</span>,</span>
-<span>         <span class="va">state_mds</span><span class="op">[</span><span class="va">isampling</span> <span class="op">+</span> <span class="fl">2</span>, <span class="fl">1</span><span class="op">]</span>, <span class="va">state_mds</span><span class="op">[</span><span class="va">isampling</span> <span class="op">+</span> <span class="fl">2</span>, <span class="fl">2</span><span class="op">]</span>,</span>
-<span>         col <span class="op">=</span> <span class="va">traj.colors</span><span class="op">[</span><span class="fl">1</span><span class="op">+</span><span class="op">(</span><span class="va">isampling</span><span class="op">-</span><span class="fl">1</span><span class="op">)</span><span class="op">/</span><span class="fl">3</span><span class="op">]</span>, arr.adj <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
-<span><span class="op">}</span></span></code></pre></div>
+<code class="sourceCode R"><span></span>
+<span><span class="co"># Plot the EDR trajectories in the state space</span></span>
+<span><span class="fu"><a href="../reference/plot_edr.html">plot_edr</a></span><span class="op">(</span><span class="va">state_mds</span>, trajectories <span class="op">=</span> <span class="va">abundance</span><span class="op">$</span><span class="va">sampling_unit</span>, </span>
+<span>         states <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/integer.html" class="external-link">as.integer</a></span><span class="op">(</span><span class="va">abundance</span><span class="op">$</span><span class="va">time</span><span class="op">)</span>, </span>
+<span>         traj.colors <span class="op">=</span> <span class="va">traj.colors</span><span class="op">)</span></span></code></pre></div>
 <p><img src="EDR_framework_files/figure-html/traj_state_mds-1.png" width="480" style="display: block; margin: auto;"></p>
 <p>The <strong>trajectory space</strong> is a multidimensional space
 defined by the dissimilarities between trajectories (i.e., the whole
