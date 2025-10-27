@@ -28,7 +28,7 @@ LazyData: true
 Imports: 
     ape,
     data.table,
-    ecotraj,
+    ecotraj (>= 1.1.1),
     graphics,
     methods,
     shape,
