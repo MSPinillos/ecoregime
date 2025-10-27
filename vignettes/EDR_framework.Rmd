@@ -140,7 +140,8 @@ To see how ecological trajectories are distributed in the state space, we just n
 # Plot the EDR trajectories in the state space
 plot_edr(state_mds, trajectories = abundance$sampling_unit, 
          states = as.integer(abundance$time), 
-         traj.colors = traj.colors)
+         traj.colors = traj.colors,
+         main = "State space")
 
 
 ```
