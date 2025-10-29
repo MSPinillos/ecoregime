@@ -1,6 +1,4 @@
-# ecoregime (development version)
-
-## New features
+# ecoregime 0.3.0
 
 ## Major changes
 
@@ -8,11 +6,13 @@
 
 ## Minor changes and bug fixes
 
-* `plot()` correctly represents trajectories when states are not in order.
+* `plot.RETRA()` correctly represents trajectories when states are not in order.
 
 * `plot_edr()` does not print `[[i]]NULL` to the console.
 
 * `retra_edr()`: fixed error when `!is.null(Dim)`.
+
+* Fixed errors due to incompatibilities with ecotraj 1.1.1
 
 # ecoregime 0.2.1
 
