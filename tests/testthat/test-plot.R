@@ -8,11 +8,12 @@ test_that("plots representative trajectories from RETRA-EDR", {
   retra <- retra_edr(d = d, trajectories = trajectories,
                      states = states, minSegs = 5)
 
-  plot(retra, d = d, trajectories = trajectories, states = states)
+  plot(retra, d = d, trajectories = trajectories, states = states,
+       main = "All representative trajectories")
 
 })
 
-test_that("plots a fraction of retra", {
+test_that("plots a portion of retra", {
   skip_on_cran()
   # Empty test that returns Skip and Warning
   d <- as.matrix(EDR_data$EDR1$state_dissim)
@@ -25,7 +26,8 @@ test_that("plots a fraction of retra", {
 
   retra <- define_retra(data = data)
 
-  plot(retra, d = d, trajectories = trajectories, states = states)
+  plot(retra, d = d, trajectories = trajectories, states = states,
+       main = "A portion of RETRA")
 
 })
 
@@ -42,7 +44,8 @@ test_that("plots a segment", {
 
   retra <- define_retra(data = data)
 
-  plot(retra, d = d, trajectories = trajectories, states = states)
+  plot(retra, d = d, trajectories = trajectories, states = states,
+       main = "A segment")
 
 })
 
@@ -59,7 +62,8 @@ test_that("plots a segment composed of states from two trajectories", {
 
   retra <- define_retra(data = data)
 
-  plot(retra, d = d, trajectories = trajectories, states = states)
+  plot(retra, d = d, trajectories = trajectories, states = states,
+       main = "A segment made from two trajectories")
 
 })
 
@@ -76,7 +80,8 @@ test_that("plots a sequence of states from different trajectories", {
 
   retra <- define_retra(data = data)
 
-  plot(retra, d = d, trajectories = trajectories, states = states)
+  plot(retra, d = d, trajectories = trajectories, states = states,
+       main = "Sequence from multiple trajectories")
 
 })
 
@@ -93,7 +98,8 @@ test_that("plots states leading to circular trajectories", {
 
   retra <- define_retra(data = data)
 
-  plot(x = retra, d = d, trajectories = trajectories, states = states)
+  plot(x = retra, d = d, trajectories = trajectories, states = states,
+       main = "Circularity")
 
 })
 
@@ -108,7 +114,8 @@ test_that("plot trajectories with different colors", {
                      states = states, minSegs = 5)
 
   plot(retra, d = d, trajectories = trajectories, states = states,
-       traj.colors = 1:length(unique(trajectories)))
+       traj.colors = 1:length(unique(trajectories)),
+       main = "Trajectory colors")
 })
 
 test_that("plots selected RT, trajectories, and links in one color (each)", {
@@ -124,7 +131,8 @@ test_that("plots selected RT, trajectories, and links in one color (each)", {
   plot(retra, d = d, trajectories = trajectories, states = states,
        select_RT = "T3", sel.color = "orange",
        traj.colors = "lightblue",
-       link.color = "red", link.lty = NULL)
+       link.color = "red", link.lty = NULL,
+       main = "Colors: RT, trajectories, links")
 
 })
 
