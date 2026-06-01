@@ -74,18 +74,27 @@ initial <- data.frame(sampling_units = ID_sampling,
 # Define the parameters for the Lotka-Volterra model
 parms <- c(r1 = 1, r2 = 0.1, a11 = 0.02, a21 = 0.03, a22 = 0.02, a12 = 0.01)
 
-# We can use primer and deSolve to run the simulations
-library(primer)
+# Define a function applying the Lotka-Volterra model
+LVmod <- function(t, x, parms){
+  with(as.list(c(x, parms)), {
+    dx1_dt = r1*x1 * (1 - a11*x1 - a12*x2)
+    dx2_dt = r2*x2 * (1 - a22*x2 - a21*x1)
+    list(c(dx1_dt, dx2_dt))
+  })
+}
+
+# We can use deSolve to run the simulations
+library(deSolve)
 simulated_abun <- lapply(1:nrow(initial), function(isampling){
   # Initial abundance in the sampling unit i
-  initialN <- c(initial$sp1[isampling], initial$sp2[isampling])
+  x <- c(x1 = initial$sp1[isampling], x2 = initial$sp2[isampling])
   # Simulate community dynamics
-  simulated_abun <- data.frame(ode(y = initialN, times = ID_obs, func = lvcomp2, parms = parms))
+  simulated_abun <- data.frame(ode(y = x, times = ID_obs, func = LVmod, parms = parms))
   # Add the names of the sampling units
   simulated_abun$sampling_unit <- ID_sampling[isampling]
   # Calculate relative abundances
-  simulated_abun$sp1 <- simulated_abun$X1/rowSums(simulated_abun[, 2:3])
-  simulated_abun$sp2 <- simulated_abun$X2/rowSums(simulated_abun[, 2:3])
+  simulated_abun$sp1 <- simulated_abun$x1/rowSums(simulated_abun[, 2:3])
+  simulated_abun$sp2 <- simulated_abun$x2/rowSums(simulated_abun[, 2:3])
   
   return(simulated_abun[, c("sampling_unit", "time", "sp1", "sp2")])
 })
@@ -290,7 +299,7 @@ plot(repr_traj, # <-- This is a RETRA object returned by retra_edr()
      d = state_mds, trajectories = rep(ID_sampling, each = 3), states = rep(ID_obs, 10),
      # use the colors previously used for individual trajectories. 
      # (make them more transparent to highlight representative trajectories)
-     traj.colors = alpha(traj.colors, 0.3),
+     traj.colors = adjustcolor(traj.colors, alpha.f = 0.3),
      # display representative trajectories in blue    
      RT.colors = "blue",
      # select T2 to be displayed with a different color (black)
@@ -600,20 +609,30 @@ initial$sp3 <- round(runif(10, 0, 0.5), 2)
 
 # Define the parameters for the Lotka-Volterra model
 parms2 <- c(r1 = 1, r2 = 0.1, a11 = 0.02, a21 = 0.03, a22 = 0.02, a12 = 0.01,
-           r3 = 1.5, a33 = 0.02, a31 = 0.01, a32 = 0.01, a13 = 0.1, a23 = 0.1)
+            r3 = 1.5, a33 = 0.02, a31 = 0.01, a32 = 0.01, a13 = 0.1, a23 = 0.1)
+
+# Define a function applying the Lotka-Volterra model for three species
+LVmod_3sp <- function(t, x, parms){
+  with(as.list(c(x, parms)), {
+    dx1_dt = r1*x1 * (1 - a11*x1 - a12*x2 - a13*x3)
+    dx2_dt = r2*x2 * (1 - a22*x2 - a21*x1 - a23*x3)
+    dx3_dt = r3*x3 * (1 - a33*x3 - a31*x1 - a32*x2)
+    list(c(dx1_dt, dx2_dt, dx3_dt))
+  })
+}
 
 # We can use primer to run the simulations
 simulated_abun2 <- lapply(1:nrow(initial), function(isampling){
   # Initial abundance in the sampling unit i
-  initialN <- c(initial$sp1[isampling], initial$sp2[isampling], initial$sp3[isampling])
+  x <- c(x1 = initial$sp1[isampling], x2 = initial$sp2[isampling], x3 = initial$sp3[isampling])
   # Simulate community dynamics
-  simulated_abun <- data.frame(ode(y = initialN, times = ID_obs, func = lvcomp3, parms = parms2))
+  simulated_abun <- data.frame(ode(y = x, times = ID_obs, func = LVmod_3sp, parms = parms2))
   # Add the names of the sampling units
   simulated_abun$sampling_unit <- ID_sampling2[isampling]
   # Calculate relative abundances
-  simulated_abun$sp1 <- simulated_abun$X1/rowSums(simulated_abun[, c("X1", "X2", "X3")])
-  simulated_abun$sp2 <- simulated_abun$X2/rowSums(simulated_abun[, c("X1", "X2", "X3")])
-  simulated_abun$sp3 <- simulated_abun$X3/rowSums(simulated_abun[, c("X1", "X2", "X3")])
+  simulated_abun$sp1 <- simulated_abun$x1/rowSums(simulated_abun[, c("x1", "x2", "x3")])
+  simulated_abun$sp2 <- simulated_abun$x2/rowSums(simulated_abun[, c("x1", "x2", "x3")])
+  simulated_abun$sp3 <- simulated_abun$x3/rowSums(simulated_abun[, c("x1", "x2", "x3")])
   
   return(simulated_abun[, c("sampling_unit", "time", "sp1", "sp2", "sp3")])
 })
@@ -640,14 +659,14 @@ parms3 <- c(r1 = 1, r2 = 0.1, a11 = 0.2, a21 = 0.1, a22 = 0.02, a12 = 0.01)
 # We can use primer to run the simulations
 simulated_abun3 <- lapply(1:nrow(initial), function(isampling){
   # Initial abundance in the sampling unit i
-  initialN <- c(initial3$sp4[isampling], initial$sp2[isampling])
+  x <- c(x1 = initial3$sp4[isampling], x2 = initial$sp2[isampling])
   # Simulate community dynamics
-  simulated_abun <- data.frame(ode(y = initialN, times = ID_obs, func = lvcomp2, parms = parms3))
+  simulated_abun <- data.frame(ode(y = x, times = ID_obs, func = LVmod, parms = parms3))
   # Add the names of the sampling units
   simulated_abun$sampling_unit <- ID_sampling3[isampling]
   # Calculate relative abundances
-  simulated_abun$sp4 <- simulated_abun$X1/rowSums(simulated_abun[, c("X1", "X2")])
-  simulated_abun$sp2 <- simulated_abun$X2/rowSums(simulated_abun[, c("X1", "X2")])
+  simulated_abun$sp4 <- simulated_abun$x1/rowSums(simulated_abun[, c("x1", "x2")])
+  simulated_abun$sp2 <- simulated_abun$x2/rowSums(simulated_abun[, c("x1", "x2")])
 
   return(simulated_abun[, c("sampling_unit", "time", "sp4", "sp2")])
 })
