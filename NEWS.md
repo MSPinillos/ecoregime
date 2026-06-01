@@ -1,4 +1,4 @@
-# ecoregime (development version)
+# ecoregime 0.3.1
 
 ## Minor changes and bug fixes
 
