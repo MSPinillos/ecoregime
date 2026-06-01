@@ -85,7 +85,8 @@ RT <- retra_edr(d = d, trajectories = trajectories, states = states,
 # Plot representative trajectories of the EDR
 plot(x = RT, d = d, trajectories = trajectories, states = states, select_RT = "T4",
      traj.colors = "lightblue", RT.colors = "orange", sel.color = "darkgreen",
-     link.lty = 1, asp = 1, main = "Representative trajectories - EDR")
+     link.lty = 1, asp = 1, xlab = "MDS D1", ylab = "MDS D2",
+     main = "Representative trajectories - EDR")
 ```
 
 <img src="man/figures/README-plotEDR-1.png" width="100%" />
