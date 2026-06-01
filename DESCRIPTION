@@ -36,9 +36,9 @@ Imports:
     stats,
     stringr
 Suggests: 
+    deSolve,
     knitr,
     plotrix,
-    primer,
     RColorBrewer,
     rmarkdown,
     testthat (>= 3.0.0),
