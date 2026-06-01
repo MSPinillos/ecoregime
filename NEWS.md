@@ -1,5 +1,11 @@
 # ecoregime (development version)
 
+## Minor changes and bug fixes
+
+* `plot()` and `plot_edr()`: axes are not constrained to "Axis X".
+
+* `vignette("EDR_framework")` uses `deSolve` to simulate data.
+
 # ecoregime 0.3.0
 
 ## Major changes
