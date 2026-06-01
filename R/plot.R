@@ -271,9 +271,7 @@ plot.RETRA <- function (x, d, trajectories, states, select_RT = NULL,
   }
 
   # Plot individual trajectories in the EDR
-  plot(statesMDS[, axes], type = "n",
-       xlab = paste0("Axis ", axes[1]),
-       ylab = paste0("Axis ", axes[2]), ... )
+  plot(statesMDS[, axes], type = "n", ... )
   lapply(seq_along(statesMDS.ls), function(itraj){
     istate = 1
     while (istate < nrow(statesMDS.ls[[itraj]])) {

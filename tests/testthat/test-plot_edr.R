@@ -9,11 +9,11 @@ test_that("works when trajectories and states are NOT in order (trajectories)", 
 
   plot_edr(x = st1[, 1:2], trajectories = st1$traj, states = as.integer(st1$states),
            traj.colors = c("red", "green", "blue"), state.colors = NULL,
-           type = "trajectories", main = 1)
+           type = "trajectories", main = 1, xlab = "D1", ylab = "D2")
 
   plot_edr(x = st2[, 1:2], trajectories = st2$traj, states = as.integer(st2$states),
            traj.colors = c( "blue", "red", "green"), state.colors = NULL,
-           type = "trajectories", main = 2)
+           type = "trajectories", main = 2, xlab = "D1", ylab = "D2")
 
 })
 

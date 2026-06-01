@@ -53,6 +53,7 @@
 #' plot_edr(x = x, trajectories = state_variables$traj,
 #'          states = as.integer(state_variables$state),
 #'          traj.colors = c(rep("coral", 10), rep("royalblue", 10), rep("gold", 10)),
+#'          xlab = "PCoA 1", ylab = "PCoA 2",
 #'          main = "type = 'trajectories'")
 #' legend("bottomleft", legend = paste0("Trajectories ", c("1-10", "11-20", "21-30")),
 #'        lty = 1, col = c("coral", "royalblue", "gold"))
@@ -63,6 +64,7 @@
 #'          traj.colors = NULL,
 #'          state.colors = rep(RColorBrewer::brewer.pal(5, "Blues"),
 #'                             length(unique(state_variables$traj))),
+#'          xlab = "PCoA 1", ylab = "PCoA 2",
 #'          type = "states", main = "type = 'states'")
 #' legend("bottomleft", legend = paste0("State ", 1:5),
 #'        pch = 15, col = RColorBrewer::brewer.pal(5, "Blues"))
@@ -72,6 +74,7 @@
 #'          states = as.integer(state_variables$state),
 #'          traj.colors = NULL, state.colors = viridis::viridis(5),
 #'          variable = state_variables$sp1,
+#'          xlab = "PCoA 1", ylab = "PCoA 2",
 #'          type = "gradient", main = "type = 'gradient'", initial = TRUE)
 #' legend("bottomleft",
 #'        legend = c(paste0("abun sp1 = ", min(state_variables$sp1)),
@@ -197,9 +200,7 @@ plot_edr <- function(x, trajectories, states, traj.colors = NULL, state.colors =
   # PLOT EDR ----------------------------------------------------------
 
   # Plot individual trajectories in the EDR
-  plot(st_coord[, axes], type = "n",
-       xlab = paste0("Axis ", axes[1]),
-       ylab = paste0("Axis ", axes[2]), ...)
+  plot(st_coord[, axes], type = "n", ...)
 
   if (type == "trajectories") {
     for (itraj in seq_along(st_coord.ls)) {
