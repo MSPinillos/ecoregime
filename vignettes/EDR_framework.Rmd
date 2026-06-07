@@ -10,14 +10,17 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r, include = FALSE}
+```{r setup, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  eval = requireNamespace("vegan", quietly = TRUE)
 )
 ```
 
-
+```{r vegan, eval = !requireNamespace("vegan", quietly = TRUE), echo = FALSE, comment = NA}
+message('This vignette requires the "vegan" package. Please, install it: install.packages("vegan").')
+```
 
 ## 1. Introduction
 
@@ -37,14 +40,14 @@ This vignette aims to give you an overview of the EDR framework and its implemen
 
 You can install `ecoregime` directly from CRAN or from my GitHub account (development version):
 
-```{r install}
-# install.packages("ecoregime")
-# devtools::install_github(repo = "MSPinillos/ecoregime", dependencies = T, build_vignettes = T)
+```{r install, eval=FALSE}
+install.packages("ecoregime")
+devtools::install_github(repo = "MSPinillos/ecoregime", dependencies = T, build_vignettes = T)
 ```
 
 Once you have installed `ecoregime` you will have to load it:
 
-```{r setup}
+```{r ecoregime}
 library(ecoregime)
 ```
 
@@ -56,9 +59,9 @@ citation("ecoregime")
 
 If you are familiar with ecological trajectories defined in multivariate spaces, you can probably skip this section. Otherwise, I recommend you to read on.
 
-Let me define a simple example that I will use along this vignette. Imagine that we have 10 sampling units in which we are monitoring the temporal changes in some state variables. For example, those sampling units (*A, B, ..., J*) could be permanent plots or transects in which we have inventoried the abundance of two species (*sp1, sp2*) at three temporal points (*t* = 1, *t* = 2, *t* = 3). 
+Let me define a simple example that I will use along this vignette. Imagine that we have 10 sampling units in which we are monitoring the temporal changes in some state variables. For example, those sampling units (*A, B, ..., J*) could be permanent plots or transects in which we have inventoried the abundance of two species (*sp1, sp2*) at three temporal points (*t* = 1, *t* = 2, *t* = 3).
 
-I will use the Lotka-Volterra model to generate some artificial data and illustrate our example. I will define the parameters of the model to generate trajectories leading to the competitive exclusion of *sp2* by *sp1* regardless of the initial state. As such, all sampling units will have analogous trajectories that can be considered part of the same EDR.
+In this example, we will generate some artificial data including successional trajectories leading to the competitive exclusion of *sp2* by *sp1* regardless of the initial state. As such, all sampling units will have analogous trajectories that can be considered part of the same EDR.
 
 ```{r data}
 # ID of the sampling units and observations
@@ -66,42 +69,26 @@ ID_sampling <- LETTERS[1:10]
 ID_obs <- 1:3
 
 # Define initial species abundances
-set.seed(123)
-initial <- data.frame(sampling_units = ID_sampling, 
-                   sp1 = round(runif(10), 2), 
-                   sp2 = round(runif(10), 2))
+set.seed(789)
+initial <- data.frame(sampling_unit = ID_sampling,
+                      sp1 = round(runif(10), 2),
+                      sp2 = round(runif(10), 2))
 
-# Define the parameters for the Lotka-Volterra model
-parms <- c(r1 = 1, r2 = 0.1, a11 = 0.02, a21 = 0.03, a22 = 0.02, a12 = 0.01)
-
-# Define a function applying the Lotka-Volterra model
-LVmod <- function(t, x, parms){
-  with(as.list(c(x, parms)), {
-    dx1_dt = r1*x1 * (1 - a11*x1 - a12*x2)
-    dx2_dt = r2*x2 * (1 - a22*x2 - a21*x1)
-    list(c(dx1_dt, dx2_dt))
-  })
-}
-
-# We can use deSolve to run the simulations
-library(deSolve)
+# Simulate artificial dynamics
 simulated_abun <- lapply(1:nrow(initial), function(isampling){
-  # Initial abundance in the sampling unit i
-  x <- c(x1 = initial$sp1[isampling], x2 = initial$sp2[isampling])
-  # Simulate community dynamics
-  simulated_abun <- data.frame(ode(y = x, times = ID_obs, func = LVmod, parms = parms))
-  # Add the names of the sampling units
-  simulated_abun$sampling_unit <- ID_sampling[isampling]
-  # Calculate relative abundances
-  simulated_abun$sp1 <- simulated_abun$x1/rowSums(simulated_abun[, 2:3])
-  simulated_abun$sp2 <- simulated_abun$x2/rowSums(simulated_abun[, 2:3])
-  
-  return(simulated_abun[, c("sampling_unit", "time", "sp1", "sp2")])
+  sp1 <- initial$sp1[isampling]
+  sp2 <- initial$sp2[isampling]
+  while (length(sp1) < 3) {
+    set.seed(isampling)
+    sp1 <- c(sp1, sp1[length(sp1)]*sample(seq(1, 2, by = 0.01), 1))
+    sp2<- c(sp2, sp2[length(sp2)]*sample(seq(0, 1, by = 0.01), 1))
+  }
+  data.frame(sampling_unit = initial$sampling_unit[isampling],
+             time = 1:3, sp1 = sp1/(sp1+sp2), sp2 = sp2/(sp1+sp2))
 })
 
 # Compile species abundances of all sampling units in the same data frame
 abundance <- do.call(rbind, simulated_abun)
-
 ```
 
 We obtain an abundance matrix similar to what we could get from field data. For each sampling unit (`sampling_unit`) and observation (`time`), we know the relative abundance of two species (`sp1` and `sp2`).
@@ -112,15 +99,13 @@ head(abundance)
 
 Next, we need to define the **state space** in which ecological trajectories live. The state space is a multidimensional resemblance space defined by the dissimilarities between every pair of states (the observations) in terms of some state variables (the species). That is, we need to generate a matrix (**$D_O$**) representing the state space and containing the dissimilarities between the observations of all sampling units.
 
-The choice of the dissimilarity metric used to generate **$D_O$** depends on the characteristics of your data and the nature of the variables. Your decision should be made carefully since it will affect the analyses in the EDR framework. In our example, we are using species abundances. A common dissimilarity metric adequate for that is the percentage difference (a.k.a. Bray-Curtis index). However, if you have presence/absence data, you could prefer the Jaccard's distance, and if your state variables are categorical (e.g., functional traits), you should use a multi-trait dissimilarity (e.g., the Gower distance).
+The choice of the dissimilarity metric used to generate **$D_O$** depends on the characteristics of your data and the nature of the variables. Your decision should be made carefully since it will affect the analyses in the EDR framework. In our example, we are using species abundances. A common dissimilarity metric adequate for that is the percentage difference (a.k.a. Bray-Curtis index). However, if you have presence/absence data, you could prefer the Jaccard's distance, and if your state variables are categorical (e.g., functional traits), you should use a multi-trait dissimilarity (e.g., the Gower distance). These and other ecologically relevant dissimilarity coefficients can be applied using the function ``vegdist()` in `vegan`.
 
-In our example, we will use `vegan` to calculate Bray-Curtis dissimilarities and generate **$D_O$**.
 
 ```{r state_dissim}
 # Generate a matrix containing dissimilarities between states
 state_dissim <- vegan::vegdist(abundance[, c("sp1", "sp2")], method = "bray")
 as.matrix(state_dissim)[1:6, 1:6]
-
 ```
 
 We can visualize the state space using ordination methods. Here, I apply multidimensional scaling (mMDS; `smacof`) to the dissimilarity matrix **$D_O$** and plot the distribution of the ecological states in an ordination space. We will use different colors and the code of the sampling unit to represent the observations of each sampling unit:
@@ -131,13 +116,13 @@ state_mds <- smacof::smacofSym(state_dissim, ndim = 2)
 state_mds <- data.frame(state_mds$conf)
 
 # Define different colors for each trajectory
-traj.colors <- RColorBrewer::brewer.pal(10, "Paired")
+traj.colors <- grDevices::palette.colors(10, palette = "Classic Tableau")
 
 # Plot the distribution of the states in the state space
 plot(state_mds$D1, state_mds$D2,
      col = rep(traj.colors, each = 3), # use different colors for each sampling unit
      pch = rep(ID_sampling, each = 3), # use different symbols for each sampling unit
-     xlab = "Axis 1", ylab = "Axis 2",
+     xlab = "MDS D1", ylab = "MDS D2",
      main = "State space")
 
 ```
@@ -145,19 +130,20 @@ plot(state_mds$D1, state_mds$D2,
 To see how ecological trajectories are distributed in the state space, we just need to link the states of each sampling unit in chronological order.
 
 ```{r traj_state_mds, fig = TRUE, fig.height = 5, fig.width = 5, fig.align = "center"}
-
 # Plot the EDR trajectories in the state space
 plot_edr(state_mds, trajectories = abundance$sampling_unit, 
          states = as.integer(abundance$time), 
          traj.colors = traj.colors,
+         xlab = "MDS D1", ylab = "MDS D2",
          main = "State space")
-
+legend("bottomright", unique(abundance$sampling_unit), 
+       lty = 1, col = traj.colors, ncol = 5, bty = "n", cex = 0.8)
 
 ```
 
 The **trajectory space** is a multidimensional space defined by the dissimilarities between trajectories (i.e., the whole sequence of states for each sampling unit). Analogously to the state space, you need to generate a dissimilarity matrix (**$D_T$**) and the metric that you use will affect the subsequent analyses. Although there are multiple metrics, there are no formal analyses evaluating their performance in ecological applications. Here, I suggest the directed segment path dissimilarity (De Cáceres et al., 2019, *Ecol. Monogr.*, https://doi.org/10.1002/ecm.1350), but you could use any other dissimilarity metric.
 
-```{r traj_dissim, fig = TRUE, fig.height = 5, fig.width = 5, fig.align = "center"}
+```{r traj_dissim}
 # Generate a matrix containing dissimilarities between trajectories
 traj_dissim <- ecotraj::trajectoryDistances(
   ecotraj::defineTrajectories(state_dissim, 
@@ -170,7 +156,6 @@ as.matrix(traj_dissim)[1:6, 1:6]
 
 ```
 
-
 In contrast to the state space, in the trajectory space, each trajectory is represented by one point:
 
 ```{r traj_mds, fig = TRUE, fig.height = 5, fig.width = 5, fig.align = "center"}
@@ -182,7 +167,7 @@ traj_mds <- data.frame(traj_mds$conf)
 plot(traj_mds$D1, traj_mds$D2,
      col = traj.colors, # use different colors for each sampling unit
      pch = ID_sampling, # use different symbols for each sampling unit
-     xlab = "Axis 1", ylab = "Axis 2",
+     xlab = "MDS D1", ylab = "MDS D2",
      main = "Trajectory space")
 
 
@@ -203,47 +188,41 @@ Clustering analyses are not the only way to define EDRs. As I stated before, the
 
 ## 4. Representative trajectories
 
-Regardless of the method used to define EDRs, you can use `ecoregime` to summarize their dynamics. In our  example, it is easy to identify a clear pattern of competitive exclusion of *sp2* by *sp1*. We can simply plot the changes in species abundances over time to see this pattern:
+Regardless of the method used to define EDRs, you can use `ecoregime` to summarize their dynamics. In our  example, it is easy to identify a clear pattern of competitive exclusion of *sp2* by *sp1*. We can apply the function `plot_edr()` using species abundances as gradient variables:
 
-```{r sp_variation, fig = TRUE, fig.height = 5, fig.width = 5, fig.align = "center"}
-# Plot species abundances over time
-plot(abundance$time, abundance$sp1, type = "n", ylim = c(-0.01, 1),
-     xlab = "Observation", ylab = "Species abundance",
-     main = "Temporal variation in species composition")
+```{r plot_edr, fig = TRUE, fig.height = 5, fig.width = 10, fig.align = "center"}
+par(mfrow = c(1, 2))
+plot_edr(state_mds, trajectories = abundance$sampling_unit, 
+         states = as.integer(abundance$time), 
+         type = "gradient", variable = abundance$sp1,
+         state.colors = hcl.colors(5, "Viridis", rev = T),
+         initial = TRUE,
+         xlab = "MDS D1", ylab = "MDS D2",
+         main = "sp1 relative abundance")
+legend("bottomright", 
+       legend = c(paste0("sp1 = ", round(max(abundance$sp1), 2)),
+                  rep(NA, 28),
+                  paste0("sp1 = ", round(min(abundance$sp1), 2))),
+       fill = hcl.colors(30, "Viridis"),
+       border = NA, y.intersp = 0.2, cex = 0.8, bty = "n")
 
-for (i in seq_along(ID_sampling)) {
-  points(abundance[which(abundance$sampling_unit == ID_sampling[i]), ]$time,
-         abundance[which(abundance$sampling_unit == ID_sampling[i]), ]$sp1,
-         col = traj.colors[i], pch = ID_sampling[i])
-  lines(abundance[which(abundance$sampling_unit == ID_sampling[i]), ]$time,
-         abundance[which(abundance$sampling_unit == ID_sampling[i]), ]$sp1,
-         col = "black", pch = ID_sampling[i])
-  
-  points(abundance[which(abundance$sampling_unit == ID_sampling[i]), ]$time,
-         abundance[which(abundance$sampling_unit == ID_sampling[i]), ]$sp2,
-         col = traj.colors[i], pch = ID_sampling[i])
-  lines(abundance[which(abundance$sampling_unit == ID_sampling[i]), ]$time,
-         abundance[which(abundance$sampling_unit == ID_sampling[i]), ]$sp2,
-         col = "red", pch = ID_sampling[i], lty = 2)
-}
-
-legend("bottomleft", legend = c("sp1", "sp2"), col = 1:2, lty = 1:2, bg = "white")
-
-
+plot_edr(state_mds, trajectories = abundance$sampling_unit, 
+         states = as.integer(abundance$time), 
+         type = "gradient", variable = abundance$sp2,
+         state.colors = hcl.colors(5, "Viridis", rev = T),
+         initial = TRUE,
+         xlab = "MDS D1", ylab = "MDS D2",
+         main = "sp2 relative abundance")
+legend("bottomright", 
+       legend = c(paste0("sp2 = ", round(max(abundance$sp2), 2)),
+                  rep(NA, 28),
+                  paste0("sp2 = ", round(min(abundance$sp2), 2))),
+       fill = hcl.colors(30, "Viridis"),
+       border = NA, y.intersp = 0.2, cex = 0.8, bty = "n")
 ```
 
-Or we can test the correlations between the first axis of the state space and the species abundances along the trajectories.
 
-```{r }
-# Correlation of the first axis of the state space with the abundance of sp1
-cor(state_mds$D1, abundance$sp1)
-
-# Correlation of the first axis of the state space with the abundance of sp2
-cor(state_mds$D1, abundance$sp2)
-
-```
-
-These analyses are fine for extremely simple systems as the one simulated in our toy data. However, when we want to apply these or similar approaches to empirical data, finding clear dynamical patterns becomes more difficult. In real ecosystems, we usually have to deal with a great heterogeneity, multiple variables interacting between each other, and noise. As a consequence, we need robust tools able to summarize a great variety of trajectories in multidimensional spaces. That is precisely what RETRA-EDR pursues.
+These analyses are fine for extremely simple systems as the one simulated in our toy data. However, finding clear dynamical patterns in empirical data becomes more difficult. In real ecosystems, we usually have to deal with a great heterogeneity, multiple variables interacting between each other, and noise. As a consequence, we need robust tools able to summarize a great variety of trajectories in multidimensional spaces. That is precisely what RETRA-EDR pursues.
 
 ### 4.1. Identifying representative trajectories with RETRA-EDR
 
@@ -267,8 +246,6 @@ set.seed(123)
 # Apply RETRA-EDR
 repr_traj <- retra_edr(d = state_dissim, trajectories = rep(ID_sampling, each = 3),
                    states = rep(ID_obs, 10), minSegs = 2)
-
-
 ```
 
 RETRA-EDR has returned two representative trajectories. We can summarize their attributes using `summary()`: 
@@ -277,12 +254,14 @@ RETRA-EDR has returned two representative trajectories. We can summarize their a
 summary(repr_traj)
 ```
 
+In the summary output, we see that both trajectories have similar properties. Yet, *T1* is slightly longer while the average length of artificial links is smaller and the average depth of the *k*d-tree (*Avg_depth*) is larger. *A priori*, we could set *T1* as the main representative trajectory of the EDR.
+
 The output of `retra_edr()` is an object of class `RETRA`. We can extract specific attributes as we do with lists. 
 
 `Segments` is probably the most important attribute since it informs about the states that form the representative trajectories.
 
-- *T1* is composed of six states of three different trajectories (*B*, *I*, and *E*).
-- *T2* is composed of the three states of the sampling unit *C* and converges towards *T1* through a link between the last state of *C* and the second state of *I*.
+- *T1* is composed of eight states of four different trajectories (*C*, *B*, *I*, and *D*).
+- *T2* shares the three first segments with *T1* and diverges towards the first segment of trajectory *G*.
 
 ```{r retra_segments}
 lapply(repr_traj, "[[", "Segments")
@@ -301,17 +280,18 @@ plot(repr_traj, # <-- This is a RETRA object returned by retra_edr()
      # (make them more transparent to highlight representative trajectories)
      traj.colors = adjustcolor(traj.colors, alpha.f = 0.3),
      # display representative trajectories in blue    
-     RT.colors = "blue",
+     RT.colors = "royalblue",
      # select T2 to be displayed with a different color (black)
-     select_RT = "T2", sel.color = "black",
+     select_RT = "T1", sel.color = "black",
      # Identify artificial links using dashed lines (default) and a different color (red)
      link.lty = 2, link.color = "red",
      # We can use other arguments in plot()
+     xlab = "MDS D1", ylab = "MDS D2",
      main = "Representative trajectories")
 
 # Add a legend
 legend("bottomright", c("T1", "T2", "Link"), 
-       col = c("blue", "black", "red"), lty = c(1, 1, 2))
+       col = c("black", "royalblue", "red"), lty = c(1, 1, 2))
 
 ```
 
@@ -319,47 +299,54 @@ legend("bottomright", c("T1", "T2", "Link"),
 
 RETRA-EDR returns the longest possible trajectory according to the procedure defined before. However, you could be interested in only a fraction of a representative trajectory, split representative trajectories based on some criteria (e.g. long artificial links), or maybe, define your own representative trajectory. 
 
-Let's say that we want to split *T1* and *T2* from the last segment (`"E[2-3]"`). For that, we can use the function `define_retra()`.
+Let's say that we want to split *T1* and *T2* from their first segment (`"C[2-3]"`) since it has the longest artificial link:
 
-There are two ways of defining our "new" trajectories. The first one consists in providing all the details in a data frame:
+```{r link_length}
+repr_traj$T1$Link_distance
+```
+
+
+There are two ways of defining our "new" trajectories using the function `define_retra()`. 
+
+The first way consists in providing a list with the sequences of segments defining each trajectory. This is particularly useful when we want to select a subset in the output of RETRA-EDR:
+
+```{r define_retra_ls}
+# List including the sequence of segments for each new trajectory
+new_traj_ls <- list(
+  # Exclude the first segment in T1
+  repr_traj$T1$Segments[2:length(repr_traj$T1$Segments)],
+  # Exclude the first segment in T2
+  repr_traj$T2$Segments[2:length(repr_traj$T2$Segments)],
+  # First segment of T1 and T2: segment composed of states 2 and 3 of the sampling unit C ("C[2-3]")
+  "C[2-3]"
+)
+
+new_traj_ls
+
+```
+
+
+The second one consists in providing consists in providing all the details in a data frame:
 
 ```{r define_retra_df}
 # Generate a data frame indicating the states forming the new trajectories
 new_traj_df <- data.frame(
   # name of the new trajectories (as many times as the number of states)
-  RT = c(rep("T1.1", 4), rep("T2.1", 5), rep("T1.2", 2)),
+  RT = c(rep("T1.1", 6), rep("T2.1", 6), rep("T1.2", 2)),
   # name of the trajectories (sampling units)
-  RT_traj = c(rep("B", 2), rep("I", 2), # for the first trajectory (T1.1)
-              rep("C", 3), rep("I", 2), # for the second trajectory (T2.1)
-              rep("E", 2)), # for the third trajectory (T1.2)
-  # states in each sampling unit 
-  RT_states = c(1:2, 2:3, # for the first trajectory (T1.1)
-                1:3, 2:3, # for the second trajectory (T2.1)
+  RT_traj = c(rep("B", 2), rep("I", 2), rep("D", 2), # for the first trajectory (T1.1)
+              rep("B", 2), rep("I", 2), rep("G", 2), # for the second trajectory (T2.1)
+              rep("C", 2)), # for the third trajectory (T1.2)
+  # states in each sampling unit
+  RT_states = c(2:3, 2:3, 2:3, # for the first trajectory (T1.1)
+                2:3, 2:3, 1:2, # for the second trajectory (T2.1)
                 2:3), # for the third trajectory (T1.2)
   # representative trajectories obtained in retra_edr()
-  RT_retra = c(rep("T1", 4), rep("T2", 5), 
+  RT_retra = c(rep("T1", 6), rep("T2", 6),
                rep("T1", 2)) # The last segment belong to both (T1, T2), choose one
 )
 
 new_traj_df
-
-```
-
-The second one consists in providing a list with the sequences of segments defining each trajectory. This is particularly useful when we want to select a subset in the output of RETRA-EDR:
-
-
-```{r define_retra_ls}
-# List including the sequence of segments for each new trajectory
-new_traj_ls <- list(
-  # First part of T1 excluding the last segment
-  repr_traj$T1$Segments[1:(length(repr_traj$T1$Segments) - 1)],
-  # First part of T2 excluding the last segment
-  repr_traj$T2$Segments[1:(length(repr_traj$T2$Segments) - 1)],
-  # Last segment of T1 and T2: segment composed of states 2 and 3 of the sampling unit E ("E[2-3]")
-  "E[2-3]"
-)
-
-new_traj_ls
 
 ```
 
@@ -385,11 +372,7 @@ new_repr_traj_ls <- define_retra(data = new_traj_ls,
 if (all.equal(new_repr_traj, new_repr_traj_ls)) {
   print("Yes, both are equal!")
 }
-
-
 ```
-
-
 
 `define_retra()` returns an object of class `RETRA` that you can use to plot the new trajectories:
 
@@ -399,19 +382,20 @@ plot(new_repr_traj, # <-- This is the RETRA object returned by define_retra()
      d = state_mds, trajectories = rep(ID_sampling, each = 3), states = rep(ID_obs, 10),
      # display individual trajectories in light blue
      traj.colors = "lightblue",
-     # display representative trajectories in dark blue    
+     # display representative trajectories in dark blue
      RT.colors = "darkblue",
      # select T1.2 to be displayed in a different color (red)
-     select_RT = "T1.2", sel.color = "red",
-     # Identify artificial links using dashed lines (default), but use the same 
+     select_RT = "T1.2", sel.color = "coral",
+     # Identify artificial links using dashed lines (default), but use the same
      # color than the representative trajectories (default)
      link.lty = 2, link.color = NULL,
      # We can use other arguments in plot()
+     xlab = "MDS D1", ylab = "MDS D2",
      main = "Defined representative trajectories")
 
-# Add a legend 
-legend("bottomright", c("T1.1, T2.1", "T1.2", "Link"), 
-       col = c("darkblue", "red", "darkblue"), lty = c(1, 1, 2))
+# Add a legend
+legend("bottomright", c("T1.1, T2.1", "T1.2", "Link"),
+       col = c("darkblue", "coral", "darkblue"), lty = c(1, 1, 2))
 
 ```
 
@@ -419,14 +403,11 @@ legend("bottomright", c("T1.1, T2.1", "T1.2", "Link"),
 
 The definition of representative trajectories is based on the real states of the sampling units. Thus, it is possible to assess the variation of some ecological properties along the representative trajectories, and therefore, across the EDR.
 
-Let's see how species diversity varies along the representative trajectories returned by `retra_edr()`. First, we need to calculate an index of species diversity (e.g., Shannon index) for the states in each representative trajectory and set the order of the states in the trajectory:
+Let's see how species composition and species diversity vary along the representative trajectories returned by `retra_edr()` and, therefore, across the EDR. For that, we need to identify the states included in both trajectories and calculate the species diversity (e.g., Shannon index):
 
-```{r sp_diversity}
+```{r sp_composition}
 # Set an ID in the abundance matrix
 abundance$ID <- paste0(abundance$sampling_unit, abundance$time)
-
-# Calculate the Shannon index in all trajectory states
-abundance$Shannon <- vegan::diversity(abundance[, c("sp1", "sp2")], index = "shannon")
 
 # Identify the states forming both representative trajectories
 traj_states <- lapply(repr_traj, function(iRT){
@@ -439,34 +420,55 @@ traj_states <- lapply(repr_traj, function(iRT){
   traj_states <- data.frame(ID = traj_states, RT_states = 1:length(traj_states))
 })
 
-# Associate the states of the representative trajectories with their corresponding
-# value of the Shannnon index
-RT_diversity <- lapply(traj_states, function(iRT){
+sp_comp <- lapply(traj_states, function(iRT){
   data <- merge(iRT, abundance, by = "ID", all.x = T)
   data <- data[order(data$RT_states), ]
+  data$Shannon <- vegan::diversity(data[, c("sp1", "sp2")], index = "shannon")
+  return(data)
 })
 
-RT_diversity$T2
+sp_comp$T1
 
 ```
 
-Then, we can evaluate the variation of species diversity along the representative trajectories graphically:
+Then, we can evaluate the variation of species abundances or other attributes along the representative trajectories graphically. Here, we will plot the changes in species composition and species diversity:
 
-```{r plot_sp_diversity, fig = TRUE, fig.height = 5, fig.width = 5, fig.align = "center"}
+```{r plot_sp_diversity, fig = TRUE, fig.height = 5, fig.width = 10, fig.align = "center"}
+par(mfrow = c(1, 2))
+# Plot the variation of sp1 in T2
+plot(x = sp_comp$T2$RT_states, y = sp_comp$T2$sp1,
+     type = "l", col = "royalblue", ylim = c(0, 1),
+     xlab = "RT state", ylab = "Relative abundance",
+     main = "Variation of species composition")
+# Add the variation of sp1 in T1
+lines(x = sp_comp$T1$RT_states, y = sp_comp$T1$sp1,
+      col = "black")
+# Add the variation of sp2 in T2
+lines(x = sp_comp$T2$RT_states, y = sp_comp$T2$sp2,
+      col = "royalblue", lty = 2)
+# Add the variation of sp2 in T1
+lines(x = sp_comp$T1$RT_states, y = sp_comp$T1$sp2,
+      col = "black", lty = 2)
+# Add a legend
+legend("bottom", c("T1", "T2", "sp1", "sp2"), 
+       col = c("black", "royalblue", "darkgrey", "darkgrey"), 
+       pch = c(20, 20, NA, NA), lty = c(NA, NA, 1, 2), 
+       ncol = 2, cex = 0.9, bty = "n")
+
 # Plot the variation of species diversity in T1
-plot(x = RT_diversity$T1$RT_states + 1, y = RT_diversity$T1$Shannon,
-     type = "l", col = "blue", xlim = c(1, 7), ylim = c(0, 0.7), 
+plot(x = sp_comp$T2$RT_states, y = sp_comp$T2$Shannon,
+     type = "l", col = "royalblue", ylim = c(0, 1),
      xlab = "RT state", ylab = "Shannon index",
      main = "Variation of species diversity")
 # Add the variation of species diversity in T2
-lines(x = RT_diversity$T2$RT_states, y = RT_diversity$T2$Shannon,
+lines(x = sp_comp$T1$RT_states, y = sp_comp$T1$Shannon,
       col = "black")
 # Add a legend
-legend("topright", c("T1", "T2"), col = c("blue", "black"), lty = 1)
+legend("topright", c("T1", "T2"), col = c("black", "royalblue"), 
+       lty = 1, cex = 0.9, bty = "n")
 
 
 ```
-
 
 ## 5. Distribution and heterogeneity of ecological trajectories in EDRs
 
@@ -476,55 +478,55 @@ Representative trajectories aim to summarize the main dynamic patterns of ecolog
 
 **Dynamic dispersion (dDis)** is calculated as the average dissimilarity between the trajectories in an EDR and another trajectory taken as a reference (Sánchez-Pinillos et al., 2023).
 
-If the trajectory taken as the reference is one of the representative trajectories (e.g. *T2*), *dDis* can be used as an indicator of its fitness to the data and as an overall metric of the dispersion of the trajectories in the EDR.
+If the trajectory taken as the reference is one of the representative trajectories (e.g. *T1*), *dDis* can be used as an indicator of its fitness to the data and as an overall metric of the dispersion of the trajectories in the EDR.
 
 First, you need to prepare the data. Even if the states of the representative trajectories are already in your abundance and dissimilarity matrices, you will need to duplicate them to indicate that this is a different trajectory. We can directly use the data frame that we produced to calculate species diversity.
 
 ```{r dDis_data}
 # Change the trajectory identifier and the number of the state
-abundance_T2 <- RT_diversity$T2
-abundance_T2$sampling_unit <- "T2"
-abundance_T2$time <- abundance_T2$RT_states
+abundance_T1 <- sp_comp$T1
+abundance_T1$sampling_unit <- "T1"
+abundance_T1$time <- abundance_T1$RT_states
 
 # Add representative trajectories' data to the abundance matrix
-abundance_T2 <- rbind(abundance, abundance_T2[, names(abundance)])
+abundance_T1 <- rbind(abundance, abundance_T1[, names(abundance)])
 
 # Calculate state dissimilarities including the representative trajectory
-state_dissim_T2 <- vegan::vegdist(abundance_T2[, c("sp1", "sp2")], method = "bray")
-
+state_dissim_T1 <- vegan::vegdist(abundance_T1[, c("sp1", "sp2")], method = "bray")
 ```
 
 Now, we can compute dDis using `dDis()`:
 
 ```{r dDis_T2}
 # Compute dDis taking T2 as reference
-dDis_T2 <- dDis(d = state_dissim_T2, d.type = "dStates", 
-         trajectories = abundance_T2$sampling_unit, states = abundance_T2$time, 
-         reference = "T2")
-dDis_T2
+dDis_T1 <- dDis(d = state_dissim_T1, d.type = "dStates", 
+         trajectories = abundance_T1$sampling_unit, states = abundance_T1$time, 
+         reference = "T1")
+dDis_T1
 
 ```
 
-Instead of using the representative trajectory as the reference, we could use any other trajectory of the EDR to quantify how "immersed" it is in the EDR. Let's compare *dDis* for trajectories of the sampling units *I*, which is part of both representative trajectories, and *F*, which was displayed relatively far from the rest of trajectories in the state and trajectory spaces.
+Instead of using the representative trajectory as the reference, we could use any other trajectory of the EDR to quantify how "immersed" it is in the EDR. Let's compare *dDis* for trajectories of the sampling units *D* and *C*. Whereas segments of both trajectories were included in the representative trajectories, *C* was displayed relatively far from the rest of trajectories in the state and trajectory spaces.
 
 In this case, we will use the trajectory dissimilarity matrix generated for the original data:
 
-```{r dDis_I_F}
-# dDis: reference C
-dDis_I <- dDis(d = traj_dissim, d.type = "dTraj", 
-         trajectories = ID_sampling, 
-         reference = "I")
-# dDis: reference F
-dDis_F <- dDis(d = traj_dissim, d.type = "dTraj", 
-         trajectories = ID_sampling, 
-         reference = "F")
+```{r dDis_D_C}
+# dDis: reference D
+dDis_D <- dDis(d = traj_dissim, d.type = "dTraj",
+               trajectories = ID_sampling,
+               reference = "D")
 
-dDis_I
-dDis_F
+# dDis: reference C
+dDis_C <- dDis(d = traj_dissim, d.type = "dTraj",
+               trajectories = ID_sampling,
+               reference = "C")
+
+dDis_D
+dDis_C
 
 ```
 
-As expected, the dispersion when trajectory *F* is taken as the reference is larger than for trajectory *I*, indicating that *F* is more isolated than *I* within the EDR.
+As expected, the dispersion when trajectory *C* is taken as the reference is larger than for trajectory *C*, indicating that *C* is more isolated than *D* within the EDR.
 
 Alternatively, you can weight each trajectory depending on some criteria. Currently, `dDis()` is able to compute *dDis* weighting ecological trajectories by their size (`w.type = "size"`) and length (`w.type = "length"`). However, if you want to use different criteria, you can use a set of weights of your choice (`w.type = "precomputed"`) and indicate them through the `w.values` argument. For example, imagine that you want to weight each trajectory by the initial abundance of *sp2*:
 
@@ -533,24 +535,24 @@ Alternatively, you can weight each trajectory depending on some criteria. Curren
 initial_sp2 <- abundance[which(abundance$time == 1), ]$sp2
 
 # Identify the index of the reference trajectories
-ind_I <- which(ID_sampling == "I")
-ind_F <- which(ID_sampling == "F")
+ind_D <- which(ID_sampling == "D")
+ind_C <- which(ID_sampling == "C")
 
 # Compute dDis with weighted trajectories:
 # Considering I as reference
-dDis_I_w <- dDis(d = traj_dissim, d.type = "dTraj", 
-         trajectories = ID_sampling, reference = "I", 
-         w.type = "precomputed", w.values = initial_sp2[-ind_I])
+dDis_D_w <- dDis(d = traj_dissim, d.type = "dTraj", 
+         trajectories = ID_sampling, reference = "D", 
+         w.type = "precomputed", w.values = initial_sp2[-ind_D])
 # Considering F as reference
-dDis_F_w <- dDis(d = traj_dissim, d.type = "dTraj", 
-         trajectories = ID_sampling, reference = "F", 
-         w.type = "precomputed", w.values = initial_sp2[-ind_F])
-dDis_I_w
-dDis_F_w
+dDis_C_w <- dDis(d = traj_dissim, d.type = "dTraj", 
+         trajectories = ID_sampling, reference = "C", 
+         w.type = "precomputed", w.values = initial_sp2[-ind_C])
+dDis_D_w
+dDis_C_w
 
 ```
 
-In comparison with the previous results, *dDis* has increased and decreased for *I* and *F*, respectively, as a result of the greater abundance of *sp2* in *F* than in *I*. This result could be interpreted as a lower isolation of *F* in relation to the trajectories initially dominated by *sp2*.
+In comparison with the previous results, *dDis* has increased and decreased for *D* and *C*, respectively, as a result of the greater abundance of *sp2* in *C* than in *D*. This result could be interpreted as a lower isolation of *C* in relation to the trajectories initially dominated by *sp2*.
 
 Weighting ecological trajectories is equivalent to modifying the location of the trajectory taken as the reference. Therefore, I do not recommend you to weight trajectories if the representative trajectory is the reference of *dDis* because it could make difficult the interpretation of the results.
 
@@ -597,44 +599,29 @@ Of course, comparing EDR characteristics will provide you with very valuable inf
 
 Let's generate two more EDRs to be compared with the previous one. 
 
-We will use the initial states of our first EDR to define the abundances of *sp1* and *sp2*, but we will introduce a third species (*sp3*).
+We will use the initial states of our first EDR to define the abundances of *sp1* and *sp2*, but we will introduce a third "invasive" species (*sp3*).
 
 ```{r data2}
 # ID of the sampling units for EDR2
-ID_sampling2 <- paste0("inv_", LETTERS[1:10])
+initial$sampling_unit <- paste0("inv_", LETTERS[1:10])
 
 # Define initial species abundances for sp3
-set.seed(321)
-initial$sp3 <- round(runif(10, 0, 0.5), 2)
+set.seed(654)
+initial$sp3 <- round(runif(10, 0, 0.1), 2)
 
-# Define the parameters for the Lotka-Volterra model
-parms2 <- c(r1 = 1, r2 = 0.1, a11 = 0.02, a21 = 0.03, a22 = 0.02, a12 = 0.01,
-            r3 = 1.5, a33 = 0.02, a31 = 0.01, a32 = 0.01, a13 = 0.1, a23 = 0.1)
-
-# Define a function applying the Lotka-Volterra model for three species
-LVmod_3sp <- function(t, x, parms){
-  with(as.list(c(x, parms)), {
-    dx1_dt = r1*x1 * (1 - a11*x1 - a12*x2 - a13*x3)
-    dx2_dt = r2*x2 * (1 - a22*x2 - a21*x1 - a23*x3)
-    dx3_dt = r3*x3 * (1 - a33*x3 - a31*x1 - a32*x2)
-    list(c(dx1_dt, dx2_dt, dx3_dt))
-  })
-}
-
-# We can use primer to run the simulations
+# Simulate artificial dynamics
 simulated_abun2 <- lapply(1:nrow(initial), function(isampling){
-  # Initial abundance in the sampling unit i
-  x <- c(x1 = initial$sp1[isampling], x2 = initial$sp2[isampling], x3 = initial$sp3[isampling])
-  # Simulate community dynamics
-  simulated_abun <- data.frame(ode(y = x, times = ID_obs, func = LVmod_3sp, parms = parms2))
-  # Add the names of the sampling units
-  simulated_abun$sampling_unit <- ID_sampling2[isampling]
-  # Calculate relative abundances
-  simulated_abun$sp1 <- simulated_abun$x1/rowSums(simulated_abun[, c("x1", "x2", "x3")])
-  simulated_abun$sp2 <- simulated_abun$x2/rowSums(simulated_abun[, c("x1", "x2", "x3")])
-  simulated_abun$sp3 <- simulated_abun$x3/rowSums(simulated_abun[, c("x1", "x2", "x3")])
-  
-  return(simulated_abun[, c("sampling_unit", "time", "sp1", "sp2", "sp3")])
+  sp1 <- initial$sp1[isampling]
+  sp2 <- initial$sp2[isampling]
+  sp3 <- initial$sp3[isampling]
+  while (length(sp1) < 3) {
+    set.seed(isampling)
+    sp1 <- c(sp1, sp1[length(sp1)]*sample(seq(0.5, 1, by = 0.01), 1))
+    sp2<- c(sp2, sp2[length(sp2)]*sample(seq(0.2, 0.5, by = 0.01), 1))
+    sp3<- c(sp3, sp3[length(sp3)]*sample(seq(1.7, 2, by = 0.01), 1))
+  }
+  data.frame(sampling_unit = initial$sampling_unit[isampling], time = 1:3,
+             sp1 = sp1/(sp1+sp2+sp3), sp2 = sp2/(sp1+sp2+sp3), sp3 = sp3/(sp1+sp2+sp3))
 })
 
 # Compile species abundances of all sampling units in the same data frame
@@ -642,33 +629,30 @@ abundance2 <- do.call(rbind, simulated_abun2)
 
 ```
 
-The third EDR will be composed of trajectories dominated by *sp2* and a new species (*sp4*) able to coexist in equilibrium with *sp2*:
+The third EDR will be composed of trajectories dominated by *sp2* and a new species (*sp4*):
 
 ```{r data3}
-# ID of the sampling units for EDR3
+# ID of the sampling units and observations
 ID_sampling3 <- LETTERS[11:20]
 
 # Define initial species abundances
-set.seed(3)
-initial3 <- data.frame(sampling_units = ID_sampling3, 
-                   sp4 = round(runif(10), 2))
+set.seed(987)
+initial3 <- data.frame(sampling_units = ID_sampling3,
+                       # sp1 = round(runif(10, 0, 0.05), 2),
+                       sp4 = round(runif(10, 0, 0.3), 2))
 
-# Define the parameters for the Lotka-Volterra model
-parms3 <- c(r1 = 1, r2 = 0.1, a11 = 0.2, a21 = 0.1, a22 = 0.02, a12 = 0.01)
-
-# We can use primer to run the simulations
+# Simulate artificial dynamics
 simulated_abun3 <- lapply(1:nrow(initial), function(isampling){
-  # Initial abundance in the sampling unit i
-  x <- c(x1 = initial3$sp4[isampling], x2 = initial$sp2[isampling])
-  # Simulate community dynamics
-  simulated_abun <- data.frame(ode(y = x, times = ID_obs, func = LVmod, parms = parms3))
-  # Add the names of the sampling units
-  simulated_abun$sampling_unit <- ID_sampling3[isampling]
-  # Calculate relative abundances
-  simulated_abun$sp4 <- simulated_abun$x1/rowSums(simulated_abun[, c("x1", "x2")])
-  simulated_abun$sp2 <- simulated_abun$x2/rowSums(simulated_abun[, c("x1", "x2")])
-
-  return(simulated_abun[, c("sampling_unit", "time", "sp4", "sp2")])
+  # sp1 <- initial3$sp1[isampling]
+  sp2 <- initial$sp2[isampling]
+  sp4 <- initial3$sp4[isampling]
+  while (length(sp2) < 3) {
+    set.seed(isampling)
+    sp2<- c(sp2, sp2[length(sp2)]*sample(seq(0.8, 1, by = 0.01), 1))
+    sp4 <- c(sp4, sp4[length(sp4)]*sample(seq(1, 2, by = 0.01), 1))
+  }
+  data.frame(sampling_unit = initial3$sampling_unit[isampling],
+             time = 1:3, sp2 = sp2/(sp2+sp4), sp4 = sp4/(sp2+sp4))
 })
 
 # Compile species abundances of all sampling units in the same data frame
@@ -684,8 +668,7 @@ abundance_allEDR <- data.table::rbindlist(list(abundance, abundance2, abundance3
 abundance_allEDR[is.na(abundance_allEDR)] <- 0
 
 # Calculate state dissimilarities including states in the three EDRs
-state_dissim_allEDR <- vegan::vegdist(abundance_allEDR[, paste0("sp", 1:4)], 
-                                      method = "bray")
+state_dissim_allEDR <- vegan::vegdist(abundance_allEDR[, paste0("sp", 1:4)], method = "bray")
 
 # Calculate trajectory dissimilarities including trajectories in the three EDRs
 traj_dissim_allEDR <- ecotraj::trajectoryDistances(
@@ -705,10 +688,10 @@ st_mds_all <- smacof::smacofSym(state_dissim_allEDR,
 st_mds_all <- data.frame(st_mds_all$conf)
 
 # Plot ecological trajectories in the state space
-state.colorsEDRs <- rep(RColorBrewer::brewer.pal(3, "Set1"), each = 30)
+state.colorsEDRs <- rep(grDevices::palette.colors(9, palette = "Set 1"), each = 30)
 # Set an empty plot
 plot(st_mds_all$D1, st_mds_all$D2, type = "n",
-     xlab = "Axis 1", ylab = "Axis 2",
+     xlab = "MDS D1", ylab = "MDS D2",
      main = "EDRs in the state space")
 # Add arrows
 for (isampling in seq(1, 90, 3)) {
@@ -723,7 +706,8 @@ for (isampling in seq(1, 90, 3)) {
 }
 
 # Add a legend
-legend("bottomleft", paste0("EDR", 1:3), col = unique(state.colorsEDRs), lty = 1)
+legend("topleft", paste0("EDR", 1:3), col = unique(state.colorsEDRs), 
+       lty = 1, cex = 0.9, bty = "n")
 
 ```
 
