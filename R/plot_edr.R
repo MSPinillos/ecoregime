@@ -41,7 +41,6 @@
 #' @export
 #'
 #' @examples
-#'
 #' # Data
 #' state_variables <- EDR_data$EDR1$abundance
 #' d <- EDR_data$EDR1$state_dissim
@@ -56,23 +55,24 @@
 #'          xlab = "PCoA 1", ylab = "PCoA 2",
 #'          main = "type = 'trajectories'")
 #' legend("bottomleft", legend = paste0("Trajectories ", c("1-10", "11-20", "21-30")),
-#'        lty = 1, col = c("coral", "royalblue", "gold"))
+#'        lty = 1, col = c("coral", "royalblue", "gold"), bty = "n", cex = 0.9)
 #'
 #' # Plot states with different colors depending on the state value
 #' plot_edr(x = x, trajectories = state_variables$traj,
 #'          states = as.integer(state_variables$state),
-#'          traj.colors = NULL,
-#'          state.colors = rep(RColorBrewer::brewer.pal(5, "Blues"),
+#'          traj.colors = NULL, initial = TRUE,
+#'          state.colors = rep(c("coral2", "azure3", "azure3", "azure3", "royalblue4"),
 #'                             length(unique(state_variables$traj))),
 #'          xlab = "PCoA 1", ylab = "PCoA 2",
 #'          type = "states", main = "type = 'states'")
-#' legend("bottomleft", legend = paste0("State ", 1:5),
-#'        pch = 15, col = RColorBrewer::brewer.pal(5, "Blues"))
+#' legend("bottomleft", legend = c("State 1", "States 2-4", "State 5"),
+#'        pch = 15, col = c("coral2", "azure3", "royalblue4"), bty = "n", cex = 0.9)
 #'
 #' # Plot states with different colors depending on the abundance of sp1
 #' plot_edr(x = x, trajectories = state_variables$traj,
 #'          states = as.integer(state_variables$state),
-#'          traj.colors = NULL, state.colors = viridis::viridis(5),
+#'          traj.colors = NULL,
+#'          state.colors = c("yellow", "orange2", "purple4"),
 #'          variable = state_variables$sp1,
 #'          xlab = "PCoA 1", ylab = "PCoA 2",
 #'          type = "gradient", main = "type = 'gradient'", initial = TRUE)
@@ -80,7 +80,9 @@
 #'        legend = c(paste0("abun sp1 = ", min(state_variables$sp1)),
 #'                   rep(NA, 28),
 #'                   paste0("abun sp1 = ", max(state_variables$sp1))),
-#'        fill = viridis::viridis(30), border = NA, y.intersp = 0.2)
+#'        fill = colorRampPalette(c("yellow", "orange2", "purple4"))(30),
+#'        border = NA, y.intersp = 0.2, cex = 0.9, bty = "n")
+#'
 
 
 plot_edr <- function(x, trajectories, states, traj.colors = NULL, state.colors = NULL,
