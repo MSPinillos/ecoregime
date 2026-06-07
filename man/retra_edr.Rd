@@ -124,9 +124,10 @@ identifies representative segments using the Euclidean distance.
 # Example 1 -----------------------------------------------------------------
 # Identify representative trajectories from state dissimilarities
 
-# Calculate state dissimilarities (Bray-Curtis) from species abundances
+# State dissimilarities (Bray-Curtis) from species abundances
 abundance <- data.frame(EDR_data$EDR1$abundance)
-d <- vegan::vegdist(abundance[, -c(1:3)], method = "bray")
+d <- EDR_data$EDR1$state_dissim
+# (d is equivalent to vegan::vegdist(abundance[, -c(1:3)]))
 
 # Identify the trajectory (or site) and states in d
 trajectories <- abundance$traj

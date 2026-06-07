@@ -80,13 +80,14 @@ use the \code{coordStates} argument.
 }
 }
 \examples{
-# State dissimilarities
-d <- vegan::vegdist(EDR_data$EDR3$abundance[, paste0("sp", 1:12)], method = "bray")
+# State dissimilarities, trajectories, and states
+d <- EDR_data$EDR3$state_dissim
+# (d is Equivalent to vegan::vegdist(EDR_data$EDR3$abundance[, -c(1:3)]))
 trajectories <- EDR_data$EDR3$abundance$traj
 states <- EDR_data$EDR3$abundance$state
 
 # Calculate the representative trajectories of an EDR to be used as reference
-RT <- retra_edr(d,
+RT <- retra_edr(d = d,
                trajectories = trajectories,
                states = states,
                minSegs = 10)
@@ -96,7 +97,7 @@ target_states <- as.integer(c(1, 16, 55))
 
 # Calculate the position of the target states with respect to  the representative
 # trajectories of an EDR
-state_to_trajectory(d, trajectories = trajectories,
+state_to_trajectory(d = d, trajectories = trajectories,
                     states = states,
                     target_states = target_states,
                     reference = RT,
