@@ -22,5 +22,10 @@ Useful links:
 \author{
 \strong{Maintainer}: Martina Sánchez-Pinillos \email{martina.sanchez.pinillos@gmail.com} (\href{https://orcid.org/0000-0002-1499-4507}{ORCID}) [copyright holder]
 
+Authors:
+\itemize{
+  \item Martina Sánchez-Pinillos \email{martina.sanchez.pinillos@gmail.com} (\href{https://orcid.org/0000-0002-1499-4507}{ORCID}) [copyright holder]
+}
+
 }
 \keyword{internal}
