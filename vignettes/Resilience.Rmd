@@ -13,8 +13,24 @@ vignette: >
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  eval = requireNamespace("vegan", quietly = TRUE)
 )
+```
+
+```{r vegan, eval = !requireNamespace("vegan", quietly = TRUE), echo = FALSE, comment = NA}
+message('This vignette requires the "vegan" package. Please, install it: install.packages("vegan").')
+```
+
+```{r draw_arc, echo=FALSE}
+draw_arc <- function(x, y, r, ini, fin, ...){
+  ini_rad <- ini*pi/180
+  fin_rad <- fin*pi/180
+  angle <- seq(ini_rad, fin_rad, by = 0.01)
+  arc_x <- x + r * cos(angle)
+  arc_y <- y + r * sin(angle)
+  lines(arc_x, arc_y, ...)
+}
 ```
 
 ## 1. Introduction
@@ -42,9 +58,9 @@ This vignette aims to illustrate how ecological resilience can be assessed using
 
 You can install `ecoregime` directly from CRAN or from my GitHub account (development version):
 
-```{r install}
-# install.packages("ecoregime")
-# devtools::install_github(repo = "MSPinillos/ecoregime", dependencies = T, build_vignettes = T)
+```{r install, eval=FALSE}
+install.packages("ecoregime")
+devtools::install_github(repo = "MSPinillos/ecoregime", dependencies = T, build_vignettes = T)
 ```
 
 Once you have installed `ecoregime` you will have to load it:
@@ -57,65 +73,115 @@ library(ecoregime)
 citation("ecoregime")
 ```
 
-## 2. Assessing ecological dynamic regimes
+Like other analyses and metrics of the EDR framework, the assessment of ecological resilience relies on a **state space** constructed from a dissimilarity matrix ($D_O$) including pairwise comparisons of all states (or observations) in the ecological trajectories being evaluated (see `vignette("EDR_framework")` for further details). The choice of the coefficient used to generate $D_O$ is, therefore, a key step that you should make carefully. As we will use species abundance data as example, we will apply the percentage difference (or Bray-Curtis dissimilarity). The percentage difference and other ecologically relevant dissimilarity coefficients can be applied using the function ``vegdist()` in `vegan`.
 
-### 2.1. Identifying the reference ecological dynamic regime
+## 2. Disturbed and undisturbed trajectories
 
-To assess the ecological resilience of a system, we need to identify its ecological dynamic regime (EDR) so it can be used as the reference to compare the disturbed dynamics. That is, the EDR to which the disturbed trajectories belonged before being disturbed. 
+To illustrate the assessment of ecological resilience based on ecological dynamic regimes (EDRs), we will use the data included in `ecoregime` (i.e., `EDR_data`). 
 
-Given a stability landscape composed of alternative dynamic regimes, we can compute the dynamic dispersion (dDis) of the pre-disturbance portion of the disturbed trajectories in relation to each alternative EDR. The function `dDis()` allows us to quantify the degree of membership of any trajectory within an EDR. You can see more information about `dDis()` in `vignette("EDR_framework")`.
+In `EDR_data`, you will find three abundance matrices corresponding to three alternative EDRs (EDR1, EDR2, EDR3) composed of **undisturbed trajectories**.
 
-In the data included in `ecoregime` (i.e., `EDR_data`), you will find three abundance matrices corresponding to a set of community trajectories forming three ecological dynamic regimes (EDR1, EDR2, EDR3). Additionally, you will find an abundance matrix associated with three disturbed communities (`EDR3_disturbed`). Assuming that EDR1, EDR2, and EDR3 are three alternative dynamic regimes in a stability landscape, we will see how `dDis()` can be used to identify the EDR with which the disturbed trajectories are associated.
+```{r EDR_data}
+abun_EDR1 <- EDR_data$EDR1$abundance
+abun_EDR2 <- EDR_data$EDR2$abundance
+abun_EDR3 <- EDR_data$EDR3$abundance
+```
+
+Additionally, you will find an abundance matrix associated with three disturbed trajectories (identified as 31, 32, and 33), in which the column `"disturbed_states"` indicates whether observations correspond to pre-disturbance states (`disturbed_states = 0`) or disturbed states (`disturbed_states > 0`):
+
+```{r dist_traj}
+head(EDR_data$EDR3_disturbed$abundance)
+```
+
+As a preliminary analysis, we can use the function `plot_EDR` to visualize the stability landscape composed of three alternative EDRs and the disturbed trajectories. For that, we need to generate a state dissimilarity matrix comparing all states in the trajectories of the three EDRs and the disturbed trajectories.
+
+```{r st_landscape, fig = TRUE, fig.height=5, fig.width=6}
+library(data.table)
+# Include all abundances in one matrix
+abun_all <- rbindlist(list(
+  EDR_data$EDR1$abundance, 
+  EDR_data$EDR2$abundance,
+  EDR_data$EDR3$abundance,
+  EDR_data$EDR3_disturbed$abundance),
+  fill = TRUE)
+
+# Compute state dissimilarities
+d_all <- vegan::vegdist(abun_all[, paste0("sp", 1:12)], method = "bray")
+
+# We can apply mMDS to the dissimilarity matrix
+mds_all <- smacof::mds(d_all, ndim = 3)
+
+# Visualize the stability landscape
+plot_edr(x = mds_all$conf, 
+         trajectories = paste0(abun_all$EDR, "_", abun_all$traj), # provide a unique ID to each trajectory
+         states = as.integer(abun_all$state), 
+         traj.colors = c(rep(palette.colors(4, "Table")[c(1:2, 4)], each= 30),
+                         rep(palette.colors(4, "Table")[3], 3)),
+         xlab = "MDS D1", ylab = "MDS D2",
+         main = "Stability landscape and disturbed trajectories")
+legend("bottomleft", c(paste0("EDR", 1:3), "Disturbed trajectories"),
+       lty = 1, lwd = 2, col = palette.colors(4, "Table")[c(1,2,4,3)], bty = "n", cex = 0.8)
+
+```
+
+
+## 3. Assessing ecological dynamic regimes
+
+### 3.1. Identifying the reference ecological dynamic regime
+
+To assess the ecological resilience of a system, we need to identify its ecological dynamic regime (EDR) so it can be used as the reference to compare the disturbed dynamics. That is, the EDR to which the disturbed trajectories belonged before being disturbed. In the figure of the stability landscape produced for our example data, we can see that the reference EDR should be EDR3, since all disturbed trajectories are located in its proximity. However, when we are working with empirical data, the distinction is often not straightforward.
+
+Given a stability landscape composed of alternative dynamic regimes, we can compute the dynamic dispersion (dDis) of the **pre-disturbance portion** of the disturbed trajectories in relation to each alternative EDR. The function `dDis()` allows us to quantify the degree of membership of any trajectory within an EDR. You can see more information about `dDis()` in `vignette("EDR_framework")`.
 
 ```{r dDis}
-# Species abundances in undisturbed states of the disturbed trajectories
-# (Undisturbed states are identified by disturbed_states = 0)
-abun_undist <- EDR_data$EDR3_disturbed$abundance[disturbed_states == 0] 
+# Species abundances in pre-disturbance states of the disturbed trajectories
+# (Pre-disturbance states are identified by disturbed_states = 0)
+abun_predist <- EDR_data$EDR3_disturbed$abundance[disturbed_states == 0] 
 selcols <- names(EDR_data$EDR1$abundance)
 
 ## EDR1 ------------------------------------------------------------------------
 
-# Species abundances in EDR1 and the undisturbed states of disturbed trajectories
-abun1_undist <- rbind(EDR_data$EDR1$abundance, abun_undist[, ..selcols])
+# Species abundances in EDR1 and the predisturbed states of disturbed trajectories
+abun1_predist <- rbind(EDR_data$EDR1$abundance, abun_predist[, ..selcols])
 
-# State dissimilarities in EDR1 and the undisturbed states of disturbed trajectories
-d1_undist <- vegan::vegdist(x = abun1_undist[, paste0("sp", 1:12)], method = "bray")
+# State dissimilarities in EDR1 and the predisturbed states of disturbed trajectories
+d1_predist <- vegan::vegdist(x = abun1_predist[, paste0("sp", 1:12)], method = "bray")
 
 # dDis of the disturbed trajectories in relation to EDR1
-dDis1 <- sapply(unique(abun_undist$traj), function(iundist){
-  dDis(d = d1_undist, d.type = "dStates", 
-       trajectories = abun1_undist$traj, states = abun1_undist$state, 
-       reference = as.character(iundist))
+dDis1 <- sapply(unique(abun_predist$traj), function(ipredist){
+  dDis(d = d1_predist, d.type = "dStates", 
+       trajectories = abun1_predist$traj, states = abun1_predist$state, 
+       reference = as.character(ipredist))
 })
 
 ## EDR2 ------------------------------------------------------------------------
 
-# Species abundances in EDR2 and the undisturbed states of disturbed trajectories
-abun2_undist <- rbind(EDR_data$EDR2$abundance, abun_undist[, ..selcols])
+# Species abundances in EDR2 and the predisturbed states of disturbed trajectories
+abun2_predist <- rbind(EDR_data$EDR2$abundance, abun_predist[, ..selcols])
 
-# State dissimilarities in EDR2 and the undisturbed states of disturbed trajectories
-d2_undist <- vegan::vegdist(x = abun2_undist[, paste0("sp", 1:12)], method = "bray")
+# State dissimilarities in EDR2 and the predisturbed states of disturbed trajectories
+d2_predist <- vegan::vegdist(x = abun2_predist[, paste0("sp", 1:12)], method = "bray")
 
 # dDis of the disturbed trajectories in relation to EDR2
-dDis2 <- sapply(unique(abun_undist$traj), function(iundist){
-  dDis(d = d2_undist, d.type = "dStates", 
-       trajectories = abun2_undist$traj, states = abun2_undist$state, 
-       reference = as.character(iundist))
+dDis2 <- sapply(unique(abun_predist$traj), function(ipredist){
+  dDis(d = d2_predist, d.type = "dStates", 
+       trajectories = abun2_predist$traj, states = abun2_predist$state, 
+       reference = as.character(ipredist))
 })
 
 ## EDR3 ------------------------------------------------------------------------
 
-# Species abundances in EDR3 and the undisturbed states of disturbed trajectories
-abun3_undist <- rbind(EDR_data$EDR3$abundance, abun_undist[, ..selcols])
+# Species abundances in EDR3 and the predisturbed states of disturbed trajectories
+abun3_predist <- rbind(EDR_data$EDR3$abundance, abun_predist[, ..selcols])
 
-# State dissimilarities in EDR3 and the undisturbed states of disturbed trajectories
-d3_undist <- vegan::vegdist(x = abun3_undist[, paste0("sp", 1:12)], method = "bray")
+# State dissimilarities in EDR3 and the predisturbed states of disturbed trajectories
+d3_predist <- vegan::vegdist(x = abun3_predist[, paste0("sp", 1:12)], method = "bray")
 
 # dDis of the disturbed trajectories in relation to EDR3
-dDis3 <- sapply(unique(abun_undist$traj), function(iundist){
-  dDis(d = d3_undist, d.type = "dStates", 
-       trajectories = abun3_undist$traj, states = abun3_undist$state, 
-       reference = as.character(iundist))
+dDis3 <- sapply(unique(abun_predist$traj), function(ipredist){
+  dDis(d = d3_predist, d.type = "dStates", 
+       trajectories = abun3_predist$traj, states = abun3_predist$state, 
+       reference = as.character(ipredist))
 })
 
 ## Compare dynamic dispersion --------------------------------------------------
@@ -129,10 +195,59 @@ If we compare the values of dDis for each disturbed trajectory (ref. 31, ref. 32
 
 ```{r dDis_comparison, echo=FALSE}
 knitr::kable(dDis_df, digits = 3)
+```
+
+Now, we can "zoom" in the stability landscape to the reference EDR and the disturbed trajectories. This time, we will use different colors to distinguish (*i*) the states in the reference EDR, (*ii*) the pre-disturbance states, and (*iii*) the disturbed states (one color for each disturbed trajectory).
+
+```{r EDR_dist, fig = TRUE, fig.height=5, fig.width=6}
+# Index of the states in the reference EDR
+iref <- which(abun_all$EDR == 3 & is.na(abun_all$disturbed_states))
+
+# Index of the states in disturbed trajectories
+idist <- which(!is.na(abun_all$disturbed_states))
+
+# Index of the states in the reference EDR and disturbed trajectories
+iref_idist <- c(iref, idist)
+
+# Filter the dissimilarity matrix to select the states of the reference EDR and 
+# the disturbed trajectories
+d_all <- as.matrix(d_all)
+d_EDR3_dist <- d_all[iref_idist, iref_idist]
+
+# Apply mMDS for the new matrix
+mds_EDR3_dist <- smacof::mds(d_EDR3_dist, ndim = 3)
+
+# Vector of colors
+state.colors <- abun_all[iref_idist, 
+                         # color for reference states
+                         state.colors := ifelse(is.na(disturbed_states), palette.colors(8, "R4")[8],
+                                                # color for pre-disturbance states
+                                                ifelse(disturbed_states == 0, palette.colors(8, "R4")[7],
+                                                       # color for disturbed states
+                                                       ifelse(traj == 31, palette.colors(8, "R4")[2],
+                                                              ifelse(traj == 32, palette.colors(8, "R4")[3], 
+                                                                     palette.colors(8, "R4")[4]))))]$state.colors
+state.colors <- state.colors[!is.na(state.colors)]
+
+# Plot the reference EDR and disturbed trajectories
+plot_edr(x = mds_EDR3_dist$conf, 
+         trajectories = paste0(abun_all$EDR[iref_idist], "_", abun_all$traj[iref_idist]),
+         states = as.integer(abun_all$state[iref_idist]),
+         type = "states", # it allows assigning different colors to the states
+         state.colors = state.colors,
+         xlab = "MDS D1", ylab = "MDS D2",
+         main = "Reference EDR and disturbed trajectories")
+legend("topleft", c("Reference EDR", "Pre-disturbed states", 
+                    "Disturbed states T31", "Disturbed states T32", 
+                    "Disturbed states T33"),
+       lty = 1, lwd = 2, col = palette.colors(8, "R4")[c(8, 7, 2:4)], 
+       cex = 0.9, bty = "n")
 
 ```
 
-### 2.2. Define the main dynamic trends through representative trajectories
+In this figure, we already observe contrasting post-disturbance dynamics. T32 seems to remain within the boundaries of the EDR, T33 temporarily visits the boundaries before returning towards the reference EDR, and T31 is pushed out of the EDR. In Section 4, we will learn to quantify these patterns.
+
+### 3.2. Define the main dynamic trends through representative trajectories
 
 Once we have identified the EDR of reference, we can compute the representative trajectories using the function `retra_edr()`. See `vignette("EDR_framework")` for more information.
 
@@ -166,6 +281,7 @@ retra_ref <- define_retra(data = retra$T4$Segments, d = d_EDR3,
 plot(retra, d = d_EDR3, 
      trajectories = EDR_data$EDR3$abundance$traj, 
      states = EDR_data$EDR3$abundance$state, select_RT = "T4",
+     xlab = "MDS D1", ylab = "MDS D2",
      main = "Representative trajectories in EDR3")
 legend("topleft", c("Representative trajectory 'T4'", 
                     "Other representative trajectories", 
@@ -174,11 +290,11 @@ legend("topleft", c("Representative trajectory 'T4'",
 ```
 
 
-## 3. Metrics of ecological resilience to pulse disturbances
+## 4. Metrics of ecological resilience to pulse disturbances
 
 When an ecological system is disturbed, its dynamics can deviate from the reference EDR and its representative trajectories. Depending on the immediate impact of the disturbance and the changes in the state variables following the release of the disturbance, post-disturbance trajectories can be characterized through four complementary indices: resistance (*Rt*), amplitude (*A*), recovery (*Rc*), and net change (*NC*).
 
-```{r graphical_indices, echo=FALSE, fig.dim=c(6,5)}
+```{r graphical_indices, echo=FALSE, fig.dim=c(6,4.8)}
 par(mar = c(0,0,0,0))
 
 # Representative trajectory
@@ -189,47 +305,45 @@ for (i in 0:9) {
 text(x = 0.2, y = 1.3, "RT")
 
 # Reference
-lines(x = c(0, 10), y = c(2.5, 2.5), col = RColorBrewer::brewer.pal(3, "Set1")[1], lty = 3, lwd = 2)
+lines(x = c(0, 10), y = c(2.5, 2.5), 
+      col = "#E41A1C", 
+      lty = 3, lwd = 2)
 
 # Disturbed trajectory
 for (i in 0.5:1.5) {
   shape::Arrows(x0 = i, y0 = 2.5, x1 = i + 1, y1 = 2.5, lwd = 2, arr.adj = 1,
-                col = RColorBrewer::brewer.pal(3, "Set1")[1])
+                col = "#E41A1C")
 }
 shape::Arrows(x0 = 2.5, y0 = 2.5, x1 = 4, y1 = 7, lwd = 2, arr.adj = 1,
-              col = RColorBrewer::brewer.pal(3, "Set1")[1])
+              col = "#E41A1C")
 shape::Arrows(x0 = 4, y0 = 7, x1 = 5, y1 = 6, lwd = 2, arr.adj = 1,
-              col = RColorBrewer::brewer.pal(3, "Set1")[1])
+              col = "#E41A1C")
 shape::Arrows(x0 = 5, y0 = 6, x1 = 5.5, y1 = 4, lwd = 2, arr.adj = 1,
-              col = RColorBrewer::brewer.pal(3, "Set1")[1])
+              col = "#E41A1C")
 shape::Arrows(x0 = 5.5, y0 = 4, x1 = 6.5, y1 = 3.5, lwd = 2, arr.adj = 1,
-              col = RColorBrewer::brewer.pal(3, "Set1")[1])
+              col = "#E41A1C")
 shape::Arrows(x0 = 6.5, y0 = 3.5, x1 = 7.5, y1 = 3.5, lwd = 2, arr.adj = 1,
-              col = RColorBrewer::brewer.pal(3, "Set1")[1])
-text(x = 0.7, y = 2.8, "DT", col = RColorBrewer::brewer.pal(3, "Set1")[1])
+              col = "#E41A1C")
+text(x = 0.7, y = 2.8, "DT", col = "#E41A1C")
 
 # Resistance
-lines(x = c(2.5, 4)-0.2, y = c(2.5, 7), col = RColorBrewer::brewer.pal(3, "Set1")[2])
-text(x = 2.8, y = 5, "Rt", col = RColorBrewer::brewer.pal(3, "Set1")[2])
+lines(x = c(2.5, 4)-0.2, y = c(2.5, 7), col = "#377EB8")
+text(x = 2.8, y = 5, "Rt", col = "#377EB8")
 
 # Amplitude
-plotrix::draw.arc(x = 2.5, y = 2.5, radius = 0.7, angle1 = 0, deg2 = 70,
-                  col = RColorBrewer::brewer.pal(3, "Set1")[3])
-text(x = 3.3, y = 3.1, "A", col = RColorBrewer::brewer.pal(3, "Set1")[3])
+draw_arc(x = 2.5, y = 2.5, r = 0.7, ini = 0, fin = 70, lwd = 2, col = "#4DAF4A")
+text(x = 3.3, y = 3.1, "A", col = "#4DAF4A")
+
 
 # Recovery
-lines(x = c(4, 5), y = c(7, 7), lty = 3, lwd = 2, 
-      col = RColorBrewer::brewer.pal(4, "Set1")[4])
-plotrix::draw.arc(x = 4, y = 7, radius = 0.6, deg1 = 0, deg2 = -45,
-                  col = RColorBrewer::brewer.pal(4, "Set1")[4])
-text(x = 4.9, y = 6.7, "Rc", col = RColorBrewer::brewer.pal(4, "Set1")[4])
+lines(x = c(4, 5), y = c(7, 7), lty = 3, lwd = 2, col = "#984EA3")
+draw_arc(x = 4, y = 7, r = 0.6, ini = -45, fin = 0, lwd = 2, col = "#984EA3")
+text(x = 4.9, y = 6.7, "Rc", col = "#984EA3")
 
 # Net change
-lines(x = c(2.5, 6.5), y = c(2.5, 3.5), lty = 3, lwd = 2,
-      col = RColorBrewer::brewer.pal(9, "Set1")[9])
-plotrix::draw.arc(x = 2.5, y = 2.5, radius = 1.5, angle1 = 0, deg2 = 15,
-                  col = RColorBrewer::brewer.pal(9, "Set1")[9])
-text(x = 4.3, y = 2.7, "NC", col = RColorBrewer::brewer.pal(9, "Set1")[9])
+lines(x = c(2.5, 6.5), y = c(2.5, 3.5), lty = 3, lwd = 2, col = "#999999")
+draw_arc(x = 2.5, y = 2.5, r = 1.5, ini = 0, fin = 15, lwd = 2, col = "#999999")
+text(x = 4.3, y = 2.7, "NC", col = "#999999")
 
 # Legend
 legend("topright",
@@ -239,16 +353,16 @@ legend("topright",
          "A: Amplitude",
          "Rc: Recovery",
          "NC: Net change"),
-       col = c("black", RColorBrewer::brewer.pal(9, "Set1")[c(1:4, 9)]),
-       lty = 1, text.col = c("black", RColorBrewer::brewer.pal(9, "Set1")[c(1:4, 9)]), bty = "n")
+       col = c("black", "#E41A1C", "#377EB8", "#4DAF4A", "#984EA3", "#999999"),
+       lty = 1, text.col = c("black", "#E41A1C", "#377EB8", "#4DAF4A", "#984EA3", "#999999"), bty = "n")
 
 # States
 text(x = c(2.5, 4, 5.2, 5.3, 6.5, 7.5), y = c(2.2, 7.4, 6, 4, 3.8, 3.8),
-     0:5, cex = 0.9, col = RColorBrewer::brewer.pal(5, "Set1")[1])
+     0:5, cex = 0.9, col = "#E41A1C")
 
 ```
 
-### 3.1. Resistance
+### 4.1. Resistance
 
 The resistance index (*Rt*) quantifies the impact of the disturbance on the system based on the immediate changes in the state variables. That is, it is a measure of how similar the disturbed (1) and the pre-disturbance (0) states are (Sánchez-Pinillos et al., 2019). As such, the resistance index does not depend on the position of the system within the EDR.
 
@@ -257,7 +371,7 @@ $$Rt = 1 - d_{pre, dist}$$
 where $d_{pre,dist}$ is the dissimilarity between the pre-disturbance (0) and the disturbed (1) states.
 
 
-```{r graphical_resistance, echo=FALSE, fig.dim=c(6,5)}
+```{r graphical_resistance, echo=FALSE, fig.dim=c(6,4.8)}
 
 par(mar = c(0,0,0,0))
 
@@ -269,31 +383,37 @@ for (i in 0:9) {
 text(x = 0.2, y = 0.2, "RT")
 
 # Reference
-lines(x = c(0, 10), y = c(2.5, 2.5), col = RColorBrewer::brewer.pal(3, "Set1")[1], lty = 3, lwd = 2)
+lines(x = c(0, 10), y = c(2.5, 2.5), 
+      col = "#E41A1C", 
+      lty = 3, lwd = 2)
 
 # Disturbed trajectories
 for (i in 5.5:6.5) {
   shape::Arrows(x0 = i, y0 = 2.5, x1 = i + 1, y1 = 2.5, lwd = 2, arr.adj = 1,
-                col = RColorBrewer::brewer.pal(3, "Set1")[1])
+                col = "#E41A1C")
 }
 shape::Arrows(x0 = 7.5, y0 = 2.5, x1 = 8.5, y1 = 4, lwd = 2, arr.adj = 1,
-              col = RColorBrewer::brewer.pal(3, "Set1")[1])
-text(x = 5.7, y = 2.7, "DT2", col = RColorBrewer::brewer.pal(3, "Set1")[1])
+              col = "#E41A1C")
+text(x = 5.7, y = 2.7, "DT2", col = "#E41A1C")
 
 for (i in 0.5:1.5) {
   shape::Arrows(x0 = i, y0 = 2.5, x1 = i + 1, y1 = 2.5, lwd = 2, arr.adj = 1,
-                col = RColorBrewer::brewer.pal(3, "Set1")[1])
+                col = "#E41A1C")
 }
 shape::Arrows(x0 = 2.5, y0 = 2.5, x1 = 8, y1 = 1, lwd = 2, arr.adj = 1,
-              col = RColorBrewer::brewer.pal(3, "Set1")[1])
-text(x = 0.7, y = 2.7, "DT1", col = RColorBrewer::brewer.pal(3, "Set1")[1])
+              col = "#E41A1C")
+text(x = 0.7, y = 2.7, "DT1", col = "#E41A1C")
 
 
 # Resistance
-lines(x = c(7.5, 8.5)-0.2, y = c(2.5, 4)+0.05, lwd = 2, col = RColorBrewer::brewer.pal(3, "Set1")[2])
-text(x = 7.2, y = 3.4, "High Rt", col = RColorBrewer::brewer.pal(3, "Set1")[2])
-lines(x = c(2.5, 8)-0.1, y = c(2.5, 1)-0.2, lwd = 2, col = RColorBrewer::brewer.pal(3, "Set1")[2])
-text(x = 5, y = 1.3, "Low Rt", col = RColorBrewer::brewer.pal(3, "Set1")[2])
+lines(x = c(7.5, 8.5)-0.2, y = c(2.5, 4)+0.05, lwd = 2, 
+      col = "#377EB8")
+text(x = 7.2, y = 3.4, "High Rt", 
+     col = "#377EB8")
+lines(x = c(2.5, 8)-0.1, y = c(2.5, 1)-0.2, lwd = 2, 
+      col = "#377EB8")
+text(x = 5, y = 1.3, "Low Rt", 
+     col = "#377EB8")
 
 
 # Legend
@@ -301,12 +421,12 @@ legend("topleft",
        c("RT: Representative trajectory",
          "DT: Disturbed trajectories",
          "Rt: Resistance"),
-       col = c("black", RColorBrewer::brewer.pal(5, "Set1")),
-       lty = 1, text.col = c("black", RColorBrewer::brewer.pal(5, "Set1")), bty = "n")
+       col = c("black", "#E41A1C", "#377EB8"),
+       lty = 1, text.col = c("black", "#E41A1C", "#377EB8"), bty = "n")
 
 # States
 text(x = c(2.5, 7.5, 8.7, 8.3), y = c(2.7, 2.3, 4.2, 1),
-     c(0, 0, 1, 1), cex = 0.9, col = RColorBrewer::brewer.pal(5, "Set1")[1])
+     c(0, 0, 1, 1), cex = 0.9, col = "#E41A1C")
 
 ```
 
@@ -315,7 +435,7 @@ Given the three disturbed trajectories in EDR3 (i.e., `EDR3_disturbed`), we can 
 ```{r resistance}
 # To calculate resistance, we need a state dissimilarity matrix for the disturbed trajectories
 d_disturbed <- vegan::vegdist(EDR_data$EDR3_disturbed$abundance[, paste0("sp", 1:12)], 
-                              method = "bray")
+                       method = "bray")
 
 # Compute resistance
 # Note that the disturbed states are identified by disturbed_states = 1
@@ -333,7 +453,7 @@ The three hypothetical systems show a relatively high resistance (close to 1) to
 knitr::kable(Rt, row.names = F, col.names = c("Disturbed trajectories", "Rt"), digits = 3)
 ```
 
-### 3.2. Amplitude
+### 4.2. Amplitude
 
 The amplitude (*A*) quantifies how much the system is deviated from its trajectory during the disturbance assuming that, in the absence of disturbances, the system would keep a constant distance to a representative trajectory taken as the reference.
 
@@ -347,67 +467,71 @@ $$A_{rel} = \frac{d_{dist,RT} - d_{pre,RT}}{d_{pre,dist}}$$
 
 In any case, positive amplitude values indicate that the system is deviated towards the boundaries of the EDR, whereas negative values indicate the deviation towards the representative trajectory taken as the reference.
 
-```{r graphical_amplitude, echo=FALSE, fig.dim=c(6,5)}
+```{r graphical_amplitude, echo=FALSE, fig.dim=c(6,3.8)}
 
 par(mar = c(0,0,0,0))
 
 # Representative trajectory
-plot(x = c(0, 16), y = c(0, 5.5), type = "n", axes = F, xlab = "", ylab = "")
+plot(x = c(0, 16), y = c(0, 8), type = "n", axes = F, xlab = "", ylab = "")
 for (i in 0:14) {
   shape::Arrows(x0 = i, y0 = 0, x1 = i + 1, y1 = 0, lwd = 2, arr.adj = 1)
 }
-text(x = 0.2, y = 0.2, "RT")
+text(x = 0.2, y = 0.3, "RT")
 
 # Reference
-lines(x = c(0, 15), y = c(2.5, 2.5), col = RColorBrewer::brewer.pal(3, "Set1")[1], lty = 3, lwd = 2)
+lines(x = c(0, 15), y = c(2.5, 2.5), 
+      col = "#E41A1C", 
+      lty = 3, lwd = 2)
 
 # Disturbed trajectory 1
 for (i in 0.5:1.5) {
   shape::Arrows(x0 = i, y0 = 2.5, x1 = i + 1, y1 = 2.5, lwd = 2, arr.adj = 1,
-                col = RColorBrewer::brewer.pal(3, "Set1")[1])
+                col = "#E41A1C")
 }
 shape::Arrows(x0 = 2.5, y0 = 2.5, x1 = 4, y1 = 0.5, lwd = 2, arr.adj = 1,
-              col = RColorBrewer::brewer.pal(3, "Set1")[1])
-text(x = 0.7, y = 2.7, "DT1", col = RColorBrewer::brewer.pal(3, "Set1")[1])
+              col = "#E41A1C")
+text(x = 0.7, y = 2.8, "DT1", col = "#E41A1C")
 
 # Disturbed trajectory 2
 for (i in 5:6) {
   shape::Arrows(x0 = i, y0 = 2.5, x1 = i + 1, y1 = 2.5, lwd = 2, arr.adj = 1,
-                col = RColorBrewer::brewer.pal(3, "Set1")[1])
+                col = "#E41A1C")
 }
 shape::Arrows(x0 = 7, y0 = 2.5, x1 = 14, y1 = 4.5, lwd = 2, arr.adj = 1,
-              col = RColorBrewer::brewer.pal(3, "Set1")[1])
-text(x = 5, y = 2.7, "DT2", col = RColorBrewer::brewer.pal(3, "Set1")[1])
+              col = "#E41A1C")
+text(x = 5, y = 2.8, "DT2", col = "#E41A1C")
 
 
 
 # # Amplitude
-lines(x = c(4, 4), y = c(0.5, 2.5), lwd = 2, col = RColorBrewer::brewer.pal(5, "Set1")[3])
-text(x = 5, y = 1.5, expression(A[abs1] ~ "< 0"), col = RColorBrewer::brewer.pal(5, "Set1")[3])
-plotrix::draw.arc(x = 2.5, y = 2.5, radius = 0.5, deg2 = -70, lwd = 2, col = RColorBrewer::brewer.pal(5, "Set1")[3])
-text(x = 3.8, y = 2.2, expression(A[rel1] ~ "< 0"), col = RColorBrewer::brewer.pal(5, "Set1")[3])
+lines(x = c(4, 4), y = c(0.5, 2.5), lwd = 2, col = "#4DAF4A")
+text(x = 5.05, y = 1.5, expression(A[abs1] ~ "< 0"), col = "#4DAF4A")
+# plotrix::draw.arc(x = 2.5, y = 2.5, radius = 0.5, deg2 = -70, lwd = 2, col = "#4DAF4A")
+draw_arc(x = 2.6, y = 2.5, r = 0.4, ini = -60, fin = 0, lwd = 2, col = "#4DAF4A")
+text(x = 3.85, y = 2.2, expression(A[rel1] ~ "< 0"), col = "#4DAF4A")
 
-lines(x = c(14, 14), y = c(2.5, 4.5), lwd = 2, col = RColorBrewer::brewer.pal(5, "Set1")[3])
-text(x = 15, y = 3.5, expression(A[abs2] ~ "> 0"), col = RColorBrewer::brewer.pal(5, "Set1")[3])
-plotrix::draw.arc(x = 7, y = 2.5, radius = 1.5, deg2 = 32, lwd = 2, col = RColorBrewer::brewer.pal(5, "Set1")[3])
-text(x = 9.5, y = 2.75, expression(A[rel2] ~ "> 0"), col = RColorBrewer::brewer.pal(5, "Set1")[3])
+lines(x = c(14, 14), y = c(2.5, 4.5), lwd = 2, col = "#4DAF4A")
+text(x = 15.05, y = 3.5, expression(A[abs2] ~ "> 0"), col = "#4DAF4A")
+# plotrix::draw.arc(x = 7, y = 2.5, radius = 1.5, deg2 = 32, lwd = 2, col = "#4DAF4A")
+draw_arc(x = 7, y = 2.5, r = 1.5, ini = 0, fin = 17, lwd = 2, col = "#4DAF4A")
+text(x = 9.5, y = 2.75, expression(A[rel2] ~ "> 0"), col = "#4DAF4A")
 
-text(x = c(0), y = c(4.5), adj = 0, expression("|"~A[abs1]~"| = |"~A[abs2]~"|"), cex = 0.9, 
-     col = RColorBrewer::brewer.pal(5, "Set1")[3])
-text(x = c(0), y = c(4.2), adj = 0, expression("|"~A[rel1]~"| > |"~A[rel2]~"|"), cex = 0.9, 
-     col = RColorBrewer::brewer.pal(5, "Set1")[3])
+text(x = c(0), y = c(6), adj = 0, expression("|"~A[abs1]~"| = |"~A[abs2]~"|"), cex = 0.9, 
+     col = "#4DAF4A")
+text(x = c(0), y = c(5.5), adj = 0, expression("|"~A[rel1]~"| > |"~A[rel2]~"|"), cex = 0.9, 
+     col = "#4DAF4A")
 
 # Legend
 legend("topleft",
        c("RT: Representative trajectory",
          "DT: Disturbed trajectories",
          "A: Amplitude"),
-       col = c("black", RColorBrewer::brewer.pal(5, "Set1")[c(1, 3)]),
-       lty = 1, text.col = c("black", RColorBrewer::brewer.pal(5, "Set1")[c(1, 3)]), bty = "n")
+       col = c("black", "#E41A1C", "#4DAF4A"),
+       lty = 1, text.col = c("black", "#E41A1C", "#4DAF4A"), bty = "n")
 
 # States
 text(x = c(2.5, 7, 4, 14), y = c(2.7, 2.3, 0.3, 4.7),
-     c(0, 0, 1, 1), cex = 0.9, col = RColorBrewer::brewer.pal(5, "Set1")[1])
+     c(0, 0, 1, 1), cex = 0.9, col = "#E41A1C")
 
 ```
 
@@ -435,7 +559,7 @@ The three considered systems show positive amplitude values, indicating that the
 knitr::kable(A, col.names = c("Disturbed trajectories", "Reference", "A~abs~", "A~rel~"), digits = 3)
 ```
 
-### 3.3. Recovery
+### 4.3. Recovery
 
 The recovery index (*Rc*) quantifies the ability of the system to reorganize itself after a disturbance and evolve towards the representative trajectory representing its dominant dynamic trends.
 
@@ -449,144 +573,142 @@ $$Rc_{rel} = \frac{d_{dist,RT} - d_{post,RT}}{d_{dist, post}}$$
 
 Both absolute and relative recovery indices are positive when the system evolves towards the representative trajectory. Otherwise, negative values indicate that the system evolves towards the boundaries of the EDR.
 
-```{r graphical_recovery, echo=FALSE, fig.dim=c(6,5)}
+```{r graphical_recovery, echo=FALSE, fig.dim=c(6,3.8)}
 
 par(mar = c(0,0,0,0))
 
 # Representative trajectory
-plot(x = c(0, 16), y = c(0, 5.5), type = "n", axes = F, xlab = "", ylab = "")
+plot(x = c(0, 16), y = c(0, 8), type = "n", axes = F, xlab = "", ylab = "")
 for (i in 0:14) {
   shape::Arrows(x0 = i, y0 = 1, x1 = i + 1, y1 = 1, lwd = 2, arr.adj = 1)
 }
-text(x = 0.2, y = 1.2, "RT")
+text(x = 0.2, y = 1.3, "RT")
 
 # Reference
-lines(x = c(0, 15), y = c(2.5, 2.5), col = RColorBrewer::brewer.pal(3, "Set1")[1], lty = 3, lwd = 2)
+lines(x = c(0, 15), y = c(2.5, 2.5), 
+      col = "#E41A1C", 
+      lty = 3, lwd = 2)
 
 # Disturbed trajectory 1
 for (i in 0.5:1.5) {
   shape::Arrows(x0 = i, y0 = 2.5, x1 = i + 1, y1 = 2.5, lwd = 2, arr.adj = 1,
-                col = RColorBrewer::brewer.pal(3, "Set1")[1])
+                col = "#E41A1C")
 }
 shape::Arrows(x0 = 2.5, y0 = 2.5, x1 = 4, y1 = 4.5, lwd = 2, arr.adj = 1,
-              col = RColorBrewer::brewer.pal(3, "Set1")[1])
+              col = "#E41A1C")
 shape::Arrows(x0 = 4, y0 = 4.5, x1 = 5, y1 = 3.5, lwd = 2, arr.adj = 1,
-              col = RColorBrewer::brewer.pal(3, "Set1")[1])
-text(x = 0.7, y = 2.7, "DT1", col = RColorBrewer::brewer.pal(3, "Set1")[1])
+              col = "#E41A1C")
+text(x = 0.7, y = 2.8, "DT1", col = "#E41A1C")
 
 # Disturbed trajectory 2
 for (i in 6:7) {
   shape::Arrows(x0 = i, y0 = 2.5, x1 = i + 1, y1 = 2.5, lwd = 2, arr.adj = 1,
-                col = RColorBrewer::brewer.pal(3, "Set1")[1])
+                col = "#E41A1C")
 }
 shape::Arrows(x0 = 8, y0 = 2.5, x1 = 9.5, y1 = 4.5, lwd = 2, arr.adj = 1,
-              col = RColorBrewer::brewer.pal(3, "Set1")[1])
+              col = "#E41A1C")
 shape::Arrows(x0 = 9.5, y0 = 4.5, x1 = 14, y1 = 3.5, lwd = 2, arr.adj = 1,
-              col = RColorBrewer::brewer.pal(3, "Set1")[1])
-text(x = 6.2, y = 2.7, "DT2", col = RColorBrewer::brewer.pal(3, "Set1")[1])
+              col = "#E41A1C")
+text(x = 6.2, y = 2.8, "DT2", col = "#E41A1C")
 
 # States
 text(x = c(2.5, 3.5, 5, 8, 9.5, 14), y = c(2.3, 4.5, 3.3, 2.3, 4.7, 3.3),
-     c(0:2, 0:2), cex = 0.9, col = RColorBrewer::brewer.pal(5, "Set1")[1])
+     c(0:2, 0:2), cex = 0.9, col = "#E41A1C")
 
 
 # Recovery DT1
-lines(x = c(4, 5), y = c(4.5, 4.5), lty = 3, col = RColorBrewer::brewer.pal(5, "Set1")[4])
-lines(x = c(5, 5), y = c(3.5, 4.5), lwd = 2, col = RColorBrewer::brewer.pal(5, "Set1")[4])
-text(x = 5.2, y = 4, adj = 0, expression(Rc[abs1] ~ "> 0"), col = RColorBrewer::brewer.pal(5, "Set1")[4])
+lines(x = c(4, 5), y = c(4.5, 4.5), lty = 3, col = "#984EA3")
+lines(x = c(5, 5), y = c(3.5, 4.5), lwd = 2, col = "#984EA3")
+text(x = 5.2, y = 4, adj = 0, expression(Rc[abs1] ~ "> 0"), col = "#984EA3")
 
-# lines(x = c(4, 4), y = c(3.5, 4.5), lty = 3, col = RColorBrewer::brewer.pal(5, "Set1")[4])
-plotrix::draw.arc(x = 4, y = 4.5, radius = 0.5, deg1 = 0, deg2 = -65, lwd = 2, col = RColorBrewer::brewer.pal(5, "Set1")[4])
-text(x = 4, y = 4.7, adj = 0, expression(Rc[rel1] ~ "> 0"), col = RColorBrewer::brewer.pal(5, "Set1")[4])
+draw_arc(x = 4, y = 4.5, r = 0.5, ini = -45, fin = 0, lwd = 2, col = "#984EA3")
+text(x = 4, y = 4.7, adj = 0, expression(Rc[rel1] ~ "> 0"), col = "#984EA3")
 
 # Recovery DT2
-lines(x = c(9.5, 14), y = c(4.5, 4.5), lty = 3, col = RColorBrewer::brewer.pal(5, "Set1")[4])
-lines(x = c(14, 14), y = c(3.5, 4.5), lwd = 2, col = RColorBrewer::brewer.pal(5, "Set1")[4])
-text(x = 15, y = 4, expression(Rc[abs2] ~ "> 0"), col = RColorBrewer::brewer.pal(5, "Set1")[4])
+lines(x = c(9.5, 14), y = c(4.5, 4.5), lty = 3, col = "#984EA3")
+lines(x = c(14, 14), y = c(3.5, 4.5), lwd = 2, col = "#984EA3")
+text(x = 15.3, y = 4, expression(Rc[abs2] ~ "> 0"), col = "#984EA3")
 
-# lines(x = c(9.5, 9.5), y = c(3.5, 4.5), lty = 3, col = RColorBrewer::brewer.pal(5, "Set1")[4])
-plotrix::draw.arc(x = 9.5, y = 4.5, radius = 1, deg1 = 0, deg2 = -25, lwd = 2, col = RColorBrewer::brewer.pal(5, "Set1")[4])
-text(x = 11, y = 4.3, adj = 0, expression(Rc[rel2] ~ "> 0"), col = RColorBrewer::brewer.pal(5, "Set1")[4])
+draw_arc(x = 9.5, y = 4.5, r = 1, ini = -13, fin = 0, lwd = 2, col = "#984EA3")
+text(x = 11, y = 4.3, adj = 0, expression(Rc[rel2] ~ "> 0"), col = "#984EA3")
 
-text(x = c(0), y = c(4.5), adj = 0, expression(Rc[abs1]~" = "~Rc[abs2]), cex = 0.9, 
-     col = RColorBrewer::brewer.pal(5, "Set1")[4])
-text(x = c(0), y = c(4.2), adj = 0, expression(Rc[rel1]~" > "~Rc[rel2]), cex = 0.9, 
-     col = RColorBrewer::brewer.pal(5, "Set1")[4])
+text(x = c(0), y = c(6), adj = 0, expression(Rc[abs1]~" = "~Rc[abs2]), cex = 0.9, 
+     col = "#984EA3")
+text(x = c(0), y = c(5.5), adj = 0, expression(Rc[rel1]~" > "~Rc[rel2]), cex = 0.9, 
+     col = "#984EA3")
 
 # Legend
 legend("topleft",
        c("RT: Representative trajectory",
          "DT: Disturbed trajectories",
          "Rc: Recovery"),
-       col = c("black", RColorBrewer::brewer.pal(5, "Set1")[c(1, 4)]),
-       lty = 1, text.col = c("black", RColorBrewer::brewer.pal(5, "Set1")[c(1, 4)]), bty = "n")
+       col = c("black", "#E41A1C", "#984EA3"),
+       lty = 1, text.col = c("black", "#E41A1C", "#984EA3"), bty = "n")
 
 
 ```
 
-```{r graphical_recovery2, echo=FALSE, fig.dim=c(6,5)}
+```{r graphical_recovery2, echo=FALSE, fig.dim=c(6,3.8)}
 
 par(mar = c(0,0,0,0))
 
 # Representative trajectory
-plot(x = c(0, 16), y = c(0, 5.5), type = "n", axes = F, xlab = "", ylab = "")
+plot(x = c(0, 16), y = c(0, 8), type = "n", axes = F, xlab = "", ylab = "")
 for (i in 0:14) {
   shape::Arrows(x0 = i, y0 = 0, x1 = i + 1, y1 = 0, lwd = 2, arr.adj = 1)
 }
-text(x = 0.2, y = 0.2, "RT")
+text(x = 0.2, y = 0.3, "RT")
 
 # Reference
-lines(x = c(0, 15), y = c(2.5, 2.5), col = RColorBrewer::brewer.pal(3, "Set1")[1], lty = 3, lwd = 2)
+lines(x = c(0, 15), y = c(2.5, 2.5), col = "#E41A1C", lty = 3, lwd = 2)
 
 # Disturbed trajectory 3
 for (i in 0.5:1.5) {
   shape::Arrows(x0 = i, y0 = 2.5, x1 = i + 1, y1 = 2.5, lwd = 2, arr.adj = 1,
-                col = RColorBrewer::brewer.pal(3, "Set1")[1])
+                col = "#E41A1C")
 }
 shape::Arrows(x0 = 2.5, y0 = 2.5, x1 = 4, y1 = 0.5, lwd = 2, arr.adj = 1,
-              col = RColorBrewer::brewer.pal(3, "Set1")[1])
+              col = "#E41A1C")
 shape::Arrows(x0 = 4, y0 = 0.5, x1 = 5, y1 = 1.5, lwd = 2, arr.adj = 1,
-              col = RColorBrewer::brewer.pal(3, "Set1")[1])
-text(x = 0.7, y = 2.7, "DT3", col = RColorBrewer::brewer.pal(3, "Set1")[1])
+              col = "#E41A1C")
+text(x = 0.7, y = 2.8, "DT3", col = "#E41A1C")
 
 # Disturbed trajectory 4
 for (i in 6:7) {
   shape::Arrows(x0 = i, y0 = 2.5, x1 = i + 1, y1 = 2.5, lwd = 2, arr.adj = 1,
-                col = RColorBrewer::brewer.pal(3, "Set1")[1])
+                col = "#E41A1C")
 }
 shape::Arrows(x0 = 8, y0 = 2.5, x1 = 9.5, y1 = 4.5, lwd = 2, arr.adj = 1,
-              col = RColorBrewer::brewer.pal(3, "Set1")[1])
+              col = "#E41A1C")
 shape::Arrows(x0 = 9.5, y0 = 4.5, x1 = 14, y1 = 5.5, lwd = 2, arr.adj = 1,
-              col = RColorBrewer::brewer.pal(3, "Set1")[1])
-text(x = 6.2, y = 2.7, "DT4", col = RColorBrewer::brewer.pal(3, "Set1")[1])
+              col = "#E41A1C")
+text(x = 6.2, y = 2.8, "DT4", col = "#E41A1C")
 
 # States
-text(x = c(2.5, 3.4, 5.5, 8, 9.2, 14.2), y = c(2.7, 0.6, 1.5, 2.3, 4.5, 5.6),
-     c(0:2, 0:2), cex = 0.9, col = RColorBrewer::brewer.pal(5, "Set1")[1])
+text(x = c(2.5, 3.4, 5.1, 8, 9.2, 14.2), y = c(2.7, 0.6, 1.7, 2.3, 4.5, 5.6),
+     c(0:2, 0:2), cex = 0.9, col = "#E41A1C")
 
 
 # Recovery DT3
-lines(x = c(4, 5), y = c(0.5, 0.5), lty = 3, col = RColorBrewer::brewer.pal(5, "Set1")[4])
-lines(x = c(5, 5), y = c(0.5, 1.5), lwd = 2, col = RColorBrewer::brewer.pal(5, "Set1")[4])
-text(x = 5.2, y = 1, adj = 0, expression(Rc[abs3] ~ "< 0"), col = RColorBrewer::brewer.pal(5, "Set1")[4])
+lines(x = c(4, 5), y = c(0.5, 0.5), lty = 3, col = "#984EA3")
+lines(x = c(5, 5), y = c(0.5, 1.5), lwd = 2, col = "#984EA3")
+text(x = 5.2, y = 1, adj = 0, expression(Rc[abs3] ~ "< 0"), col = "#984EA3")
 
-# lines(x = c(4, 4), y = c(0.5, 1.5), lty = 3, col = RColorBrewer::brewer.pal(5, "Set1")[4])
-plotrix::draw.arc(x = 4, y = 0.5, radius = 0.5, deg1 = 0, deg2 = 65, lwd = 2, col = RColorBrewer::brewer.pal(5, "Set1")[4])
-text(x = 3.8, y = 0.3, adj = 0, expression(Rc[rel3] ~ "< 0"), col = RColorBrewer::brewer.pal(5, "Set1")[4])
+draw_arc(x = 4, y = 0.5, r = 0.5, ini = 0, fin = 45, lwd = 2, col = "#984EA3")
+text(x = 3.8, y = 0.3, adj = 0, expression(Rc[rel3] ~ "< 0"), col = "#984EA3")
 
 # Recovery DT4
-lines(x = c(9.5, 14), y = c(4.5, 4.5), lty = 3, col = RColorBrewer::brewer.pal(5, "Set1")[4])
-lines(x = c(14, 14), y = c(5.5, 4.5), lwd = 2, col = RColorBrewer::brewer.pal(5, "Set1")[4])
-text(x = 15, y = 5, expression(Rc[abs4] ~ "< 0"), col = RColorBrewer::brewer.pal(5, "Set1")[4])
+lines(x = c(9.5, 14), y = c(4.5, 4.5), lty = 3, col = "#984EA3")
+lines(x = c(14, 14), y = c(5.5, 4.5), lwd = 2, col = "#984EA3")
+text(x = 15.3, y = 5, expression(Rc[abs4] ~ "< 0"), col = "#984EA3")
 
-# lines(x = c(9.5, 9.5), y = c(5.5, 4.5), lty = 3, col = RColorBrewer::brewer.pal(5, "Set1")[4])
-plotrix::draw.arc(x = 9.5, y = 4.5, radius = 1.3, deg1 = 0, deg2 = 25, lwd = 2, col = RColorBrewer::brewer.pal(5, "Set1")[4])
-text(x = 11.1, y = 4.7, adj = 0, expression(Rc[rel4] ~ "< 0"), col = RColorBrewer::brewer.pal(5, "Set1")[4])
+draw_arc(x = 9.5, y = 4.5, r = 1.3, ini = 0, fin = 13, lwd = 2, col = "#984EA3")
+text(x = 11.1, y = 4.7, adj = 0, expression(Rc[rel4] ~ "< 0"), col = "#984EA3")
 
-text(x = c(0), y = c(5.5), adj = 0, expression(Rc[abs3]~" = "~Rc[abs4]), cex = 0.9, 
-     col = RColorBrewer::brewer.pal(5, "Set1")[4])
-text(x = c(0), y = c(5.2), adj = 0, expression(Rc[rel3]~" < "~Rc[rel4]~" < "~Rc[rel2]~" < "~Rc[rel1]), cex = 0.9, 
-     col = RColorBrewer::brewer.pal(5, "Set1")[4])
+text(x = c(0), y = c(6.5), adj = 0, expression(Rc[abs3]~" = "~Rc[abs4]), cex = 0.9, 
+     col = "#984EA3")
+text(x = c(0), y = c(6), adj = 0, expression(Rc[rel3]~" < "~Rc[rel4]~" < "~Rc[rel2]~" < "~Rc[rel1]), cex = 0.9, 
+     col = "#984EA3")
 
 
 ```
@@ -606,11 +728,12 @@ Rc <- recovery(d = d,
 
 We can plot the variation of recovery over time considering all post-disturbance states:
 
-```{r plot_recovery, fig.dim=c(6,5)}
+```{r plot_recovery, fig.height=5, fig.width=10}
 # Number of states after the disturbed state
 Rc <- data.table::data.table(Rc)
 Rc[, ID_post := 1:(.N), by = disturbed_trajectories]
 
+par(mfrow = c(1, 2))
 # Plot absolute recovery over time
 plot(x = range(Rc$ID_post), y = range(Rc$Rc_abs), type = "n",
      xlab = "Nb. states after disturbance", ylab = "Absolute recovery",
@@ -633,11 +756,9 @@ for (i in unique(Rc$disturbed_trajectories)) {
 legend("topright", legend = unique(Rc$disturbed_trajectories), lty = 1, 
        col = seq_along(unique(Rc$disturbed_trajectories)) + 1, bty = "n")
 
-
-
 ```
 
-### 3.4. Net change
+### 4.4. Net change
 
 Net change (*NC*) quantifies how much the system is deviated from its trajectory after the release of the disturbance assuming that, in the absence of disturbances, the system would keep a constant distance to a representative trajectory taken as the reference.
 
@@ -651,76 +772,74 @@ $$NC_{rel} = \frac{d_{post,RT} - d_{pre,RT}}{d_{pre,post}}$$
 
 As in the amplitude index, positive values indicate that the system is deviated towards the boundaries of the EDR and negative values indicate the deviation towards the representative trajectory taken as the reference.
 
-```{r graphical_NetChange, echo=FALSE, fig.dim=c(6,5)}
+```{r graphical_NetChange, echo=FALSE, fig.dim=c(6,3.8)}
 
 par(mar = c(0,0,0,0))
 
 # Representative trajectory
-plot(x = c(0, 16), y = c(0, 5.5), type = "n", axes = F, xlab = "", ylab = "")
+plot(x = c(0, 16), y = c(0, 8), type = "n", axes = F, xlab = "", ylab = "")
 for (i in 0:14) {
   shape::Arrows(x0 = i, y0 = 1, x1 = i + 1, y1 = 1, lwd = 2, arr.adj = 1)
 }
-text(x = 0.2, y = 1.2, "RT")
+text(x = 0.2, y = 1.3, "RT")
 
 # Reference
-lines(x = c(0, 15), y = c(2.5, 2.5), col = RColorBrewer::brewer.pal(3, "Set1")[1], lty = 3, lwd = 2)
+lines(x = c(0, 15), y = c(2.5, 2.5), col = "#E41A1C", lty = 3, lwd = 2)
 
 # Disturbed trajectory 1
 for (i in 0.5:1.5) {
   shape::Arrows(x0 = i, y0 = 2.5, x1 = i + 1, y1 = 2.5, lwd = 2, arr.adj = 1,
-                col = RColorBrewer::brewer.pal(3, "Set1")[1])
+                col = "#E41A1C")
 }
 shape::Arrows(x0 = 2.5, y0 = 2.5, x1 = 4, y1 = 4.5, lwd = 2, arr.adj = 1,
-              col = RColorBrewer::brewer.pal(3, "Set1")[1])
+              col = "#E41A1C")
 shape::Arrows(x0 = 4, y0 = 4.5, x1 = 5, y1 = 3.5, lwd = 2, arr.adj = 1,
-              col = RColorBrewer::brewer.pal(3, "Set1")[1])
-text(x = 0.7, y = 2.7, "DT1", col = RColorBrewer::brewer.pal(3, "Set1")[1])
+              col = "#E41A1C")
+text(x = 0.7, y = 2.8, "DT1", col = "#E41A1C")
 
 # Disturbed trajectory 2
 for (i in 6:7) {
   shape::Arrows(x0 = i, y0 = 2.5, x1 = i + 1, y1 = 2.5, lwd = 2, arr.adj = 1,
-                col = RColorBrewer::brewer.pal(3, "Set1")[1])
+                col = "#E41A1C")
 }
 shape::Arrows(x0 = 8, y0 = 2.5, x1 = 9.5, y1 = 3.5, lwd = 2, arr.adj = 1,
-              col = RColorBrewer::brewer.pal(3, "Set1")[1])
+              col = "#E41A1C")
 shape::Arrows(x0 = 9.5, y0 = 3.5, x1 = 14, y1 = 1.5, lwd = 2, arr.adj = 1,
-              col = RColorBrewer::brewer.pal(3, "Set1")[1])
-text(x = 6.2, y = 2.7, "DT2", col = RColorBrewer::brewer.pal(3, "Set1")[1])
+              col = "#E41A1C")
+text(x = 6.2, y = 2.8, "DT2", col = "#E41A1C")
 
 # States
-text(x = c(2.5, 4, 5.5, 8, 9.5, 14), y = c(2.3, 4.7, 3.5, 2.3, 3.7, 1.3),
-     c(0:2, 0:2), cex = 0.9, col = RColorBrewer::brewer.pal(5, "Set1")[1])
-
+text(x = c(2.5, 4, 5.3, 8, 9.5, 14), y = c(2.3, 4.7, 3.7, 2.3, 3.7, 1.3),
+     c(0:2, 0:2), cex = 0.9, col = "#E41A1C")
 
 # Net change DT1
-lines(x = c(2.5, 5), y = c(2.5, 3.5), lty = 3, col = RColorBrewer::brewer.pal(9, "Set1")[9])
-lines(x = c(5, 5), y = c(2.5, 3.5), lwd = 2, col = RColorBrewer::brewer.pal(9, "Set1")[9])
-text(x = 5.2, y = 3, adj = 0, expression(NC[abs1] ~ "> 0"), col = RColorBrewer::brewer.pal(9, "Set1")[9])
+lines(x = c(2.5, 5), y = c(2.5, 3.5), lty = 3, col = "#999999")
+lines(x = c(5, 5), y = c(2.5, 3.5), lwd = 2, col = "#999999")
+text(x = 5.2, y = 3.2, adj = 0, expression(NC[abs1] ~ "> 0"), col = "#999999")
 
-plotrix::draw.arc(x = 2.5, y = 2.5, radius = 0.6, deg2 = 40, lwd = 2, col = RColorBrewer::brewer.pal(9, "Set1")[9])
-text(x = 3.2, y = 2.7, adj = 0, expression(NC[rel1] ~ "> 0"), col = RColorBrewer::brewer.pal(9, "Set1")[9])
+draw_arc(x = 2.5, y = 2.5, r = 0.6, ini = 0, fin = 25, lwd = 2, col = "#999999")
+text(x = 3.2, y = 2.7, adj = 0, expression(NC[rel1] ~ "> 0"), col = "#999999")
 
 # Net change DT2
-lines(x = c(8, 14), y = c(2.5, 1.5), lty = 3, col = RColorBrewer::brewer.pal(9, "Set1")[9])
-lines(x = c(14, 14), y = c(2.5, 1.5), lwd = 2, col = RColorBrewer::brewer.pal(9, "Set1")[9])
-text(x = 15, y = 2, expression(NC[abs2] ~ "< 0"), col = RColorBrewer::brewer.pal(9, "Set1")[9])
+lines(x = c(8, 14), y = c(2.5, 1.5), lty = 3, col = "#999999")
+lines(x = c(14, 14), y = c(2.5, 1.5), lwd = 2, col = "#999999")
+text(x = 15.2, y = 2, expression(NC[abs2] ~ "< 0"), col = "#999999")
 
-plotrix::draw.arc(x = 8, y = 2.5, radius = 1.7, deg2 = -20, lwd = 2, col = RColorBrewer::brewer.pal(9, "Set1")[9])
-text(x = 10, y = 2.3, adj = 0, expression(NC[rel2] ~ "< 0"), col = RColorBrewer::brewer.pal(9, "Set1")[9])
+draw_arc(x = 8, y = 2.5, r = 1.7, ini = -10, fin = 0, lwd = 2, col = "#999999")
+text(x = 10, y = 2.3, adj = 0, expression(NC[rel2] ~ "< 0"), col = "#999999")
 
-text(x = c(0), y = c(4.5), adj = 0, expression("|"~NC[abs1]~"| = |"~NC[abs2]~"|"), cex = 0.9, 
-     col = RColorBrewer::brewer.pal(9, "Set1")[9])
-text(x = c(0), y = c(4.2), adj = 0, expression("|"~NC[rel1]~"| > |"~NC[rel2]~"|"), cex = 0.9, 
-     col = RColorBrewer::brewer.pal(9, "Set1")[9])
+text(x = c(0), y = c(6), adj = 0, expression("|"~NC[abs1]~"| = |"~NC[abs2]~"|"), cex = 0.9, 
+     col = "#999999")
+text(x = c(0), y = c(5.5), adj = 0, expression("|"~NC[rel1]~"| > |"~NC[rel2]~"|"), cex = 0.9, 
+     col = "#999999")
 
 # Legend
 legend("topleft",
        c("RT: Representative trajectory",
          "DT: Disturbed trajectories",
          "NC: Net change"),
-       col = c("black", RColorBrewer::brewer.pal(9, "Set1")[c(1, 9)]),
-       lty = 1, text.col = c("black", RColorBrewer::brewer.pal(9, "Set1")[c(1, 9)]), bty = "n")
-
+       col = c("black", "#E41A1C", "#999999"),
+       lty = 1, text.col = c("black", "#E41A1C", "#999999"), bty = "n")
 
 ```
 
@@ -739,11 +858,12 @@ NC <- net_change(d = d,
 
 We can plot the variation of net change over time considering all post-disturbance states:
 
-```{r plot_NetChange, fig.dim=c(6,5)}
+```{r plot_NetChange, fig.height=5, fig.width=10}
 # ID post-disturbance states
 NC <- data.table::data.table(NC)
 NC[, ID_post := 1:(.N), by = disturbed_trajectories]
 
+par(mfrow = c(1, 2))
 # Plot absolute net change over time
 plot(x = range(NC$ID_post), y = range(NC$NC_abs), type = "n",
      xlab = "Nb. states after disturbance", ylab = "Absolute net change",
@@ -769,7 +889,7 @@ legend("bottomleft", legend = unique(NC$disturbed_trajectories), lty = 1,
 ```
 
 
-## 4. Assessing the ecological resilience of systems affected by pulse disturbances
+## 5. Assessing the ecological resilience of systems affected by pulse disturbances
 
 Altogether, the metrics of amplitude, recovery, and net change define the geometry of disturbed trajectories in relation to the reference EDR. Additionally, the resistance index helps interpret the response of the system considering the immediate impact of the disturbance.
 
@@ -796,7 +916,7 @@ Both *Trajectory 32* and *Trajectory 33* showed positive values of recovery and 
 
 To support our evaluation of the ecological resilience of disturbed trajectories, we can calculate the dynamic dispersion (dDis) of the post-disturbance portion of the disturbed trajectories in relation to the trajectories in the EDR.
 
-```{r dDis_post, echo = T}
+```{r dDis_post}
 # Species abundances in post-disturbance states of the disturbed trajectories
 # The states after the release of the disturbance are identified by disturbed_states > 1
 abun_post <- EDR_data$EDR3_disturbed$abundance[disturbed_states > 1] 
@@ -835,6 +955,7 @@ plot(retra_ref, d = d,
      trajectories = abun$traj, 
      states = abun$state, 
      traj.colors = c(rep("grey", 30), 2:4), 
+     xlab = "MDS D1", ylab = "MDS D2",
      main = "Comparison of disturbed trajectories and EDR3")
 legend("topleft", c("Representative trajectory", 
                     "Individual trajectories in EDR3",
