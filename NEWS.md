@@ -4,7 +4,11 @@
 
 * `plot()` and `plot_edr()`: axes are not constrained to "Axis X".
 
-* `vignette("EDR_framework")` uses `deSolve` to simulate data.
+* `vignette("EDR_framework")`: new plots showing ecological succession.
+
+* `vignette("Resilience")`: new Section 2.
+
+* Packages in Suggests are used conditionally in examples, tests, and vignettes.
 
 # ecoregime 0.3.0
 
