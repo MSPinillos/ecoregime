@@ -128,7 +128,24 @@ test_that("returns expected results when 'd' is not metric and coordStates is pr
                        y = c(2, 5, 2, 2,
                              2, 8, 5,
                              8, 8, 20))
-  d <- as.matrix(vegan::vegdist(coord))
+  perc_diff <- function(abun){
+    total_abun <- rowSums(abun)
+    d <- matrix(0, nrow = nrow(abun), ncol = nrow(abun),
+                dimnames = list(1:nrow(abun), 1:nrow(abun)))
+    for (istate in 1:nrow(abun)) {
+      jstate <- istate
+      while (jstate <= nrow(abun)) {
+        W <- sum(apply(abun[c(istate, jstate), ], 2, min))
+        A <- total_abun[istate]
+        B <- total_abun[jstate]
+        d[istate, jstate] <- 1-2*W/(A+B)
+        d[jstate, istate] <- 1-2*W/(A+B)
+        jstate <- jstate + 1
+      }
+    }
+    return(d)
+  }
+  d <- perc_diff(coord)
   coordStates <- round(cmdscale(d), 3)
 
   trajectories <- c("T1", "T1", "T1", "T1",
@@ -179,7 +196,24 @@ test_that("returns expected results when 'd' is not metric and coordStates is NU
                        y = c(2, 5, 2, 2,
                              2, 8, 5,
                              8, 8, 20))
-  d <- as.matrix(vegan::vegdist(coord))
+  perc_diff <- function(abun){
+    total_abun <- rowSums(abun)
+    d <- matrix(0, nrow = nrow(abun), ncol = nrow(abun),
+                dimnames = list(1:nrow(abun), 1:nrow(abun)))
+    for (istate in 1:nrow(abun)) {
+      jstate <- istate
+      while (jstate <= nrow(abun)) {
+        W <- sum(apply(abun[c(istate, jstate), ], 2, min))
+        A <- total_abun[istate]
+        B <- total_abun[jstate]
+        d[istate, jstate] <- 1-2*W/(A+B)
+        d[jstate, istate] <- 1-2*W/(A+B)
+        jstate <- jstate + 1
+      }
+    }
+    return(d)
+  }
+  d <- perc_diff(coord)
   coordStates <- smacof::mds(d, ndim = nrow(d) - 1)$conf
 
   trajectories <- c("T1", "T1", "T1", "T1",
@@ -224,7 +258,24 @@ test_that("returns same or different results depending on the number of target_s
                              4, 10, 6,
                              8, 12, 12,
                              12, 20, 14))
-  d <- as.matrix(vegan::vegdist(coord))
+  perc_diff <- function(abun){
+    total_abun <- rowSums(abun)
+    d <- matrix(0, nrow = nrow(abun), ncol = nrow(abun),
+                dimnames = list(1:nrow(abun), 1:nrow(abun)))
+    for (istate in 1:nrow(abun)) {
+      jstate <- istate
+      while (jstate <= nrow(abun)) {
+        W <- sum(apply(abun[c(istate, jstate), ], 2, min))
+        A <- total_abun[istate]
+        B <- total_abun[jstate]
+        d[istate, jstate] <- 1-2*W/(A+B)
+        d[jstate, istate] <- 1-2*W/(A+B)
+        jstate <- jstate + 1
+      }
+    }
+    return(d)
+  }
+  d <- perc_diff(coord)
 
   trajectories <- c(rep("R1", 4),
                     rep("R2", 3),

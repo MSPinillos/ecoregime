@@ -11,7 +11,26 @@ test_that("returns expected results when method = 'nearest_state' and 'd' is not
                              4, 10, 6,
                              8, 12, 12,
                              12, 20, 14))
-  d <- as.matrix(vegan::vegdist(coord))
+
+  perc_diff <- function(abun){
+    total_abun <- rowSums(abun)
+    d <- matrix(0, nrow = nrow(abun), ncol = nrow(abun),
+                dimnames = list(1:nrow(abun), 1:nrow(abun)))
+    for (istate in 1:nrow(abun)) {
+      jstate <- istate
+      while (jstate <= nrow(abun)) {
+        W <- sum(apply(abun[c(istate, jstate), ], 2, min))
+        A <- total_abun[istate]
+        B <- total_abun[jstate]
+        d[istate, jstate] <- 1-2*W/(A+B)
+        d[jstate, istate] <- 1-2*W/(A+B)
+        jstate <- jstate + 1
+      }
+    }
+    return(d)
+  }
+
+  d <- perc_diff(coord)
   trajectories <- c(rep("R1", 4),
                     rep("R2", 3),
                     rep("T1", 3),
@@ -258,7 +277,24 @@ test_that("returns expected results when method = 'mixed' and 'd' is not metric"
                              4, 10, 6,
                              8, 12, 12,
                              12, 20, 14))
-  d <- as.matrix(vegan::vegdist(coord))
+  perc_diff <- function(abun){
+    total_abun <- rowSums(abun)
+    d <- matrix(0, nrow = nrow(abun), ncol = nrow(abun),
+                dimnames = list(1:nrow(abun), 1:nrow(abun)))
+    for (istate in 1:nrow(abun)) {
+      jstate <- istate
+      while (jstate <= nrow(abun)) {
+        W <- sum(apply(abun[c(istate, jstate), ], 2, min))
+        A <- total_abun[istate]
+        B <- total_abun[jstate]
+        d[istate, jstate] <- 1-2*W/(A+B)
+        d[jstate, istate] <- 1-2*W/(A+B)
+        jstate <- jstate + 1
+      }
+    }
+    return(d)
+  }
+  d <- perc_diff(coord)
 
   trajectories <- c(rep("R1", 4),
                     rep("R2", 3),
@@ -393,7 +429,7 @@ test_that("returns the same results when method = 'projection' and method = 'mix
                              4, 10, 6,
                              8, 12, 12,
                              12, 20, 14))
-  d <- as.matrix(vegan::vegdist(coord))
+  d <- as.matrix(dist(coord))
 
   trajectories <- c(rep("R1", 4),
                     rep("R2", 3),
@@ -468,7 +504,7 @@ test_that("returns same results when states are not in order", {
                              4, 10, 6, 3, 2,
                              8, 12, 12,
                              12, 20, 14))
-  d <- as.matrix(vegan::vegdist(coord))
+  d <- as.matrix(dist(coord))
 
   trajectories <- c(rep("R1", 4),
                     rep("R2", 3),
@@ -486,7 +522,7 @@ test_that("returns same results when states are not in order", {
 
   order2 <- sample(1:length(trajectories))
   coord2 <- coord[order2, ]
-  d2 <- as.matrix(vegan::vegdist(coord2))
+  d2 <- as.matrix(dist(coord2))
   trajectories2 <- trajectories[order2]
   states2 <- states[order2]
 

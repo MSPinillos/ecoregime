@@ -3,7 +3,7 @@ test_that("dissimilarity of an EDR to itself is zero", {
   abun <- rbind(EDR_data$EDR1$abundance,
                 EDR_data$EDR2$abundance,
                 EDR_data$EDR3$abundance)
-  dStates <- vegan::vegdist(abun[, -c(1:3)])
+  dStates <- dist(abun[, -c(1:3)])
   trajectories <- paste0(abun$EDR, "_", abun$traj)
   states <- abun$state
 
@@ -41,7 +41,7 @@ test_that("symmetrize argument works", {
                 EDR_data$EDR2$abundance,
                 EDR_data$EDR3$abundance,
                 EDR4)
-  dStates <- vegan::vegdist(abun[, -c(1:3)])
+  dStates <- dist(abun[, -c(1:3)])
   dTraj <- ecotraj::trajectoryDistances(ecotraj::defineTrajectories(d = dStates,
                                                                     sites = paste0(abun$EDR, "_", abun$traj),
                                                                     surveys = abun$state))
@@ -121,7 +121,7 @@ test_that("the properties of dDR are fit", {
                 EDR_data$EDR2$abundance,
                 EDR_data$EDR3$abundance,
                 EDR2_bis, EDR3_sbst)
-  dStates <- vegan::vegdist(abun[, -c(1:3)])
+  dStates <- dist(abun[, -c(1:3)])
   dTraj <- ecotraj::trajectoryDistances(ecotraj::defineTrajectories(d = dStates,
                                                                     sites = paste0(abun$EDR, "_", abun$traj),
                                                                     surveys = abun$state))
@@ -150,7 +150,7 @@ test_that("trajectories can be disordered", {
                 EDR_data$EDR2$abundance,
                 EDR_data$EDR3$abundance)
   abun <- abun[order(abun$sp1), ]
-  dStates <- vegan::vegdist(abun[, -c(1:3)])
+  dStates <- dist(abun[, -c(1:3)])
   trajectories <- paste0(abun$EDR, "_", abun$traj)
   states <- abun$state
 
@@ -172,7 +172,7 @@ test_that("trajectories can be disordered", {
   abun_or <- rbind(EDR_data$EDR1$abundance,
                    EDR_data$EDR2$abundance,
                    EDR_data$EDR3$abundance)
-  dStates_or <- vegan::vegdist(abun_or[, -c(1:3)])
+  dStates_or <- dist(abun_or[, -c(1:3)])
   trajectories_or <- paste0(abun_or$EDR, "_", abun_or$traj)
   states_or <- abun_or$state
 
@@ -201,7 +201,7 @@ test_that("returns errors", {
   abun <- rbind(EDR_data$EDR1$abundance,
                 EDR_data$EDR2$abundance,
                 EDR_data$EDR3$abundance)
-  dStates <- vegan::vegdist(abun[, -c(1:3)])
+  dStates <- dist(abun[, -c(1:3)])
   trajectories <- paste0(abun$EDR, "_", abun$traj)
   states <- abun$state
 

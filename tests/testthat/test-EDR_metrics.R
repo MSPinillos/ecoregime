@@ -31,7 +31,7 @@ test_that("dDis is smaller when the reference trajectory belongs to the EDR
   abun2$traj <- 31
   abun <- rbind(abun1, abun2)
 
-  dStates <- vegan::vegdist(abun[, -c(1:3)], method = "bray")
+  dStates <- dist(abun[, -c(1:3)])
 
   dDis_inEDR <- dDis(d = dStates, d.type = "dStates",
                          trajectories = abun$traj, states = abun$state,
@@ -89,7 +89,7 @@ test_that("dBD is greater when trajectories belong to different EDRs", {
   abun <- rbind(EDR_data$EDR1$abundance[traj %in% 1:10],
                 EDR_data$EDR2$abundance[traj %in% 11:20],
                 EDR_data$EDR3$abundance[traj %in% 21:30])
-  dStates <- vegan::vegdist(abun[, -c(1:3)], method = "bray")
+  dStates <- dist(abun[, -c(1:3)])
 
   dBD_sameEDR <- dBD(d = as.matrix(EDR_data$EDR1$state_dissim),
                          d.type = "dStates",
@@ -107,7 +107,7 @@ test_that("dBD is greater when trajectories belong to different EDRs", {
 test_that("dEve is smaller when trajectories belong to different EDRs", {
   abun <- rbind(EDR_data$EDR1$abundance[traj %in% 1:15],
                 EDR_data$EDR2$abundance[traj %in% 16:30])
-  dStates <- vegan::vegdist(abun[, -c(1:3)], method = "bray")
+  dStates <- dist(abun[, -c(1:3)])
 
   dEve_sameEDR <- dEve(d = as.matrix(EDR_data$EDR1$state_dissim),
                            d.type = "dStates",
@@ -125,7 +125,7 @@ test_that("dEve is smaller when trajectories belong to different EDRs", {
 test_that("dEve is smaller when trajectories of the same EDR have greater weight", {
   abun <- rbind(EDR_data$EDR1$abundance[traj %in% 1:15],
                 EDR_data$EDR2$abundance[traj %in% 16:30])
-  dStates <- vegan::vegdist(abun[, -c(1:3)], method = "bray")
+  dStates <- dist(abun[, -c(1:3)])
 
   dEve_ew <- dEve(d = as.matrix(dStates),
                            d.type = "dStates",

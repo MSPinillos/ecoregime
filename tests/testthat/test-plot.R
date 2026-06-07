@@ -141,7 +141,7 @@ test_that("plots trajectories when states are not in order", {
   # Empty test that returns Skip and Warning
   order2 <- sample(1:nrow(EDR_data$EDR1$abundance), nrow(EDR_data$EDR1$abundance), replace = F)
   data <- EDR_data$EDR1$abundance[order2, ]
-  d <- as.matrix(vegan::vegdist(data[, paste0("sp", 1:12)], method = "bray"))
+  d <- as.matrix(dist(data[, paste0("sp", 1:12)]))
   trajectories <- data$traj
   states <- data$state
 

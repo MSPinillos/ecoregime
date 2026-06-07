@@ -133,7 +133,24 @@ test_that("returns the same output when states are not in order", {
 
   order2 <- sample(1:nrow(EDR_data$EDR1$abundance), nrow(EDR_data$EDR1$abundance))
   data2 <- EDR_data$EDR1$abundance[order2, ]
-  d2 <- as.matrix(vegan::vegdist(data2[, paste0("sp", 1:12)], method = "bray"))
+  perc_diff <- function(abun){
+    total_abun <- rowSums(abun)
+    d <- matrix(0, nrow = nrow(abun), ncol = nrow(abun),
+                dimnames = list(1:nrow(abun), 1:nrow(abun)))
+    for (istate in 1:nrow(abun)) {
+      jstate <- istate
+      while (jstate <= nrow(abun)) {
+        W <- sum(apply(abun[c(istate, jstate), ], 2, min))
+        A <- total_abun[istate]
+        B <- total_abun[jstate]
+        d[istate, jstate] <- 1-2*W/(A+B)
+        d[jstate, istate] <- 1-2*W/(A+B)
+        jstate <- jstate + 1
+      }
+    }
+    return(d)
+  }
+  d2 <- as.matrix(perc_diff(data2[, paste0("sp", 1:12)]))
   trajectories2 <- data2$traj
   states2 <- data2$state
   retra2 <- retra_edr(d = d2, trajectories = trajectories2,

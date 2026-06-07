@@ -52,11 +52,11 @@ test_that("works when trajectories and states are NOT in order (gradient)", {
 
 
   plot_edr(x = st1[, 1:2], trajectories = st1$traj, states = as.integer(st1$states),
-           traj.colors = NULL, state.colors = viridis::viridis(3),
+           traj.colors = NULL, state.colors = hcl.colors(3, "viridis"),
            type = "gradient", variable = st1$x, main = 1)
 
   plot_edr(x = st2[, 1:2], trajectories = st2$traj, states = as.integer(st2$states),
-           traj.colors = NULL, state.colors = viridis::viridis(3),
+           traj.colors = NULL, state.colors = hcl.colors(3, "viridis"),
            type = "gradient", variable = st2$x, main = 2)
 
 })
@@ -78,7 +78,7 @@ test_that("works when x is dist", {
                                            "pink", "purple", "blue", "black"),
                           type = "states", main = "states"))
   expect_warning(plot_edr(x = dist(st[, 1:2]), trajectories = st$traj, states = as.integer(st$states),
-                          traj.colors = NULL, state.colors = viridis::viridis(3),
+                          traj.colors = NULL, state.colors = hcl.colors(3, "viridis"),
                           type = "gradient", variable = st$x, main = "gradient"))
 })
 
@@ -131,11 +131,11 @@ test_that("returns errors", {
                regexp = "'states' needs to be of class integer.")
 
   expect_error(plot_edr(x = st[, 1:2], trajectories = st$traj, states = as.integer(st$states),
-                        traj.colors = NULL, state.colors = viridis::viridis(3),
+                        traj.colors = NULL, state.colors = hcl.colors(3, "viridis"),
                         type = "gradient", variable = c(st$x, 10)))
 
   expect_error(plot_edr(x = st[, 1:2], trajectories = st$traj, states = as.integer(st$states),
-                        traj.colors = NULL, state.colors = viridis::viridis(3),
+                        traj.colors = NULL, state.colors = hcl.colors(3, "viridis"),
                         type = "gradient", variable = c(st$x[-1], NA)),
                regexp = "There are missing values in 'variable'")
 
