@@ -11,6 +11,7 @@
 status](https://www.r-pkg.org/badges/version/ecoregime)](https://CRAN.R-project.org/package=ecoregime)
 [![](http://cranlogs.r-pkg.org/badges/grand-total/ecoregime)](https://cran.r-project.org/package=ecoregime)
 [![R-hub](https://github.com/MSPinillos/ecoregime/actions/workflows/rhub.yaml/badge.svg)](https://github.com/MSPinillos/ecoregime/actions/workflows/rhub.yaml)
+[![R-CMD-check](https://github.com/MSPinillos/ecoregime/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/MSPinillos/ecoregime/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 `ecoregime` implements the EDR framework to characterize and compare
@@ -89,7 +90,7 @@ plot(x = RT, d = d, trajectories = trajectories, states = states, select_RT = "T
      main = "Representative trajectories - EDR")
 ```
 
-<img src="man/figures/README-plotEDR-1.png" width="100%" />
+<img src="man/figures/README-plotEDR-1.png" alt="" width="100%" />
 
 Characterize the internal structure of ecological dynamic regimes
 calculating the dispersion (dDis), beta diversity (dBD), and evenness
