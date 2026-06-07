@@ -103,54 +103,56 @@
 #' @export
 #'
 #' @examples
-#' # Load species abundances and compile in a data frame
-#' abun1 <- EDR_data$EDR1$abundance
-#' abun2 <- EDR_data$EDR2$abundance
-#' abun3 <- EDR_data$EDR3$abundance
-#' abun <- data.frame(rbind(abun1, abun2, abun3))
+#' if (requireNamespace("vegan", quietly = TRUE)) {
+#'     # Load species abundances and compile in a data frame
+#'     abun1 <- EDR_data$EDR1$abundance
+#'     abun2 <- EDR_data$EDR2$abundance
+#'     abun3 <- EDR_data$EDR3$abundance
+#'     abun <- data.frame(rbind(abun1, abun2, abun3))
 #'
-#' # Define row names in abun to keep the reference of the EDR, trajectory, and
-#' # state
-#' row.names(abun) <- paste0(abun$EDR, "_", abun$traj, "_", abun$state)
+#'     # Define row names in abun to keep the reference of the EDR, trajectory, and
+#'     # state
+#'     row.names(abun) <- paste0(abun$EDR, "_", abun$traj, "_", abun$state)
 #'
-#' # Calculate dissimilarities between every pair of states
-#' # For example, Bray-Curtis index
-#' dStates <- vegan::vegdist(abun[, -c(1, 2, 3)], method = "bray")
+#'     # Calculate dissimilarities between every pair of states
+#'     # For example, Bray-Curtis index
+#'     dStates <- vegan::vegdist(abun[, -c(1, 2, 3)], method = "bray")
 #'
-#' # Use the labels in dStates to define the trajectories to which each state
-#' # belongs
-#' id_traj <- vapply(strsplit(labels(dStates), "_"), function(x){
-#'                     paste0(x[1], "_", x[2])
-#'                 }, character(1))
-#' id_state <- vapply(strsplit(labels(dStates), "_"), function(x){
-#'                     as.integer(x[3])
-#'                 }, integer(1))
-#' id_edr <- vapply(strsplit(labels(dStates), "_"), function(x){
-#'                     paste0("EDR", x[1])
-#'                 }, character(1))
+#'     # Use the labels in dStates to define the trajectories to which each state
+#'     # belongs
+#'     id_traj <- vapply(strsplit(labels(dStates), "_"), function(x){
+#'       paste0(x[1], "_", x[2])
+#'     }, character(1))
+#'     id_state <- vapply(strsplit(labels(dStates), "_"), function(x){
+#'     as.integer(x[3])
+#'     }, integer(1))
+#'     id_edr <- vapply(strsplit(labels(dStates), "_"), function(x){
+#'     paste0("EDR", x[1])
+#'     }, character(1))
 #'
-#' # Calculate dissimilarities between every pair of trajectories
-#' dTraj <- ecotraj::trajectoryDistances(ecotraj::defineTrajectories(d = dStates, sites = id_traj,
-#'                                                                   surveys = id_state),
-#'                                       distance.type = "DSPD")
+#'     # Calculate dissimilarities between every pair of trajectories
+#'     dTraj <- ecotraj::trajectoryDistances(ecotraj::defineTrajectories(d = dStates, sites = id_traj,
+#'                                                                       surveys = id_state),
+#'                                           distance.type = "DSPD")
 #'
-#' # Use labels in dTraj to identify EDRs
-#' id_edr_traj <- vapply(strsplit(labels(dTraj), "_"), function(x){
-#'                     paste0("EDR", x[1])
-#'                 }, character(1))
+#'     # Use labels in dTraj to identify EDRs
+#'     id_edr_traj <- vapply(strsplit(labels(dTraj), "_"), function(x){
+#'     paste0("EDR", x[1])
+#'     }, character(1))
 #'
-#' # Compute dissimilarities between EDRs:
-#' # 1) without symmetrizing the matrix and using state dissimilarities
-#' dEDR <- dist_edr(d = dStates, d.type = "dStates",
-#'                  trajectories = id_traj, states = id_state, edr = id_edr,
-#'                  metric = "dDR", symmetrize = NULL)
+#'     # Compute dissimilarities between EDRs:
+#'     # 1) without symmetrizing the matrix and using state dissimilarities
+#'     dEDR <- dist_edr(d = dStates, d.type = "dStates",
+#'                      trajectories = id_traj, states = id_state, edr = id_edr,
+#'                      metric = "dDR", symmetrize = NULL)
 #'
-#' # 2) symmetrizing by averaging elements on and below the diagonal and using
-#' # trajectory dissimilarities
-#' dEDR <- dist_edr(d = dTraj, d.type = "dTraj", edr = id_edr_traj,
-#'                  metric = "dDR", symmetrize = "mean")
-#'
-#'
+#'     # 2) symmetrizing by averaging elements on and below the diagonal and using
+#'     # trajectory dissimilarities
+#'     dEDR <- dist_edr(d = dTraj, d.type = "dTraj", edr = id_edr_traj,
+#'                      metric = "dDR", symmetrize = "mean")
+#' }
+
+
 dist_edr <- function(d, d.type, trajectories = NULL, states = NULL, edr, metric = "dDR", symmetrize = NULL, ...){
 
   metric <- match.arg(metric, c("dDR", "minDist", "maxDist"))

@@ -179,39 +179,42 @@
 #' @export
 #'
 #' @examples
-#' # Identify the representative trajectories of the EDR from undisturbed trajectories
-#' RT <- retra_edr(d = EDR_data$EDR3$state_dissim,
-#'                 trajectories = EDR_data$EDR3$abundance$traj,
-#'                 states = as.integer(EDR_data$EDR3$abundance$state),
-#'                 minSegs = 5)
+#' if (requireNamespace("vegan", quietly = TRUE)) {
+#'   # Identify the representative trajectories of the EDR from undisturbed trajectories
+#'   RT <- retra_edr(d = EDR_data$EDR3$state_dissim,
+#'                   trajectories = EDR_data$EDR3$abundance$traj,
+#'                   states = as.integer(EDR_data$EDR3$abundance$state),
+#'                   minSegs = 5)
 #'
-#' # Abundance matrix including disturbed and undisturbed trajectories
-#' abundance <- rbind(EDR_data$EDR3$abundance,
-#'                    EDR_data$EDR3_disturbed$abundance, fill = TRUE)
+#'   # Abundance matrix including disturbed and undisturbed trajectories
+#'   abundance <- rbind(EDR_data$EDR3$abundance,
+#'                      EDR_data$EDR3_disturbed$abundance, fill = TRUE)
 #'
-#' # State dissimilarities (Bray-Curtis) for disturbed and undisturbed trajectories
-#' d <- vegan::vegdist(abundance[, paste0("sp", 1:12)], method = "bray")
+#'   # State dissimilarities (Bray-Curtis) for disturbed and undisturbed trajectories
+#'   d <- vegan::vegdist(abundance[, paste0("sp", 1:12)], method = "bray")
 #'
-#' # Resistance
-#' Rt <- resistance(d = d, trajectories = abundance$traj, states = abundance$state,
-#'                  disturbed_trajectories = unique(abundance[!is.na(disturbed_states)]$traj),
-#'                  disturbed_states = abundance[disturbed_states == 1]$state)
+#'   # Resistance
+#'   Rt <- resistance(d = d, trajectories = abundance$traj, states = abundance$state,
+#'                    disturbed_trajectories = unique(abundance[!is.na(disturbed_states)]$traj),
+#'                    disturbed_states = abundance[disturbed_states == 1]$state)
 #'
-#' # Amplitude
-#' A <- amplitude(d = d, trajectories = abundance$traj, states = abundance$state,
-#'                disturbed_trajectories = unique(abundance[!is.na(disturbed_states)]$traj),
-#'                disturbed_states = abundance[disturbed_states == 1]$state, reference = RT)
-#'
-#' # Recovery
-#' Rc <- recovery(d = d, trajectories = abundance$traj, states = abundance$state,
-#'                disturbed_trajectories = unique(abundance[!is.na(disturbed_states)]$traj),
-#'                disturbed_states = abundance[disturbed_states == 1]$state, reference = RT)
-#'
-#' # Net change
-#' NC <- net_change(d = d, trajectories = abundance$traj, states = abundance$state,
+#'   # Amplitude
+#'   A <- amplitude(d = d, trajectories = abundance$traj, states = abundance$state,
 #'                  disturbed_trajectories = unique(abundance[!is.na(disturbed_states)]$traj),
 #'                  disturbed_states = abundance[disturbed_states == 1]$state, reference = RT)
 #'
+#'   # Recovery
+#'   Rc <- recovery(d = d, trajectories = abundance$traj, states = abundance$state,
+#'                  disturbed_trajectories = unique(abundance[!is.na(disturbed_states)]$traj),
+#'                  disturbed_states = abundance[disturbed_states == 1]$state, reference = RT)
+#'
+#'   # Net change
+#'   NC <- net_change(d = d, trajectories = abundance$traj, states = abundance$state,
+#'                    disturbed_trajectories = unique(abundance[!is.na(disturbed_states)]$traj),
+#'                    disturbed_states = abundance[disturbed_states == 1]$state, reference = RT)
+#' }
+
+
 
 #### RESISTANCE ####
 
