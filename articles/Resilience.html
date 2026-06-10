@@ -12,8 +12,8 @@
 <link rel="icon" sizes="any" href="../favicon.ico">
 <link rel="manifest" href="../site.webmanifest">
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Ecological resilience to pulse disturbances">
 </head>
@@ -25,7 +25,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">ecoregime</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.1.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -66,7 +66,7 @@
 Sánchez-Pinillos</h4>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/MSPinillos/ecoregime/blob/v0.3.0/vignettes/Resilience.Rmd" class="external-link"><code>vignettes/Resilience.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/MSPinillos/ecoregime/blob/master/vignettes/Resilience.Rmd" class="external-link"><code>vignettes/Resilience.Rmd</code></a></small>
       <div class="d-none name"><code>Resilience.Rmd</code></div>
     </div>
 
@@ -133,8 +133,8 @@ evaluate ecological resilience.</p>
 <p>You can install <code>ecoregime</code> directly from CRAN or from my
 GitHub account (development version):</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># install.packages("ecoregime")</span></span>
-<span><span class="co"># devtools::install_github(repo = "MSPinillos/ecoregime", dependencies = T, build_vignettes = T)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"ecoregime"</span><span class="op">)</span></span>
+<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span>repo <span class="op">=</span> <span class="st">"MSPinillos/ecoregime"</span>, dependencies <span class="op">=</span> <span class="cn">T</span>, build_vignettes <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span></code></pre></div>
 <p>Once you have installed <code>ecoregime</code> you will have to load
 it:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
@@ -158,83 +158,166 @@ it:</p>
 <span><span class="co">#&gt; To see these entries in BibTeX format, use 'print(&lt;citation&gt;,</span></span>
 <span><span class="co">#&gt; bibtex=TRUE)', 'toBibtex(.)', or set</span></span>
 <span><span class="co">#&gt; 'options(citation.bibtex.max=999)'.</span></span></code></pre></div>
+<p>Like other analyses and metrics of the EDR framework, the assessment
+of ecological resilience relies on a <strong>state space</strong>
+constructed from a dissimilarity matrix
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>D</mi><mi>O</mi></msub><annotation encoding="application/x-tex">D_O</annotation></semantics></math>)
+including pairwise comparisons of all states (or observations) in the
+ecological trajectories being evaluated (see
+<code><a href="../articles/EDR_framework.html">vignette("EDR_framework")</a></code> for further details). The choice
+of the coefficient used to generate
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>D</mi><mi>O</mi></msub><annotation encoding="application/x-tex">D_O</annotation></semantics></math>
+is, therefore, a key step that you should make carefully. As we will use
+species abundance data as example, we will apply the percentage
+difference (or Bray-Curtis dissimilarity). The percentage difference and
+other ecologically relevant dissimilarity coefficients can be applied
+using the function `<code>vegdist()</code> in <code>vegan</code>.</p>
 </div>
 </div>
 <div class="section level2">
-<h2 id="assessing-ecological-dynamic-regimes">2. Assessing ecological dynamic regimes<a class="anchor" aria-label="anchor" href="#assessing-ecological-dynamic-regimes"></a>
+<h2 id="disturbed-and-undisturbed-trajectories">2. Disturbed and undisturbed trajectories<a class="anchor" aria-label="anchor" href="#disturbed-and-undisturbed-trajectories"></a>
+</h2>
+<p>To illustrate the assessment of ecological resilience based on
+ecological dynamic regimes (EDRs), we will use the data included in
+<code>ecoregime</code> (i.e., <code>EDR_data</code>).</p>
+<p>In <code>EDR_data</code>, you will find three abundance matrices
+corresponding to three alternative EDRs (EDR1, EDR2, EDR3) composed of
+<strong>undisturbed trajectories</strong>.</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">abun_EDR1</span> <span class="op">&lt;-</span> <span class="va">EDR_data</span><span class="op">$</span><span class="va">EDR1</span><span class="op">$</span><span class="va">abundance</span></span>
+<span><span class="va">abun_EDR2</span> <span class="op">&lt;-</span> <span class="va">EDR_data</span><span class="op">$</span><span class="va">EDR2</span><span class="op">$</span><span class="va">abundance</span></span>
+<span><span class="va">abun_EDR3</span> <span class="op">&lt;-</span> <span class="va">EDR_data</span><span class="op">$</span><span class="va">EDR3</span><span class="op">$</span><span class="va">abundance</span></span></code></pre></div>
+<p>Additionally, you will find an abundance matrix associated with three
+disturbed trajectories (identified as 31, 32, and 33), in which the
+column <code>"disturbed_states"</code> indicates whether observations
+correspond to pre-disturbance states (<code>disturbed_states = 0</code>)
+or disturbed states (<code>disturbed_states &gt; 0</code>):</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">EDR_data</span><span class="op">$</span><span class="va">EDR3_disturbed</span><span class="op">$</span><span class="va">abundance</span><span class="op">)</span></span>
+<span><span class="co">#&gt;      EDR  traj state disturbed_states   sp1   sp2   sp3   sp4   sp5   sp6   sp7</span></span>
+<span><span class="co">#&gt;    &lt;int&gt; &lt;int&gt; &lt;int&gt;            &lt;num&gt; &lt;num&gt; &lt;num&gt; &lt;num&gt; &lt;num&gt; &lt;num&gt; &lt;num&gt; &lt;num&gt;</span></span>
+<span><span class="co">#&gt; 1:     3    31     1                0    13    13     3     8     5    58     0</span></span>
+<span><span class="co">#&gt; 2:     3    31     2                0    10    18     4    11     3    53     0</span></span>
+<span><span class="co">#&gt; 3:     3    31     3                1    10    18     4     3     3    53     0</span></span>
+<span><span class="co">#&gt; 4:     3    31     4                2    11    19     5     3     4    58     0</span></span>
+<span><span class="co">#&gt; 5:     3    31     5                3     8    26     7     4     3    52     0</span></span>
+<span><span class="co">#&gt; 6:     3    31     6                4     6    34     9     6     2    44     0</span></span>
+<span><span class="co">#&gt;      sp8   sp9  sp10  sp11  sp12</span></span>
+<span><span class="co">#&gt;    &lt;num&gt; &lt;num&gt; &lt;num&gt; &lt;num&gt; &lt;num&gt;</span></span>
+<span><span class="co">#&gt; 1:     0     0     0     0     0</span></span>
+<span><span class="co">#&gt; 2:     0     0     0     0     0</span></span>
+<span><span class="co">#&gt; 3:     0     0     0     0     0</span></span>
+<span><span class="co">#&gt; 4:     0     0     0     0     0</span></span>
+<span><span class="co">#&gt; 5:     0     0     0     0     0</span></span>
+<span><span class="co">#&gt; 6:     0     0     0     0     0</span></span></code></pre></div>
+<p>As a preliminary analysis, we can use the function
+<code>plot_EDR</code> to visualize the stability landscape composed of
+three alternative EDRs and the disturbed trajectories. For that, we need
+to generate a state dissimilarity matrix comparing all states in the
+trajectories of the three EDRs and the disturbed trajectories.</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com" class="external-link">data.table</a></span><span class="op">)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Attaching package: 'data.table'</span></span>
+<span><span class="co">#&gt; The following object is masked from 'package:base':</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;     %notin%</span></span>
+<span><span class="co"># Include all abundances in one matrix</span></span>
+<span><span class="va">abun_all</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/data.table/man/rbindlist.html" class="external-link">rbindlist</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>  <span class="va">EDR_data</span><span class="op">$</span><span class="va">EDR1</span><span class="op">$</span><span class="va">abundance</span>, </span>
+<span>  <span class="va">EDR_data</span><span class="op">$</span><span class="va">EDR2</span><span class="op">$</span><span class="va">abundance</span>,</span>
+<span>  <span class="va">EDR_data</span><span class="op">$</span><span class="va">EDR3</span><span class="op">$</span><span class="va">abundance</span>,</span>
+<span>  <span class="va">EDR_data</span><span class="op">$</span><span class="va">EDR3_disturbed</span><span class="op">$</span><span class="va">abundance</span><span class="op">)</span>,</span>
+<span>  fill <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Compute state dissimilarities</span></span>
+<span><span class="va">d_all</span> <span class="op">&lt;-</span> <span class="fu">vegan</span><span class="fu">::</span><span class="fu"><a href="https://vegandevs.github.io/vegan/reference/vegdist.html" class="external-link">vegdist</a></span><span class="op">(</span><span class="va">abun_all</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"sp"</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">12</span><span class="op">)</span><span class="op">]</span>, method <span class="op">=</span> <span class="st">"bray"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># We can apply mMDS to the dissimilarity matrix</span></span>
+<span><span class="va">mds_all</span> <span class="op">&lt;-</span> <span class="fu">smacof</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/smacof/man/smacofSym.html" class="external-link">mds</a></span><span class="op">(</span><span class="va">d_all</span>, ndim <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Visualize the stability landscape</span></span>
+<span><span class="fu"><a href="../reference/plot_edr.html">plot_edr</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">mds_all</span><span class="op">$</span><span class="va">conf</span>, </span>
+<span>         trajectories <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">abun_all</span><span class="op">$</span><span class="va">EDR</span>, <span class="st">"_"</span>, <span class="va">abun_all</span><span class="op">$</span><span class="va">traj</span><span class="op">)</span>, <span class="co"># provide a unique ID to each trajectory</span></span>
+<span>         states <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/integer.html" class="external-link">as.integer</a></span><span class="op">(</span><span class="va">abun_all</span><span class="op">$</span><span class="va">state</span><span class="op">)</span>, </span>
+<span>         traj.colors <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/grDevices/palette.html" class="external-link">palette.colors</a></span><span class="op">(</span><span class="fl">4</span>, <span class="st">"Table"</span><span class="op">)</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, <span class="fl">4</span><span class="op">)</span><span class="op">]</span>, each<span class="op">=</span> <span class="fl">30</span><span class="op">)</span>,</span>
+<span>                         <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/grDevices/palette.html" class="external-link">palette.colors</a></span><span class="op">(</span><span class="fl">4</span>, <span class="st">"Table"</span><span class="op">)</span><span class="op">[</span><span class="fl">3</span><span class="op">]</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>         xlab <span class="op">=</span> <span class="st">"MDS D1"</span>, ylab <span class="op">=</span> <span class="st">"MDS D2"</span>,</span>
+<span>         main <span class="op">=</span> <span class="st">"Stability landscape and disturbed trajectories"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/legend.html" class="external-link">legend</a></span><span class="op">(</span><span class="st">"bottomleft"</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"EDR"</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span>, <span class="st">"Disturbed trajectories"</span><span class="op">)</span>,</span>
+<span>       lty <span class="op">=</span> <span class="fl">1</span>, lwd <span class="op">=</span> <span class="fl">2</span>, col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/grDevices/palette.html" class="external-link">palette.colors</a></span><span class="op">(</span><span class="fl">4</span>, <span class="st">"Table"</span><span class="op">)</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">2</span>,<span class="fl">4</span>,<span class="fl">3</span><span class="op">)</span><span class="op">]</span>, bty <span class="op">=</span> <span class="st">"n"</span>, cex <span class="op">=</span> <span class="fl">0.8</span><span class="op">)</span></span></code></pre></div>
+<p><img src="Resilience_files/figure-html/st_landscape-1.png" class="r-plt" alt="" width="576"></p>
+</div>
+<div class="section level2">
+<h2 id="assessing-ecological-dynamic-regimes">3. Assessing ecological dynamic regimes<a class="anchor" aria-label="anchor" href="#assessing-ecological-dynamic-regimes"></a>
 </h2>
 <div class="section level3">
-<h3 id="identifying-the-reference-ecological-dynamic-regime">2.1. Identifying the reference ecological dynamic regime<a class="anchor" aria-label="anchor" href="#identifying-the-reference-ecological-dynamic-regime"></a>
+<h3 id="identifying-the-reference-ecological-dynamic-regime">3.1. Identifying the reference ecological dynamic regime<a class="anchor" aria-label="anchor" href="#identifying-the-reference-ecological-dynamic-regime"></a>
 </h3>
 <p>To assess the ecological resilience of a system, we need to identify
 its ecological dynamic regime (EDR) so it can be used as the reference
 to compare the disturbed dynamics. That is, the EDR to which the
-disturbed trajectories belonged before being disturbed.</p>
+disturbed trajectories belonged before being disturbed. In the figure of
+the stability landscape produced for our example data, we can see that
+the reference EDR should be EDR3, since all disturbed trajectories are
+located in its proximity. However, when we are working with empirical
+data, the distinction is often not straightforward.</p>
 <p>Given a stability landscape composed of alternative dynamic regimes,
-we can compute the dynamic dispersion (dDis) of the pre-disturbance
-portion of the disturbed trajectories in relation to each alternative
-EDR. The function <code><a href="../reference/EDR_metrics.html">dDis()</a></code> allows us to quantify the degree
-of membership of any trajectory within an EDR. You can see more
-information about <code><a href="../reference/EDR_metrics.html">dDis()</a></code> in
+we can compute the dynamic dispersion (dDis) of the
+<strong>pre-disturbance portion</strong> of the disturbed trajectories
+in relation to each alternative EDR. The function <code><a href="../reference/EDR_metrics.html">dDis()</a></code>
+allows us to quantify the degree of membership of any trajectory within
+an EDR. You can see more information about <code><a href="../reference/EDR_metrics.html">dDis()</a></code> in
 <code><a href="../articles/EDR_framework.html">vignette("EDR_framework")</a></code>.</p>
-<p>In the data included in <code>ecoregime</code> (i.e.,
-<code>EDR_data</code>), you will find three abundance matrices
-corresponding to a set of community trajectories forming three
-ecological dynamic regimes (EDR1, EDR2, EDR3). Additionally, you will
-find an abundance matrix associated with three disturbed communities
-(<code>EDR3_disturbed</code>). Assuming that EDR1, EDR2, and EDR3 are
-three alternative dynamic regimes in a stability landscape, we will see
-how <code><a href="../reference/EDR_metrics.html">dDis()</a></code> can be used to identify the EDR with which the
-disturbed trajectories are associated.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Species abundances in undisturbed states of the disturbed trajectories</span></span>
-<span><span class="co"># (Undisturbed states are identified by disturbed_states = 0)</span></span>
-<span><span class="va">abun_undist</span> <span class="op">&lt;-</span> <span class="va">EDR_data</span><span class="op">$</span><span class="va">EDR3_disturbed</span><span class="op">$</span><span class="va">abundance</span><span class="op">[</span><span class="va">disturbed_states</span> <span class="op">==</span> <span class="fl">0</span><span class="op">]</span> </span>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Species abundances in pre-disturbance states of the disturbed trajectories</span></span>
+<span><span class="co"># (Pre-disturbance states are identified by disturbed_states = 0)</span></span>
+<span><span class="va">abun_predist</span> <span class="op">&lt;-</span> <span class="va">EDR_data</span><span class="op">$</span><span class="va">EDR3_disturbed</span><span class="op">$</span><span class="va">abundance</span><span class="op">[</span><span class="va">disturbed_states</span> <span class="op">==</span> <span class="fl">0</span><span class="op">]</span> </span>
 <span><span class="va">selcols</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">EDR_data</span><span class="op">$</span><span class="va">EDR1</span><span class="op">$</span><span class="va">abundance</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co">## EDR1 ------------------------------------------------------------------------</span></span>
 <span></span>
-<span><span class="co"># Species abundances in EDR1 and the undisturbed states of disturbed trajectories</span></span>
-<span><span class="va">abun1_undist</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="va">EDR_data</span><span class="op">$</span><span class="va">EDR1</span><span class="op">$</span><span class="va">abundance</span>, <span class="va">abun_undist</span><span class="op">[</span>, <span class="va">..selcols</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="co"># Species abundances in EDR1 and the predisturbed states of disturbed trajectories</span></span>
+<span><span class="va">abun1_predist</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="va">EDR_data</span><span class="op">$</span><span class="va">EDR1</span><span class="op">$</span><span class="va">abundance</span>, <span class="va">abun_predist</span><span class="op">[</span>, <span class="va">..selcols</span><span class="op">]</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># State dissimilarities in EDR1 and the undisturbed states of disturbed trajectories</span></span>
-<span><span class="va">d1_undist</span> <span class="op">&lt;-</span> <span class="fu">vegan</span><span class="fu">::</span><span class="fu"><a href="https://vegandevs.github.io/vegan/reference/vegdist.html" class="external-link">vegdist</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">abun1_undist</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"sp"</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">12</span><span class="op">)</span><span class="op">]</span>, method <span class="op">=</span> <span class="st">"bray"</span><span class="op">)</span></span>
+<span><span class="co"># State dissimilarities in EDR1 and the predisturbed states of disturbed trajectories</span></span>
+<span><span class="va">d1_predist</span> <span class="op">&lt;-</span> <span class="fu">vegan</span><span class="fu">::</span><span class="fu"><a href="https://vegandevs.github.io/vegan/reference/vegdist.html" class="external-link">vegdist</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">abun1_predist</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"sp"</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">12</span><span class="op">)</span><span class="op">]</span>, method <span class="op">=</span> <span class="st">"bray"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># dDis of the disturbed trajectories in relation to EDR1</span></span>
-<span><span class="va">dDis1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">sapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">abun_undist</span><span class="op">$</span><span class="va">traj</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">iundist</span><span class="op">)</span><span class="op">{</span></span>
-<span>  <span class="fu"><a href="../reference/EDR_metrics.html">dDis</a></span><span class="op">(</span>d <span class="op">=</span> <span class="va">d1_undist</span>, d.type <span class="op">=</span> <span class="st">"dStates"</span>, </span>
-<span>       trajectories <span class="op">=</span> <span class="va">abun1_undist</span><span class="op">$</span><span class="va">traj</span>, states <span class="op">=</span> <span class="va">abun1_undist</span><span class="op">$</span><span class="va">state</span>, </span>
-<span>       reference <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="va">iundist</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">dDis1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">sapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">abun_predist</span><span class="op">$</span><span class="va">traj</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">ipredist</span><span class="op">)</span><span class="op">{</span></span>
+<span>  <span class="fu"><a href="../reference/EDR_metrics.html">dDis</a></span><span class="op">(</span>d <span class="op">=</span> <span class="va">d1_predist</span>, d.type <span class="op">=</span> <span class="st">"dStates"</span>, </span>
+<span>       trajectories <span class="op">=</span> <span class="va">abun1_predist</span><span class="op">$</span><span class="va">traj</span>, states <span class="op">=</span> <span class="va">abun1_predist</span><span class="op">$</span><span class="va">state</span>, </span>
+<span>       reference <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="va">ipredist</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">}</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co">## EDR2 ------------------------------------------------------------------------</span></span>
 <span></span>
-<span><span class="co"># Species abundances in EDR2 and the undisturbed states of disturbed trajectories</span></span>
-<span><span class="va">abun2_undist</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="va">EDR_data</span><span class="op">$</span><span class="va">EDR2</span><span class="op">$</span><span class="va">abundance</span>, <span class="va">abun_undist</span><span class="op">[</span>, <span class="va">..selcols</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="co"># Species abundances in EDR2 and the predisturbed states of disturbed trajectories</span></span>
+<span><span class="va">abun2_predist</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="va">EDR_data</span><span class="op">$</span><span class="va">EDR2</span><span class="op">$</span><span class="va">abundance</span>, <span class="va">abun_predist</span><span class="op">[</span>, <span class="va">..selcols</span><span class="op">]</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># State dissimilarities in EDR2 and the undisturbed states of disturbed trajectories</span></span>
-<span><span class="va">d2_undist</span> <span class="op">&lt;-</span> <span class="fu">vegan</span><span class="fu">::</span><span class="fu"><a href="https://vegandevs.github.io/vegan/reference/vegdist.html" class="external-link">vegdist</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">abun2_undist</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"sp"</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">12</span><span class="op">)</span><span class="op">]</span>, method <span class="op">=</span> <span class="st">"bray"</span><span class="op">)</span></span>
+<span><span class="co"># State dissimilarities in EDR2 and the predisturbed states of disturbed trajectories</span></span>
+<span><span class="va">d2_predist</span> <span class="op">&lt;-</span> <span class="fu">vegan</span><span class="fu">::</span><span class="fu"><a href="https://vegandevs.github.io/vegan/reference/vegdist.html" class="external-link">vegdist</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">abun2_predist</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"sp"</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">12</span><span class="op">)</span><span class="op">]</span>, method <span class="op">=</span> <span class="st">"bray"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># dDis of the disturbed trajectories in relation to EDR2</span></span>
-<span><span class="va">dDis2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">sapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">abun_undist</span><span class="op">$</span><span class="va">traj</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">iundist</span><span class="op">)</span><span class="op">{</span></span>
-<span>  <span class="fu"><a href="../reference/EDR_metrics.html">dDis</a></span><span class="op">(</span>d <span class="op">=</span> <span class="va">d2_undist</span>, d.type <span class="op">=</span> <span class="st">"dStates"</span>, </span>
-<span>       trajectories <span class="op">=</span> <span class="va">abun2_undist</span><span class="op">$</span><span class="va">traj</span>, states <span class="op">=</span> <span class="va">abun2_undist</span><span class="op">$</span><span class="va">state</span>, </span>
-<span>       reference <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="va">iundist</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">dDis2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">sapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">abun_predist</span><span class="op">$</span><span class="va">traj</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">ipredist</span><span class="op">)</span><span class="op">{</span></span>
+<span>  <span class="fu"><a href="../reference/EDR_metrics.html">dDis</a></span><span class="op">(</span>d <span class="op">=</span> <span class="va">d2_predist</span>, d.type <span class="op">=</span> <span class="st">"dStates"</span>, </span>
+<span>       trajectories <span class="op">=</span> <span class="va">abun2_predist</span><span class="op">$</span><span class="va">traj</span>, states <span class="op">=</span> <span class="va">abun2_predist</span><span class="op">$</span><span class="va">state</span>, </span>
+<span>       reference <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="va">ipredist</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">}</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co">## EDR3 ------------------------------------------------------------------------</span></span>
 <span></span>
-<span><span class="co"># Species abundances in EDR3 and the undisturbed states of disturbed trajectories</span></span>
-<span><span class="va">abun3_undist</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="va">EDR_data</span><span class="op">$</span><span class="va">EDR3</span><span class="op">$</span><span class="va">abundance</span>, <span class="va">abun_undist</span><span class="op">[</span>, <span class="va">..selcols</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="co"># Species abundances in EDR3 and the predisturbed states of disturbed trajectories</span></span>
+<span><span class="va">abun3_predist</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="va">EDR_data</span><span class="op">$</span><span class="va">EDR3</span><span class="op">$</span><span class="va">abundance</span>, <span class="va">abun_predist</span><span class="op">[</span>, <span class="va">..selcols</span><span class="op">]</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># State dissimilarities in EDR3 and the undisturbed states of disturbed trajectories</span></span>
-<span><span class="va">d3_undist</span> <span class="op">&lt;-</span> <span class="fu">vegan</span><span class="fu">::</span><span class="fu"><a href="https://vegandevs.github.io/vegan/reference/vegdist.html" class="external-link">vegdist</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">abun3_undist</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"sp"</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">12</span><span class="op">)</span><span class="op">]</span>, method <span class="op">=</span> <span class="st">"bray"</span><span class="op">)</span></span>
+<span><span class="co"># State dissimilarities in EDR3 and the predisturbed states of disturbed trajectories</span></span>
+<span><span class="va">d3_predist</span> <span class="op">&lt;-</span> <span class="fu">vegan</span><span class="fu">::</span><span class="fu"><a href="https://vegandevs.github.io/vegan/reference/vegdist.html" class="external-link">vegdist</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">abun3_predist</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"sp"</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">12</span><span class="op">)</span><span class="op">]</span>, method <span class="op">=</span> <span class="st">"bray"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># dDis of the disturbed trajectories in relation to EDR3</span></span>
-<span><span class="va">dDis3</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">sapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">abun_undist</span><span class="op">$</span><span class="va">traj</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">iundist</span><span class="op">)</span><span class="op">{</span></span>
-<span>  <span class="fu"><a href="../reference/EDR_metrics.html">dDis</a></span><span class="op">(</span>d <span class="op">=</span> <span class="va">d3_undist</span>, d.type <span class="op">=</span> <span class="st">"dStates"</span>, </span>
-<span>       trajectories <span class="op">=</span> <span class="va">abun3_undist</span><span class="op">$</span><span class="va">traj</span>, states <span class="op">=</span> <span class="va">abun3_undist</span><span class="op">$</span><span class="va">state</span>, </span>
-<span>       reference <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="va">iundist</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">dDis3</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">sapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">abun_predist</span><span class="op">$</span><span class="va">traj</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">ipredist</span><span class="op">)</span><span class="op">{</span></span>
+<span>  <span class="fu"><a href="../reference/EDR_metrics.html">dDis</a></span><span class="op">(</span>d <span class="op">=</span> <span class="va">d3_predist</span>, d.type <span class="op">=</span> <span class="st">"dStates"</span>, </span>
+<span>       trajectories <span class="op">=</span> <span class="va">abun3_predist</span><span class="op">$</span><span class="va">traj</span>, states <span class="op">=</span> <span class="va">abun3_predist</span><span class="op">$</span><span class="va">state</span>, </span>
+<span>       reference <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="va">ipredist</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">}</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co">## Compare dynamic dispersion --------------------------------------------------</span></span>
@@ -274,15 +357,69 @@ communities.</p>
 </tr>
 </tbody>
 </table>
+<p>Now, we can “zoom” in the stability landscape to the reference EDR
+and the disturbed trajectories. This time, we will use different colors
+to distinguish (<em>i</em>) the states in the reference EDR,
+(<em>ii</em>) the pre-disturbance states, and (<em>iii</em>) the
+disturbed states (one color for each disturbed trajectory).</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Index of the states in the reference EDR</span></span>
+<span><span class="va">iref</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="va">abun_all</span><span class="op">$</span><span class="va">EDR</span> <span class="op">==</span> <span class="fl">3</span> <span class="op">&amp;</span> <span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">abun_all</span><span class="op">$</span><span class="va">disturbed_states</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Index of the states in disturbed trajectories</span></span>
+<span><span class="va">idist</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">abun_all</span><span class="op">$</span><span class="va">disturbed_states</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Index of the states in the reference EDR and disturbed trajectories</span></span>
+<span><span class="va">iref_idist</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">iref</span>, <span class="va">idist</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Filter the dissimilarity matrix to select the states of the reference EDR and </span></span>
+<span><span class="co"># the disturbed trajectories</span></span>
+<span><span class="va">d_all</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">d_all</span><span class="op">)</span></span>
+<span><span class="va">d_EDR3_dist</span> <span class="op">&lt;-</span> <span class="va">d_all</span><span class="op">[</span><span class="va">iref_idist</span>, <span class="va">iref_idist</span><span class="op">]</span></span>
+<span></span>
+<span><span class="co"># Apply mMDS for the new matrix</span></span>
+<span><span class="va">mds_EDR3_dist</span> <span class="op">&lt;-</span> <span class="fu">smacof</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/smacof/man/smacofSym.html" class="external-link">mds</a></span><span class="op">(</span><span class="va">d_EDR3_dist</span>, ndim <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Vector of colors</span></span>
+<span><span class="va">state.colors</span> <span class="op">&lt;-</span> <span class="va">abun_all</span><span class="op">[</span><span class="va">iref_idist</span>, </span>
+<span>                         <span class="co"># color for reference states</span></span>
+<span>                         <span class="va">state.colors</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">disturbed_states</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/grDevices/palette.html" class="external-link">palette.colors</a></span><span class="op">(</span><span class="fl">8</span>, <span class="st">"R4"</span><span class="op">)</span><span class="op">[</span><span class="fl">8</span><span class="op">]</span>,</span>
+<span>                                                <span class="co"># color for pre-disturbance states</span></span>
+<span>                                                <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">disturbed_states</span> <span class="op">==</span> <span class="fl">0</span>, <span class="fu"><a href="https://rdrr.io/r/grDevices/palette.html" class="external-link">palette.colors</a></span><span class="op">(</span><span class="fl">8</span>, <span class="st">"R4"</span><span class="op">)</span><span class="op">[</span><span class="fl">7</span><span class="op">]</span>,</span>
+<span>                                                       <span class="co"># color for disturbed states</span></span>
+<span>                                                       <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">traj</span> <span class="op">==</span> <span class="fl">31</span>, <span class="fu"><a href="https://rdrr.io/r/grDevices/palette.html" class="external-link">palette.colors</a></span><span class="op">(</span><span class="fl">8</span>, <span class="st">"R4"</span><span class="op">)</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span>,</span>
+<span>                                                              <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">traj</span> <span class="op">==</span> <span class="fl">32</span>, <span class="fu"><a href="https://rdrr.io/r/grDevices/palette.html" class="external-link">palette.colors</a></span><span class="op">(</span><span class="fl">8</span>, <span class="st">"R4"</span><span class="op">)</span><span class="op">[</span><span class="fl">3</span><span class="op">]</span>, </span>
+<span>                                                                     <span class="fu"><a href="https://rdrr.io/r/grDevices/palette.html" class="external-link">palette.colors</a></span><span class="op">(</span><span class="fl">8</span>, <span class="st">"R4"</span><span class="op">)</span><span class="op">[</span><span class="fl">4</span><span class="op">]</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">]</span><span class="op">$</span><span class="va">state.colors</span></span>
+<span><span class="va">state.colors</span> <span class="op">&lt;-</span> <span class="va">state.colors</span><span class="op">[</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">state.colors</span><span class="op">)</span><span class="op">]</span></span>
+<span></span>
+<span><span class="co"># Plot the reference EDR and disturbed trajectories</span></span>
+<span><span class="fu"><a href="../reference/plot_edr.html">plot_edr</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">mds_EDR3_dist</span><span class="op">$</span><span class="va">conf</span>, </span>
+<span>         trajectories <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">abun_all</span><span class="op">$</span><span class="va">EDR</span><span class="op">[</span><span class="va">iref_idist</span><span class="op">]</span>, <span class="st">"_"</span>, <span class="va">abun_all</span><span class="op">$</span><span class="va">traj</span><span class="op">[</span><span class="va">iref_idist</span><span class="op">]</span><span class="op">)</span>,</span>
+<span>         states <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/integer.html" class="external-link">as.integer</a></span><span class="op">(</span><span class="va">abun_all</span><span class="op">$</span><span class="va">state</span><span class="op">[</span><span class="va">iref_idist</span><span class="op">]</span><span class="op">)</span>,</span>
+<span>         type <span class="op">=</span> <span class="st">"states"</span>, <span class="co"># it allows assigning different colors to the states</span></span>
+<span>         state.colors <span class="op">=</span> <span class="va">state.colors</span>,</span>
+<span>         xlab <span class="op">=</span> <span class="st">"MDS D1"</span>, ylab <span class="op">=</span> <span class="st">"MDS D2"</span>,</span>
+<span>         main <span class="op">=</span> <span class="st">"Reference EDR and disturbed trajectories"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/legend.html" class="external-link">legend</a></span><span class="op">(</span><span class="st">"topleft"</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Reference EDR"</span>, <span class="st">"Pre-disturbed states"</span>, </span>
+<span>                    <span class="st">"Disturbed states T31"</span>, <span class="st">"Disturbed states T32"</span>, </span>
+<span>                    <span class="st">"Disturbed states T33"</span><span class="op">)</span>,</span>
+<span>       lty <span class="op">=</span> <span class="fl">1</span>, lwd <span class="op">=</span> <span class="fl">2</span>, col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/grDevices/palette.html" class="external-link">palette.colors</a></span><span class="op">(</span><span class="fl">8</span>, <span class="st">"R4"</span><span class="op">)</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">8</span>, <span class="fl">7</span>, <span class="fl">2</span><span class="op">:</span><span class="fl">4</span><span class="op">)</span><span class="op">]</span>, </span>
+<span>       cex <span class="op">=</span> <span class="fl">0.9</span>, bty <span class="op">=</span> <span class="st">"n"</span><span class="op">)</span></span></code></pre></div>
+<p><img src="Resilience_files/figure-html/EDR_dist-1.png" class="r-plt" alt="" width="576"></p>
+<p>In this figure, we already observe contrasting post-disturbance
+dynamics. T32 seems to remain within the boundaries of the EDR, T33
+temporarily visits the boundaries before returning towards the reference
+EDR, and T31 is pushed out of the EDR. In Section 4, we will learn to
+quantify these patterns.</p>
 </div>
 <div class="section level3">
-<h3 id="define-the-main-dynamic-trends-through-representative-trajectories">2.2. Define the main dynamic trends through representative
+<h3 id="define-the-main-dynamic-trends-through-representative-trajectories">3.2. Define the main dynamic trends through representative
 trajectories<a class="anchor" aria-label="anchor" href="#define-the-main-dynamic-trends-through-representative-trajectories"></a>
 </h3>
 <p>Once we have identified the EDR of reference, we can compute the
 representative trajectories using the function <code><a href="../reference/retra_edr.html">retra_edr()</a></code>.
 See <code><a href="../articles/EDR_framework.html">vignette("EDR_framework")</a></code> for more information.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># State dissimilarities for EDR3 (considering only the undisturbed trajectories)</span></span>
 <span><span class="va">d_EDR3</span> <span class="op">&lt;-</span> <span class="fu">vegan</span><span class="fu">::</span><span class="fu"><a href="https://vegandevs.github.io/vegan/reference/vegdist.html" class="external-link">vegdist</a></span><span class="op">(</span><span class="va">EDR_data</span><span class="op">$</span><span class="va">EDR3</span><span class="op">$</span><span class="va">abundance</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"sp"</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">12</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span>
 <span></span>
@@ -293,7 +430,7 @@ See <code><a href="../articles/EDR_framework.html">vignette("EDR_framework")</a>
 <p>Although there are five representative trajectories, we will select
 “T4” as the reference for being the longest and covering all regions of
 the EDR relatively well.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Summarize retra</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">retra</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    ID Size     Length   Avg_link   Sum_link Avg_density Max_density Avg_depth</span></span>
@@ -314,21 +451,22 @@ the EDR relatively well.</p>
 <span>                          trajectories <span class="op">=</span> <span class="va">EDR_data</span><span class="op">$</span><span class="va">EDR3</span><span class="op">$</span><span class="va">abundance</span><span class="op">$</span><span class="va">traj</span>, </span>
 <span>                          states <span class="op">=</span> <span class="va">EDR_data</span><span class="op">$</span><span class="va">EDR3</span><span class="op">$</span><span class="va">abundance</span><span class="op">$</span><span class="va">state</span>,</span>
 <span>                          retra <span class="op">=</span> <span class="va">retra</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Plot EDR3 and its representative trajectories</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">retra</span>, d <span class="op">=</span> <span class="va">d_EDR3</span>, </span>
 <span>     trajectories <span class="op">=</span> <span class="va">EDR_data</span><span class="op">$</span><span class="va">EDR3</span><span class="op">$</span><span class="va">abundance</span><span class="op">$</span><span class="va">traj</span>, </span>
 <span>     states <span class="op">=</span> <span class="va">EDR_data</span><span class="op">$</span><span class="va">EDR3</span><span class="op">$</span><span class="va">abundance</span><span class="op">$</span><span class="va">state</span>, select_RT <span class="op">=</span> <span class="st">"T4"</span>,</span>
+<span>     xlab <span class="op">=</span> <span class="st">"MDS D1"</span>, ylab <span class="op">=</span> <span class="st">"MDS D2"</span>,</span>
 <span>     main <span class="op">=</span> <span class="st">"Representative trajectories in EDR3"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/legend.html" class="external-link">legend</a></span><span class="op">(</span><span class="st">"topleft"</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Representative trajectory 'T4'"</span>, </span>
 <span>                    <span class="st">"Other representative trajectories"</span>, </span>
 <span>                    <span class="st">"Individual trajectories in EDR3"</span><span class="op">)</span>,</span>
 <span>       lty <span class="op">=</span> <span class="fl">1</span>, col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"red"</span>, <span class="st">"black"</span>, <span class="st">"grey"</span><span class="op">)</span>, bty <span class="op">=</span> <span class="st">"n"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Resilience_files/figure-html/plot_retra-1.png" width="576"></p>
+<p><img src="Resilience_files/figure-html/plot_retra-1.png" class="r-plt" alt="" width="576"></p>
 </div>
 </div>
 <div class="section level2">
-<h2 id="metrics-of-ecological-resilience-to-pulse-disturbances">3. Metrics of ecological resilience to pulse disturbances<a class="anchor" aria-label="anchor" href="#metrics-of-ecological-resilience-to-pulse-disturbances"></a>
+<h2 id="metrics-of-ecological-resilience-to-pulse-disturbances">4. Metrics of ecological resilience to pulse disturbances<a class="anchor" aria-label="anchor" href="#metrics-of-ecological-resilience-to-pulse-disturbances"></a>
 </h2>
 <p>When an ecological system is disturbed, its dynamics can deviate from
 the reference EDR and its representative trajectories. Depending on the
@@ -337,9 +475,9 @@ variables following the release of the disturbance, post-disturbance
 trajectories can be characterized through four complementary indices:
 resistance (<em>Rt</em>), amplitude (<em>A</em>), recovery
 (<em>Rc</em>), and net change (<em>NC</em>).</p>
-<p><img src="Resilience_files/figure-html/graphical_indices-1.png" width="576"></p>
+<p><img src="Resilience_files/figure-html/graphical_indices-1.png" class="r-plt" alt="" width="576"></p>
 <div class="section level3">
-<h3 id="resistance">3.1. Resistance<a class="anchor" aria-label="anchor" href="#resistance"></a>
+<h3 id="resistance">4.1. Resistance<a class="anchor" aria-label="anchor" href="#resistance"></a>
 </h3>
 <p>The resistance index (<em>Rt</em>) quantifies the impact of the
 disturbance on the system based on the immediate changes in the state
@@ -352,14 +490,14 @@ within the EDR.</p>
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>d</mi><mrow><mi>p</mi><mi>r</mi><mi>e</mi><mo>,</mo><mi>d</mi><mi>i</mi><mi>s</mi><mi>t</mi></mrow></msub><annotation encoding="application/x-tex">d_{pre,dist}</annotation></semantics></math>
 is the dissimilarity between the pre-disturbance (0) and the disturbed
 (1) states.</p>
-<p><img src="Resilience_files/figure-html/graphical_resistance-1.png" width="576"></p>
+<p><img src="Resilience_files/figure-html/graphical_resistance-1.png" class="r-plt" alt="" width="576"></p>
 <p>Given the three disturbed trajectories in EDR3 (i.e.,
 <code>EDR3_disturbed</code>), we can compute the resistance index using
 the function <code><a href="../reference/deviation_metrics.html">resistance()</a></code>:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># To calculate resistance, we need a state dissimilarity matrix for the disturbed trajectories</span></span>
 <span><span class="va">d_disturbed</span> <span class="op">&lt;-</span> <span class="fu">vegan</span><span class="fu">::</span><span class="fu"><a href="https://vegandevs.github.io/vegan/reference/vegdist.html" class="external-link">vegdist</a></span><span class="op">(</span><span class="va">EDR_data</span><span class="op">$</span><span class="va">EDR3_disturbed</span><span class="op">$</span><span class="va">abundance</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"sp"</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">12</span><span class="op">)</span><span class="op">]</span>, </span>
-<span>                              method <span class="op">=</span> <span class="st">"bray"</span><span class="op">)</span></span>
+<span>                       method <span class="op">=</span> <span class="st">"bray"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Compute resistance</span></span>
 <span><span class="co"># Note that the disturbed states are identified by disturbed_states = 1</span></span>
@@ -392,7 +530,7 @@ the function <code><a href="../reference/deviation_metrics.html">resistance()</a
 </table>
 </div>
 <div class="section level3">
-<h3 id="amplitude">3.2. Amplitude<a class="anchor" aria-label="anchor" href="#amplitude"></a>
+<h3 id="amplitude">4.2. Amplitude<a class="anchor" aria-label="anchor" href="#amplitude"></a>
 </h3>
 <p>The amplitude (<em>A</em>) quantifies how much the system is deviated
 from its trajectory during the disturbance assuming that, in the absence
@@ -417,10 +555,10 @@ in the state variables provoked by the disturbance.</p>
 deviated towards the boundaries of the EDR, whereas negative values
 indicate the deviation towards the representative trajectory taken as
 the reference.</p>
-<p><img src="Resilience_files/figure-html/graphical_amplitude-1.png" width="576"></p>
+<p><img src="Resilience_files/figure-html/graphical_amplitude-1.png" class="r-plt" alt="" width="576"></p>
 <p>Amplitude can be calculated using the function
 <code><a href="../reference/deviation_metrics.html">amplitude()</a></code>:</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># We need a state dissimilarity matrix containing the states of the disturbed </span></span>
 <span><span class="co"># trajectories and the representative trajectory taken as the reference</span></span>
 <span><span class="va">abun</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="va">EDR_data</span><span class="op">$</span><span class="va">EDR3</span><span class="op">$</span><span class="va">abundance</span>, <span class="va">EDR_data</span><span class="op">$</span><span class="va">EDR3_disturbed</span><span class="op">$</span><span class="va">abundance</span>, fill <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span>
@@ -436,12 +574,12 @@ the reference.</p>
 <p>The three considered systems show positive amplitude values,
 indicating that the disturbance lead them towards the boundaries of the
 EDR. Whereas the absolute amplitude of trajectory 31
-(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>A</mi><mrow><mi>a</mi><mi>b</mi><mi>s</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mn>31</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mn>0.027</mn></mrow><annotation encoding="application/x-tex">A_{abs}(31) = 0.027</annotation></semantics></math>)
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>A</mi><mrow><mi>a</mi><mi>b</mi><mi>s</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mn>31</mn><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mn>0.027</mn></mrow><annotation encoding="application/x-tex">A_{abs}(31) = 0.027</annotation></semantics></math>)
 is smaller than the absolute amplitude of trajectory 32
-(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>A</mi><mrow><mi>r</mi><mi>e</mi><mi>l</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mn>32</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mn>0.119</mn></mrow><annotation encoding="application/x-tex">A_{rel}(32) = 0.119</annotation></semantics></math>),
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>A</mi><mrow><mi>r</mi><mi>e</mi><mi>l</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mn>32</mn><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mn>0.119</mn></mrow><annotation encoding="application/x-tex">A_{rel}(32) = 0.119</annotation></semantics></math>),
 both have similar relative values
-(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>A</mi><mrow><mi>r</mi><mi>e</mi><mi>l</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mn>31</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mn>0.653</mn></mrow><annotation encoding="application/x-tex">A_{rel}(31) = 0.653</annotation></semantics></math>;
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>A</mi><mrow><mi>r</mi><mi>e</mi><mi>l</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mn>32</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mn>0.631</mn></mrow><annotation encoding="application/x-tex">A_{rel}(32) = 0.631</annotation></semantics></math>).
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>A</mi><mrow><mi>r</mi><mi>e</mi><mi>l</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mn>31</mn><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mn>0.653</mn></mrow><annotation encoding="application/x-tex">A_{rel}(31) = 0.653</annotation></semantics></math>;
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>A</mi><mrow><mi>r</mi><mi>e</mi><mi>l</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mn>32</mn><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mn>0.631</mn></mrow><annotation encoding="application/x-tex">A_{rel}(32) = 0.631</annotation></semantics></math>).
 This result indicates that despite the small deviation of trajectory 31
 from the representative trajectory during the disturbance, such
 deviation is disproportionately high in relation to the impact of the
@@ -478,7 +616,7 @@ disturbance on the state variables.</p>
 </table>
 </div>
 <div class="section level3">
-<h3 id="recovery">3.3. Recovery<a class="anchor" aria-label="anchor" href="#recovery"></a>
+<h3 id="recovery">4.3. Recovery<a class="anchor" aria-label="anchor" href="#recovery"></a>
 </h3>
 <p>The recovery index (<em>Rc</em>) quantifies the ability of the system
 to reorganize itself after a disturbance and evolve towards the
@@ -505,11 +643,11 @@ through major changes in its state variables.</p>
 system evolves towards the representative trajectory. Otherwise,
 negative values indicate that the system evolves towards the boundaries
 of the EDR.</p>
-<p><img src="Resilience_files/figure-html/graphical_recovery-1.png" width="576"></p>
-<p><img src="Resilience_files/figure-html/graphical_recovery2-1.png" width="576"></p>
+<p><img src="Resilience_files/figure-html/graphical_recovery-1.png" class="r-plt" alt="" width="576"></p>
+<p><img src="Resilience_files/figure-html/graphical_recovery2-1.png" class="r-plt" alt="" width="576"></p>
 <p>Recovery can be calculated using the function <code><a href="../reference/deviation_metrics.html">recovery()</a></code>
 considering all states after the disturbed state (&gt; 1):</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Compute recovery using the same data used for amplitude</span></span>
 <span><span class="va">Rc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/deviation_metrics.html">recovery</a></span><span class="op">(</span>d <span class="op">=</span> <span class="va">d</span>, </span>
 <span>               trajectories <span class="op">=</span> <span class="va">abun</span><span class="op">$</span><span class="va">traj</span>,</span>
@@ -519,11 +657,12 @@ considering all states after the disturbed state (&gt; 1):</p>
 <span>               reference <span class="op">=</span> <span class="va">retra_ref</span>, method <span class="op">=</span> <span class="st">"nearest_state"</span><span class="op">)</span></span></code></pre></div>
 <p>We can plot the variation of recovery over time considering all
 post-disturbance states:</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Number of states after the disturbed state</span></span>
-<span><span class="va">Rc</span> <span class="op">&lt;-</span> <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></span><span class="op">(</span><span class="va">Rc</span><span class="op">)</span></span>
+<span><span class="va">Rc</span> <span class="op">&lt;-</span> <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table</a></span><span class="op">(</span><span class="va">Rc</span><span class="op">)</span></span>
 <span><span class="va">Rc</span><span class="op">[</span>, <span class="va">ID_post</span> <span class="op">:=</span> <span class="fl">1</span><span class="op">:</span><span class="op">(</span><span class="va">.N</span><span class="op">)</span>, by <span class="op">=</span> <span class="va">disturbed_trajectories</span><span class="op">]</span></span>
 <span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co"># Plot absolute recovery over time</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/range.html" class="external-link">range</a></span><span class="op">(</span><span class="va">Rc</span><span class="op">$</span><span class="va">ID_post</span><span class="op">)</span>, y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/range.html" class="external-link">range</a></span><span class="op">(</span><span class="va">Rc</span><span class="op">$</span><span class="va">Rc_abs</span><span class="op">)</span>, type <span class="op">=</span> <span class="st">"n"</span>,</span>
 <span>     xlab <span class="op">=</span> <span class="st">"Nb. states after disturbance"</span>, ylab <span class="op">=</span> <span class="st">"Absolute recovery"</span>,</span>
@@ -533,10 +672,8 @@ post-disturbance states:</p>
 <span>        col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">Rc</span><span class="op">$</span><span class="va">disturbed_trajectories</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">i</span><span class="op">)</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/legend.html" class="external-link">legend</a></span><span class="op">(</span><span class="st">"bottomleft"</span>, legend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">Rc</span><span class="op">$</span><span class="va">disturbed_trajectories</span><span class="op">)</span>, lty <span class="op">=</span> <span class="fl">1</span>, </span>
-<span>       col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_along</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">Rc</span><span class="op">$</span><span class="va">disturbed_trajectories</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="fl">1</span>, bty <span class="op">=</span> <span class="st">"n"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Resilience_files/figure-html/plot_recovery-1.png" width="576"></p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span></span>
+<span>       col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_along</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">Rc</span><span class="op">$</span><span class="va">disturbed_trajectories</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="fl">1</span>, bty <span class="op">=</span> <span class="st">"n"</span><span class="op">)</span></span>
+<span></span>
 <span><span class="co"># Plot relative recovery over time</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/range.html" class="external-link">range</a></span><span class="op">(</span><span class="va">Rc</span><span class="op">$</span><span class="va">ID_post</span><span class="op">)</span>, y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/range.html" class="external-link">range</a></span><span class="op">(</span><span class="va">Rc</span><span class="op">$</span><span class="va">Rc_rel</span><span class="op">)</span>, type <span class="op">=</span> <span class="st">"n"</span>,</span>
 <span>     xlab <span class="op">=</span> <span class="st">"Nb. states after disturbance"</span>, ylab <span class="op">=</span> <span class="st">"Relative recovery"</span>,</span>
@@ -547,10 +684,10 @@ post-disturbance states:</p>
 <span><span class="op">}</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/legend.html" class="external-link">legend</a></span><span class="op">(</span><span class="st">"topright"</span>, legend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">Rc</span><span class="op">$</span><span class="va">disturbed_trajectories</span><span class="op">)</span>, lty <span class="op">=</span> <span class="fl">1</span>, </span>
 <span>       col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_along</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">Rc</span><span class="op">$</span><span class="va">disturbed_trajectories</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="fl">1</span>, bty <span class="op">=</span> <span class="st">"n"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Resilience_files/figure-html/plot_recovery-2.png" width="576"></p>
+<p><img src="Resilience_files/figure-html/plot_recovery-1.png" class="r-plt" alt="" width="960"></p>
 </div>
 <div class="section level3">
-<h3 id="net-change">3.4. Net change<a class="anchor" aria-label="anchor" href="#net-change"></a>
+<h3 id="net-change">4.4. Net change<a class="anchor" aria-label="anchor" href="#net-change"></a>
 </h3>
 <p>Net change (<em>NC</em>) quantifies how much the system is deviated
 from its trajectory after the release of the disturbance assuming that,
@@ -577,11 +714,11 @@ state.</p>
 is deviated towards the boundaries of the EDR and negative values
 indicate the deviation towards the representative trajectory taken as
 the reference.</p>
-<p><img src="Resilience_files/figure-html/graphical_NetChange-1.png" width="576"></p>
+<p><img src="Resilience_files/figure-html/graphical_NetChange-1.png" class="r-plt" alt="" width="576"></p>
 <p>The function <code><a href="../reference/deviation_metrics.html">net_change()</a></code> included in
 <code>ecoregime</code> can be used to calculate the net change of all
 post-disturbance states in relation to the pre-disturbance state:</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Compute net change using the same data used for amplitude</span></span>
 <span><span class="va">NC</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/deviation_metrics.html">net_change</a></span><span class="op">(</span>d <span class="op">=</span> <span class="va">d</span>, </span>
 <span>                 trajectories <span class="op">=</span> <span class="va">abun</span><span class="op">$</span><span class="va">traj</span>,</span>
@@ -591,11 +728,12 @@ post-disturbance states in relation to the pre-disturbance state:</p>
 <span>                 reference <span class="op">=</span> <span class="va">retra_ref</span>, method <span class="op">=</span> <span class="st">"nearest_state"</span><span class="op">)</span></span></code></pre></div>
 <p>We can plot the variation of net change over time considering all
 post-disturbance states:</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># ID post-disturbance states</span></span>
-<span><span class="va">NC</span> <span class="op">&lt;-</span> <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></span><span class="op">(</span><span class="va">NC</span><span class="op">)</span></span>
+<span><span class="va">NC</span> <span class="op">&lt;-</span> <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table</a></span><span class="op">(</span><span class="va">NC</span><span class="op">)</span></span>
 <span><span class="va">NC</span><span class="op">[</span>, <span class="va">ID_post</span> <span class="op">:=</span> <span class="fl">1</span><span class="op">:</span><span class="op">(</span><span class="va">.N</span><span class="op">)</span>, by <span class="op">=</span> <span class="va">disturbed_trajectories</span><span class="op">]</span></span>
 <span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co"># Plot absolute net change over time</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/range.html" class="external-link">range</a></span><span class="op">(</span><span class="va">NC</span><span class="op">$</span><span class="va">ID_post</span><span class="op">)</span>, y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/range.html" class="external-link">range</a></span><span class="op">(</span><span class="va">NC</span><span class="op">$</span><span class="va">NC_abs</span><span class="op">)</span>, type <span class="op">=</span> <span class="st">"n"</span>,</span>
 <span>     xlab <span class="op">=</span> <span class="st">"Nb. states after disturbance"</span>, ylab <span class="op">=</span> <span class="st">"Absolute net change"</span>,</span>
@@ -605,10 +743,8 @@ post-disturbance states:</p>
 <span>        col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">NC</span><span class="op">$</span><span class="va">disturbed_trajectories</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">i</span><span class="op">)</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/legend.html" class="external-link">legend</a></span><span class="op">(</span><span class="st">"topleft"</span>, legend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">NC</span><span class="op">$</span><span class="va">disturbed_trajectories</span><span class="op">)</span>, lty <span class="op">=</span> <span class="fl">1</span>, </span>
-<span>       col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_along</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">NC</span><span class="op">$</span><span class="va">disturbed_trajectories</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="fl">1</span>, bty <span class="op">=</span> <span class="st">"n"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Resilience_files/figure-html/plot_NetChange-1.png" width="576"></p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span></span>
+<span>       col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_along</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">NC</span><span class="op">$</span><span class="va">disturbed_trajectories</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="fl">1</span>, bty <span class="op">=</span> <span class="st">"n"</span><span class="op">)</span></span>
+<span></span>
 <span><span class="co"># Plot relative net change over time</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/range.html" class="external-link">range</a></span><span class="op">(</span><span class="va">NC</span><span class="op">$</span><span class="va">ID_post</span><span class="op">)</span>, y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/range.html" class="external-link">range</a></span><span class="op">(</span><span class="va">NC</span><span class="op">$</span><span class="va">NC_rel</span><span class="op">)</span>, type <span class="op">=</span> <span class="st">"n"</span>,</span>
 <span>     xlab <span class="op">=</span> <span class="st">"Nb. states after disturbance"</span>, ylab <span class="op">=</span> <span class="st">"Relative net change"</span>,</span>
@@ -619,11 +755,11 @@ post-disturbance states:</p>
 <span><span class="op">}</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/legend.html" class="external-link">legend</a></span><span class="op">(</span><span class="st">"bottomleft"</span>, legend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">NC</span><span class="op">$</span><span class="va">disturbed_trajectories</span><span class="op">)</span>, lty <span class="op">=</span> <span class="fl">1</span>, </span>
 <span>       col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_along</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">NC</span><span class="op">$</span><span class="va">disturbed_trajectories</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="fl">1</span>, bty <span class="op">=</span> <span class="st">"n"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Resilience_files/figure-html/plot_NetChange-2.png" width="576"></p>
+<p><img src="Resilience_files/figure-html/plot_NetChange-1.png" class="r-plt" alt="" width="960"></p>
 </div>
 </div>
 <div class="section level2">
-<h2 id="assessing-the-ecological-resilience-of-systems-affected-by-pulse-disturbances">4. Assessing the ecological resilience of systems affected by pulse
+<h2 id="assessing-the-ecological-resilience-of-systems-affected-by-pulse-disturbances">5. Assessing the ecological resilience of systems affected by pulse
 disturbances<a class="anchor" aria-label="anchor" href="#assessing-the-ecological-resilience-of-systems-affected-by-pulse-disturbances"></a>
 </h2>
 <p>Altogether, the metrics of amplitude, recovery, and net change define
@@ -636,7 +772,7 @@ and the absolute values of amplitude, recovery, and net change and we
 will consider the 14th post-disturbance state (last post-disturbance
 state of <em>Trajectory 33</em>) of all trajectories to calculate
 recovery and net change.</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Merge the results for resistance, amplitude, recovery, and net change</span></span>
 <span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/funprog.html" class="external-link">Reduce</a></span><span class="op">(</span><span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/merge.html" class="external-link">merge</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span>, all <span class="op">=</span> <span class="cn">T</span><span class="op">)</span>,</span>
 <span>                  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">Rt</span>, <span class="va">A</span>, <span class="va">Rc</span>, <span class="va">NC</span><span class="op">)</span><span class="op">)</span></span>
@@ -686,7 +822,7 @@ and the amplitude provoked by the disturbance was very small
 (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>A</mi><mo>=</mo><mn>0.027</mn></mrow><annotation encoding="application/x-tex">A = 0.027</annotation></semantics></math>).
 However, unlike <em>Trajectory 32</em> and <em>Trajectory 33</em>, the
 recovery was negative
-(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>R</mi><mi>c</mi><mo>=</mo><mo>−</mo><mn>0.474</mn></mrow><annotation encoding="application/x-tex">Rc = -0.474</annotation></semantics></math>)
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>R</mi><mi>c</mi><mo>=</mo><mi>−</mi><mn>0.474</mn></mrow><annotation encoding="application/x-tex">Rc = -0.474</annotation></semantics></math>)
 and the net change positive and relatively high
 (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mi>C</mi><mo>=</mo><mn>0.502</mn></mrow><annotation encoding="application/x-tex">NC = 0.502</annotation></semantics></math>).
 Thus, despite the relatively low impact of the disturbance, the values
@@ -724,7 +860,7 @@ eventually return towards the representative trajectory.</p>
 trajectories, we can calculate the dynamic dispersion (dDis) of the
 post-disturbance portion of the disturbed trajectories in relation to
 the trajectories in the EDR.</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Species abundances in post-disturbance states of the disturbed trajectories</span></span>
 <span><span class="co"># The states after the release of the disturbance are identified by disturbed_states &gt; 1</span></span>
 <span><span class="va">abun_post</span> <span class="op">&lt;-</span> <span class="va">EDR_data</span><span class="op">$</span><span class="va">EDR3_disturbed</span><span class="op">$</span><span class="va">abundance</span><span class="op">[</span><span class="va">disturbed_states</span> <span class="op">&gt;</span> <span class="fl">1</span><span class="op">]</span> </span>
@@ -772,12 +908,13 @@ to the other dynamics in the EDR.</p>
 <p>Finally, we can illustrate the responses of the three disturbed
 communities by representing their trajectories in relation to the
 reference EDR and its representative trajectory:</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Plot EDR3 and its representative trajectories</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">retra_ref</span>, d <span class="op">=</span> <span class="va">d</span>, </span>
 <span>     trajectories <span class="op">=</span> <span class="va">abun</span><span class="op">$</span><span class="va">traj</span>, </span>
 <span>     states <span class="op">=</span> <span class="va">abun</span><span class="op">$</span><span class="va">state</span>, </span>
 <span>     traj.colors <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"grey"</span>, <span class="fl">30</span><span class="op">)</span>, <span class="fl">2</span><span class="op">:</span><span class="fl">4</span><span class="op">)</span>, </span>
+<span>     xlab <span class="op">=</span> <span class="st">"MDS D1"</span>, ylab <span class="op">=</span> <span class="st">"MDS D2"</span>,</span>
 <span>     main <span class="op">=</span> <span class="st">"Comparison of disturbed trajectories and EDR3"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/legend.html" class="external-link">legend</a></span><span class="op">(</span><span class="st">"topleft"</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Representative trajectory"</span>, </span>
 <span>                    <span class="st">"Individual trajectories in EDR3"</span>,</span>
@@ -785,7 +922,7 @@ reference EDR and its representative trajectory:</p>
 <span>                    <span class="st">"Trajectory 32"</span>,</span>
 <span>                    <span class="st">"Trajectory 33"</span><span class="op">)</span>,</span>
 <span>       lty <span class="op">=</span> <span class="fl">1</span>, col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"black"</span>, <span class="st">"grey"</span>, <span class="fl">2</span><span class="op">:</span><span class="fl">4</span><span class="op">)</span>, bty <span class="op">=</span> <span class="st">"n"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Resilience_files/figure-html/plot_disturbed-1.png" width="672"></p>
+<p><img src="Resilience_files/figure-html/plot_disturbed-1.png" class="r-plt" alt="" width="672"></p>
 </div>
 <div class="section level2">
 <h2 id="acknowledgements">Acknowledgements<a class="anchor" aria-label="anchor" href="#acknowledgements"></a>
@@ -805,7 +942,7 @@ grant agreement No 891477 (RESET project).</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer>
