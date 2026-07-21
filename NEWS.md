@@ -1,5 +1,25 @@
 # ecoregime (development version)
 
+## New features
+
+* `MPD()` quantifies the accuracy of predicted trajectories returned by `petra_edr()`.
+
+* `petra_edr()`predicts longer trajectories in ecological dynamic regime from a target.
+
+* `plot.PETRA()` represents predicted trajectories returned by `petra_edr()` and 
+the trajectories of the reference EDR in a state space.
+
+* `vignette("Predicted_trajectories")`: describes how to predict ecological 
+trajectories from EDRs.
+
+## Improvements
+
+* `amplitude()` calculates the amplitude of disturbed trajectories from `RETRA` and `PETRA` objects.
+
+* `net_change()` calculates the net change of disturbed trajectories from `RETRA` and `PETRA` objects.
+
+* `recovery()` calculates the recovery towards reference trajectories from `RETRA` and `PETRA` objects.
+
 # ecoregime 0.3.1
 
 ## Minor changes and bug fixes

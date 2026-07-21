@@ -30,6 +30,21 @@ bibentry(
 )
 
 bibentry(
+  bibtype = "Article",
+  title = "Forecasting ecological trajectories from ecological dynamic regimes to improve resilience analysis",
+  author = c(
+    person("Martina", "Sánchez-Pinillos"),
+    person("Marie-Josée", "Fortin"),
+    person("Christian", "Messier"),
+    person("Daniel", "Kneeshaw")),
+  year = "2026",
+  journal = "Methods in Ecology and Evolution",
+  number = "",
+  pages = "",
+  url = ""
+)
+
+bibentry(
   bibtype = "Manual",
   title = "ecoregime: Analysis of Ecological Dynamic Regimes",
   author = person("Martina", "Sánchez-Pinillos"),

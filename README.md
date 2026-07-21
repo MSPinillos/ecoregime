@@ -10,7 +10,7 @@
 [![CRAN
 status](https://www.r-pkg.org/badges/version/ecoregime)](https://CRAN.R-project.org/package=ecoregime)
 [![](http://cranlogs.r-pkg.org/badges/grand-total/ecoregime)](https://cran.r-project.org/package=ecoregime)
-[![R-hub](https://github.com/MSPinillos/ecoregime/actions/workflows/rhub.yaml/badge.svg)](https://github.com/MSPinillos/ecoregime/actions/workflows/rhub.yaml)
+<!-- [![R-hub](https://github.com/MSPinillos/ecoregime/actions/workflows/rhub.yaml/badge.svg)](https://github.com/MSPinillos/ecoregime/actions/workflows/rhub.yaml) -->
 [![R-CMD-check](https://github.com/MSPinillos/ecoregime/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/MSPinillos/ecoregime/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
@@ -29,6 +29,15 @@ in:
 - Sánchez-Pinillos M., Dakos, V., Kéfi, S. 2024. Ecological dynamic
   regimes: A key concept for assessing ecological resilience.
   *Biological Conservation*. <doi:10.1016/j.biocon.2023.110409>
+
+`ecoregime` includes functions to forecast ecological trajectories from
+ecological dynamic regimes and assess the accuracy of the predictions.
+This method was introduced in:
+
+- Sánchez-Pinillos M., Fortin, M-J., Messier, C., Kneeshaw, D. 2026.
+  Forecasting ecological trajectories from ecological dynamic regimes to
+  improve resilience analysis. *Methods in Ecology and Evolution* (in
+  press).
 
 ## Installation
 
@@ -191,6 +200,57 @@ net_change(d = d, trajectories = disturbed_ref$traj, states = disturbed_ref$stat
 #> 3                     33     19      newT 0.02000000 0.5000000
 ```
 
+Predict ecological trajectories.
+
+``` r
+# State variables for the states in the trajectories forming the EDR
+EDR_var <- EDR_data$EDR3$abundance
+
+# State variables of the target
+target_var <- EDR_data$EDR3_disturbed$abundance[21:22, paste0("sp", 1:12)]
+
+# Define state_var including the state variables for the states in the EDR and
+# the target
+state_var <- data.frame(rbind(EDR_var[, -c("EDR", "traj", "state")], target_var))
+
+# Define the function used to calculate state dissimilarities and its arguments
+# For example, the Canberra dissimilarity.
+d_function = "vegan::vegdist"
+d_args = list(x = state_var, method = "bray")
+
+# Compute PETRA-EDR
+petra <- petra_edr(state_var = state_var,
+                   trajectories = c(EDR_var$traj, "target", "target"),
+                   states = as.integer(c(EDR_var$state, 1:2)),
+                   targets = "target",
+                   k = 5L,
+                   minPts = 2L,
+                   d_function = d_function,
+                   d_args = d_args,
+                   return_args = T)
+
+# Accuracy of the predicted trajectory
+MPD(petra)
+#>     target 
+#> 0.03885392
+
+# Represent the predicted trajectory
+plot(x = petra,
+     petra.colors = "coral",
+     target.colors = "royalblue",
+     traj.colors = "lightblue",
+     xlab = "MDS D1", ylab = "MDS D2",
+     main = "Predicted trajectory")
+#> Warning in plot.PETRA(x = petra, petra.colors = "coral", target.colors =
+#> "royalblue", : Trajectories will be displayed in an ordination space generated
+#> through multidimensional scaling (MDS). You can avoid this step by providing
+#> state coordinates in 'coord'.
+legend("bottomleft", c("EDR trajectories", "Observed states", "Predicted states"),
+       lty = 1, col = c("lightblue", "royalblue", "coral"), bty = "n")
+```
+
+<img src="man/figures/README-predict-1.png" alt="" width="100%" />
+
 ## Citation
 
 To cite `ecoregime` in publications use:
@@ -202,6 +262,10 @@ dynamic regimes: Identification, characterization, and comparison.”
 Sánchez-Pinillos M, Dakos V, Kéfi S (2024). “Ecological dynamic regimes:
 A key concept for assessing ecological resilience.” *Biological
 Conservation*, 110409. <https://doi.org/10.1016/j.biocon.2023.110409>.
+
+Sánchez-Pinillos M, Fortin M, Messier C, Kneeshaw D (2026). “Forecasting
+ecological trajectories from ecological dynamic regimes to improve
+resilience analysis.” *Methods in Ecology and Evolution*.
 
 Sánchez-Pinillos M (2023). *ecoregime: Analysis of Ecological Dynamic
 Regimes*. <https://doi.org/10.5281/zenodo.7584943>.
