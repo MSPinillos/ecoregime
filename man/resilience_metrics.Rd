@@ -328,7 +328,7 @@ A key concept for assessing ecological resilience. \emph{Biological Conservation
 
 Sánchez-Pinillos M., Fortin, M-J., Messier, C., Kneeshaw, D. 2026.
 Forecasting ecological trajectories from ecological dynamic regimes to improve
-resilience analysis. \emph{Methods in Ecology and Evolution} (in press).
+resilience analysis. \emph{Methods in Ecology and Evolution}. \url{doi:10.1111/2041-210x.70372}
 }
 \seealso{
 \code{\link[=retra_edr]{retra_edr()}} to identify representative trajectories in an ecological dynamic

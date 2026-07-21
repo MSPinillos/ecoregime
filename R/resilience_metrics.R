@@ -184,7 +184,7 @@
 #'
 #' Sánchez-Pinillos M., Fortin, M-J., Messier, C., Kneeshaw, D. 2026.
 #' Forecasting ecological trajectories from ecological dynamic regimes to improve
-#' resilience analysis. *Methods in Ecology and Evolution* (in press).
+#' resilience analysis. *Methods in Ecology and Evolution*. <doi:10.1111/2041-210x.70372>
 #'
 #' @seealso
 #' [`retra_edr()`] to identify representative trajectories in an ecological dynamic

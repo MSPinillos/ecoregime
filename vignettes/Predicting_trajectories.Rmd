@@ -38,11 +38,11 @@ PETRA-EDR is complemented by the metric **MPD (*Mean Predicted Deviation*)**, wh
 
 To learn more about the technical details of PETRA-EDR and MPD, see this publication:
 
-- Sánchez-Pinillos M., Fortin, M-J., Messier, C., Kneeshaw, D. 2026. Forecasting ecological trajectories from ecological dynamic regimes to improve resilience analysis. *Methods in Ecology and Evolution* (in press).
+- Sánchez-Pinillos M., Fortin, M-J., Messier, C., Kneeshaw, D. 2026. Forecasting ecological trajectories from ecological dynamic regimes to improve resilience analysis. *Methods in Ecology and Evolution*. <doi:10.1111/2041-210x.70372>
 
 Additional information about the analysis of ecological dynamic regimes can be found in `vignette("EDR_framework")` and this publication:
 
-- Sánchez-Pinillos M., Kéfi, S., De Cáceres, M., Dakos, V. 2023. Ecological Dynamic Regimes: Identification, characterization, and comparison. *Ecological   Monographs*. <https://doi.org/10.1002/ecm.1589>
+- Sánchez-Pinillos M., Kéfi, S., De Cáceres, M., Dakos, V. 2023. Ecological Dynamic Regimes: Identification, characterization, and comparison. *Ecological Monographs*. <https://doi.org/10.1002/ecm.1589>
 
 To assess ecological resilience using EDRs, you can check `vignette("Resilience")` and this publication:
 

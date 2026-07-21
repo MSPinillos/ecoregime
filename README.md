@@ -36,8 +36,8 @@ This method was introduced in:
 
 - Sánchez-Pinillos M., Fortin, M-J., Messier, C., Kneeshaw, D. 2026.
   Forecasting ecological trajectories from ecological dynamic regimes to
-  improve resilience analysis. *Methods in Ecology and Evolution* (in
-  press).
+  improve resilience analysis. *Methods in Ecology and Evolution*.
+  <doi:10.1111/2041-210x.70372>
 
 ## Installation
 
