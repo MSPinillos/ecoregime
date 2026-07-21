@@ -5,7 +5,7 @@
 \alias{dDis}
 \alias{dBD}
 \alias{dEve}
-\title{Metrics of Ecological Dynamic Regimes}
+\title{Metrics of trajectory distribution in Ecological Dynamic Regimes}
 \usage{
 dDis(
   d,
