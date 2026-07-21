@@ -86,7 +86,7 @@
 
 
 plot_edr <- function(x, trajectories, states, traj.colors = NULL, state.colors = NULL,
-                     variable = NULL, type = "trajectories", axes = c(1, 2), initial = F, ...) {
+                     variable = NULL, type = "trajectories", axes = c(1, 2), initial = FALSE, ...) {
 
   ## WARNING MESSAGES ----------------------------------------------------------
 
