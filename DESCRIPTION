@@ -29,6 +29,7 @@ Imports:
     data.table,
     ecotraj (>= 1.1.1),
     graphics,
+    grDevices,
     methods,
     shape,
     smacof,
@@ -42,3 +43,4 @@ Suggests:
 Config/testthat/edition: 3
 VignetteBuilder: knitr
 Config/roxygen2/version: 8.0.0
+RoxygenNote: 8.0.0
