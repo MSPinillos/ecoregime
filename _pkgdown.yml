@@ -1,4 +1,30 @@
 url: https://mspinillos.github.io/ecoregime/
 template:
   bootstrap: 5
+  math-rendering: mathjax
 
+reference:
+- title: Characterizing Ecological Dynamic Regimes
+  contents:
+  - retra_edr
+  - define_retra
+  - summary.RETRA
+  - plot.RETRA
+  - EDR_metrics
+  - plot_edr
+  - state_to_trajectory
+
+- title: Predicting ecological trajectories
+  contents:
+  - petra_edr
+  - MPD
+  - plot.PETRA
+
+- title: Assessing ecological resilience
+  contents:
+  - resilience_metrics
+  - dist_edr
+
+- title: Data
+  contents:
+  - EDR_data
