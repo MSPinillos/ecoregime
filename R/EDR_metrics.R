@@ -1,4 +1,4 @@
-#' Metrics of Ecological Dynamic Regimes
+#' Metrics of trajectory distribution in Ecological Dynamic Regimes
 #'
 #' @description
 #' Set of metrics to analyze the distribution and variability of trajectories
