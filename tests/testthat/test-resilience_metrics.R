@@ -133,7 +133,7 @@ test_that("returns expected results when method = 'nearest_state' and 'd' is not
 
 })
 
-test_that("returns expected results when method = 'mixed' and 'd' is metric", {
+test_that("returns expected results when method = 'projection' and 'd' is metric", {
   coord <-  data.frame(x = c(5, 9, 13, 23,
                              5, 13, 13,
                              20, 9, 13,
@@ -243,18 +243,18 @@ test_that("returns expected results when method = 'mixed' and 'd' is metric", {
                   disturbed_trajectories = disturbed_trajectories,
                   disturbed_states = disturbed_states,
                   predisturbed_states = predisturbed_states,
-                  reference = reference, method = "mixed"),
+                  reference = reference, method = "projection"),
 
     Rc = recovery(d, trajectories = trajectories, states = states,
                   disturbed_trajectories = disturbed_trajectories,
                   disturbed_states = disturbed_states,
-                  reference = reference, method = "mixed"),
+                  reference = reference, method = "projection"),
 
     NC = net_change(d = d, trajectories = trajectories, states = states,
                     disturbed_trajectories = disturbed_trajectories,
                     disturbed_states = disturbed_states,
                     predisturbed_states = predisturbed_states,
-                    reference = reference, method = "mixed")
+                    reference = reference, method = "projection")
   )
 
   expect_equal(expected_values$Rt, calculated_values$Rt)
@@ -264,7 +264,7 @@ test_that("returns expected results when method = 'mixed' and 'd' is metric", {
 
 })
 
-test_that("returns expected results when method = 'mixed' and 'd' is not metric", {
+test_that("returns expected results when method = 'projection' and 'd' is not metric", {
   coord <-  data.frame(x = c(5, 9, 13, 23,
                              5, 13, 13,
                              20, 9, 13,
@@ -314,7 +314,7 @@ test_that("returns expected results when method = 'mixed' and 'd' is not metric"
   euc <- as.matrix(dist(coordStates))
   stt <- data.table::data.table(state_to_trajectory(d = d, trajectories = trajectories, states = states,
                                                     target_states = as.integer(8:length(trajectories)), reference = reference,
-                                                    method = "mixed", coordStates = coordStates))
+                                                    method = "projection", coordStates = coordStates))
 
 
   expected_values <- list(
@@ -395,18 +395,18 @@ test_that("returns expected results when method = 'mixed' and 'd' is not metric"
                   disturbed_trajectories = disturbed_trajectories,
                   disturbed_states = disturbed_states,
                   predisturbed_states = predisturbed_states,
-                  reference = reference, method = "mixed"),
+                  reference = reference, method = "projection"),
 
     Rc = recovery(d, trajectories = trajectories, states = states,
                   disturbed_trajectories = disturbed_trajectories,
                   disturbed_states = disturbed_states,
-                  reference = reference, method = "mixed"),
+                  reference = reference, method = "projection"),
 
     NC = net_change(d = d, trajectories = trajectories, states = states,
                     disturbed_trajectories = disturbed_trajectories,
                     disturbed_states = disturbed_states,
                     predisturbed_states = predisturbed_states,
-                    reference = reference, method = "mixed")
+                    reference = reference, method = "projection")
   ))
 
   expect_equal(expected_values$Rt, calculated_values$Rt)
@@ -416,7 +416,7 @@ test_that("returns expected results when method = 'mixed' and 'd' is not metric"
 
 })
 
-test_that("returns the same results when method = 'projection' and method = 'mixed'", {
+test_that("returns the same results when method = 'projection' and method = 'mixed' (deprecated)", {
   coord <-  data.frame(x = c(5, 9, 13, 23,
                              5, 13, 13,
                              20, 9, 13,
@@ -940,4 +940,635 @@ test_that("net_change returns errors", {
                regexp = "All states in 'reference'")
 })
 
+test_that("works with PETRA when method = 'nearest_state'", {
+  edr_data <- EDR_data$EDR1$abundance
+  cols <- names(edr_data)[-c(1:2)]
+  predist <- edr_data[1, ][, (cols) := lapply(.SD, "+", 2), .SDcols = cols]
+  dist <- data.table::copy(predist)[, sp1 := 0]
+  postdist <- data.table::copy(predist)[, sp1 := 5]
+  disturbed <- rbind(predist, dist, postdist)[, state := 1:3]
+  disturbed$traj <- 31
+
+  abundance <- rbind(edr_data, disturbed)
+  d <- dist(abundance[, paste0('sp', 1:12)])
+
+  state_var <- data.frame(abundance[1:151, paste0("sp", 1:12)])
+  PT <- petra_edr(state_var = state_var,
+                  trajectories = abundance[1:151]$traj,
+                  states = as.integer(abundance[1:151]$state),
+                  targets = 31,
+                  k = 100L, minPts = 2L, eps = 20,
+                  d_function = "dist", d_args = list(x = state_var),
+                  return_args = T)
+
+  d_distPT <- as.matrix(dist(rbind(abundance[151:153, paste0("sp", 1:12)], PT$state_var)))
+
+  A_abs <- min(d_distPT[4:nrow(d_distPT), 2])
+  A_rel <- A_abs / d_distPT[1, 2]
+  Rc_abs <- min(d_distPT[4:nrow(d_distPT), 2]) - min(d_distPT[4:nrow(d_distPT), 3])
+  Rc_rel <- Rc_abs/ d_distPT[2, 3]
+  NC_abs <- min(d_distPT[4:nrow(d_distPT), 3])
+  NC_rel <- NC_abs / d_distPT[1, 3]
+
+  state_var <- data.frame(abundance[1:153, paste0("sp", 1:12)])
+  A <- amplitude(d = d, state_var = state_var,
+                 trajectories = abundance$traj, states = abundance$state,
+                 disturbed_trajectories = 31, disturbed_states = 2L, reference = PT,
+                 method = 'nearest_state')
+
+  Rc <- recovery(d = d, state_var = state_var,
+                 trajectories = abundance$traj, states = abundance$state,
+                 disturbed_trajectories = 31, disturbed_states = 2L, reference = PT,
+                 method = 'nearest_state')
+
+  NC <- net_change(d = d, state_var = state_var,
+                   trajectories = abundance$traj, states = abundance$state,
+                   disturbed_trajectories = 31, disturbed_states = 2L, reference = PT,
+                   method = 'nearest_state')
+
+  expect_equal(A$A_abs, A_abs)
+  expect_equal(A$A_rel, A_rel)
+  expect_equal(Rc$Rc_abs, Rc_abs)
+  expect_equal(Rc$Rc_rel, Rc_rel)
+  expect_equal(NC$NC_abs, NC_abs)
+  expect_equal(NC$NC_rel, NC_rel)
+
+})
+
+test_that("works with PETRA when method = 'projection' and 'd' is metric", {
+  edr_data <- EDR_data$EDR1$abundance
+  cols <- names(edr_data)[-c(1:2)]
+  predist <- edr_data[5, ][, (cols) := lapply(.SD, "+", 2), .SDcols = cols]
+  dist <- data.table::copy(predist)[, sp3 := 0]
+  postdist <- data.table::copy(predist)[, sp3 := 8]
+  disturbed <- rbind(predist, dist, postdist)[, state := 1:3]
+  disturbed$traj <- 31
+
+  abundance <- rbind(edr_data, disturbed)
+  d <- stats::dist(abundance[, paste0('sp', 1:12)])
+
+  state_var <- data.frame(abundance[1:151, paste0("sp", 1:12)])
+  petra <- petra_edr(state_var = state_var,
+                     trajectories = abundance[1:151]$traj,
+                     states = as.integer(abundance[1:151]$state), targets = 31,
+                     k = 150L, minPts = 2L, eps = quantile(d)[2],
+                     d_function = "stats::dist", d_args = list(x = state_var),
+                     return_args = T)
+
+  state_var <- data.frame(abundance[1:153, paste0("sp", 1:12)])
+  A <- amplitude(d = d, state_var = state_var,
+                 trajectories = abundance$traj, states = abundance$state,
+                 disturbed_trajectories = 31, disturbed_states = 2, reference = petra,
+                 method = 'projection')
+
+  Rc <- recovery(d = d, state_var = state_var,
+                 trajectories = abundance$traj, states = abundance$state,
+                 disturbed_trajectories = 31, disturbed_states = 2, reference = petra,
+                 method = 'projection')
+
+  NC <- net_change(d = d, state_var = state_var,
+                   trajectories = abundance$traj, states = abundance$state,
+                   disturbed_trajectories = 31, disturbed_states = 2, reference = petra,
+                   method = 'projection')
+
+
+  d_distpetra <- as.matrix(stats::dist(rbind(abundance[151:153, paste0("sp", 1:12)], petra$state_var)))
+  dist_to_petra <- state_to_trajectory(d = d_distpetra,
+                                       trajectories = c(rep("disturbed", 3), rep("petra", length(petra$trajectories))),
+                                       states = as.integer(c(1:3, seq_along(petra$states))),
+                                       target_states = 2:3, reference = "petra", method = "projection")
+  A_abs <- dist_to_petra$distance[1]
+  A_rel <- A_abs / d_distpetra[1, 2]
+  Rc_abs <- dist_to_petra$distance[1] - dist_to_petra$distance[2]
+  Rc_rel <- Rc_abs/ d_distpetra[2, 3]
+  NC_abs <- dist_to_petra$distance[2]
+  NC_rel <- NC_abs / d_distpetra[1, 3]
+
+  expect_equal(A$A_abs, A_abs)
+  expect_equal(A$A_rel, A_rel)
+  expect_equal(Rc$Rc_abs, Rc_abs)
+  expect_equal(Rc$Rc_rel, Rc_rel)
+  expect_equal(NC$NC_abs, NC_abs)
+  expect_equal(NC$NC_rel, NC_rel)
+
+})
+
+test_that("works with PETRA when method = 'projection' and 'd' is not metric", {
+  requireNamespace("vegan", quietly = TRUE)
+
+  edr_data <- EDR_data$EDR1$abundance
+  cols <- names(edr_data)[-c(1:2)]
+
+  predist <- edr_data[5, ][, (cols) := lapply(.SD, "+", 2), .SDcols = cols]
+  dist <- data.table::copy(predist)[, sp3 := 0]
+  postdist <- data.table::copy(predist)[, sp3 := 8]
+  disturbed <- rbind(predist, dist, postdist)[, state := 1:3]
+  disturbed$traj <- 31
+
+  edr2_data <- EDR_data$EDR2$abundance
+  edr2_data$traj <- edr2_data$traj + 200
+
+  abundance <- rbind(edr_data, disturbed, edr2_data)
+  d <- vegan::vegdist(abundance[, paste0('sp', 1:12)])
+
+  state_var <- data.frame(abundance[c(1:151, 154:nrow(abundance)), paste0("sp", 1:12)])
+  petra <- petra_edr(state_var = state_var,
+                     trajectories = abundance[c(1:151, 154:nrow(abundance)), ]$traj,
+                     states = as.integer(abundance[c(1:151, 154:nrow(abundance)), ]$state),
+                     targets = 31, k = 150L, minPts = 2L, eps = quantile(d)[2],
+                     d_function = "vegan::vegdist", d_args = list(x = state_var),
+                     return_args = T)
+
+
+  state_var <- data.frame(abundance[, paste0("sp", 1:12)])
+  expect_warning(A <- amplitude(d = d, state_var = state_var,
+                                trajectories = abundance$traj, states = abundance$state,
+                                disturbed_trajectories = 31, disturbed_states = 2, reference = petra,
+                                method = 'projection'))
+
+  expect_warning(Rc <- recovery(d = d, state_var = state_var,
+                                trajectories = abundance$traj, states = abundance$state,
+                                disturbed_trajectories = 31, disturbed_states = 2, reference = petra,
+                                method = 'projection'))
+
+  d_mat2 <- as.matrix(vegan::vegdist(rbind(abundance[, paste0("sp", 1:12)], petra$state_var)))
+  d_distpetra <- as.matrix(dist(smacof::mds(d_mat2, ndim = nrow(d_mat2) - 1)$conf))
+  expect_warning(dist_to_petra <- state_to_trajectory(d_mat2,
+                                                      trajectories = c(abundance$traj, rep("petra", length(petra$trajectories))),
+                                                      states = as.integer(c(abundance$state, seq_along(petra$states))),
+                                                      target_states = 152:153, reference = "petra", method = "projection"))
+  A_abs <- dist_to_petra$distance[1]
+  A_rel <- A_abs / d_distpetra[151, 152]
+  Rc_abs <- dist_to_petra$distance[1] - dist_to_petra$distance[2]
+  Rc_rel <- Rc_abs/ d_distpetra[152, 153]
+
+  expect_equal(A$A_abs, A_abs, tolerance = 1e-6)
+  expect_equal(A$A_rel, A_rel, tolerance = 1e-6)
+  expect_equal(Rc$Rc_abs, Rc_abs, tolerance = 1e-6)
+  expect_equal(Rc$Rc_rel, Rc_rel, tolerance = 1e-6)
+
+})
+
+test_that("works with PETRA when there are multiple disturbed trajectories", {
+  edr_data <- EDR_data$EDR1$abundance
+  cols <- names(edr_data)[-c(1:2)]
+  predist <- edr_data[c(1, 6, 11), ][, (cols) := lapply(.SD, "+", 2), .SDcols = cols]
+  dist <- rbind(data.table::copy(predist)[1, sp1 := 0][1, ],
+                data.table::copy(predist)[2, sp3 := 0][2, ],
+                data.table::copy(predist)[3, sp1 := 0][3, ])
+  postdist <- rbind(data.table::copy(predist)[1, sp1 := 5][1, ],
+                    data.table::copy(predist)[2, sp3 := 8][2, ],
+                    data.table::copy(predist)[3, sp1 := 8][3, ])
+  disturbed <- rbind(predist, dist, postdist)[, state := rep(1:3, each = 3)]
+  disturbed$traj <- rep(31:33, 3)
+
+  abundance <- rbind(edr_data, disturbed)
+  d <- dist(abundance[, paste0('sp', 1:12)])
+
+  state_var <- data.frame(abundance[1:153, paste0("sp", 1:12)])
+  petra <- petra_edr(state_var = state_var,
+                     trajectories = abundance[1:153]$traj,
+                     states = as.integer(abundance[1:153]$state), targets = 31:33,
+                     k = 153L, minPts = 2L, eps = 20,
+                     d_function = "stats::dist", d_args = list(x = state_var),
+                     return_args = T)
+
+  d_distpetra <- lapply(setNames(31:33, 31:33), function(idist){
+    as.matrix(dist(rbind(abundance[traj == idist, paste0("sp", 1:12)], petra$state_var[which(petra$trajectories == idist), ])))
+  })
+
+  dist_to_petra <- lapply(31:33, function(idist){
+    state_to_trajectory(d_distpetra[[as.character(idist)]],
+                        trajectories = c(rep(paste0("dist_", idist), 3),
+                                         rep(paste0("pt_", idist), sum(petra$trajectories == idist))),
+                        states = as.integer(c(1:3, 1:sum(petra$trajectories == idist))),
+                        target_states = 2:3, reference = paste0("pt_", idist), method = "projection")
+  })
+
+
+  A_abs <- sapply(lapply(dist_to_petra, "[[", "distance"), "[[", 1)
+  A_rel <- sapply(1:3, function(i){
+    A_abs[i] / d_distpetra[[i]][1, 2]
+  })
+  Rc_abs <- -sapply(lapply(dist_to_petra, "[[", "distance"), diff)
+  Rc_rel <- sapply(1:3, function(i){
+    Rc_abs[i] / d_distpetra[[i]][2, 3]
+  })
+  NC_abs <- sapply(lapply(dist_to_petra, "[[", "distance"), "[[", 2)
+  NC_rel <- sapply(1:3, function(i){
+    NC_abs[i] / d_distpetra[[i]][1, 3]
+  })
+
+  state_var <- data.frame(abundance[, paste0("sp", 1:12)])
+  A <- amplitude(d = d, state_var = state_var,
+                 trajectories = abundance$traj, states = abundance$state,
+                 disturbed_trajectories = 31:33, disturbed_states = c(2L, 2L, 2L), reference = petra,
+                 method = 'projection')
+
+  Rc <- recovery(d = d, state_var = state_var,
+                 trajectories = abundance$traj, states = abundance$state,
+                 disturbed_trajectories = 31:33, disturbed_states = c(2L, 2L, 2L), reference = petra,
+                 method = 'projection')
+
+  NC <- net_change(d = d, state_var = state_var,
+                   trajectories = abundance$traj, states = abundance$state,
+                   disturbed_trajectories = 31:33, disturbed_states = c(2L, 2L, 2L), reference = petra,
+                   method = 'projection')
+
+  expect_equal(A$A_abs, A_abs)
+  expect_equal(A$A_rel, A_rel)
+  expect_equal(Rc$Rc_abs, Rc_abs)
+  expect_equal(Rc$Rc_rel, Rc_rel)
+  expect_equal(NC$NC_abs, NC_abs)
+  expect_equal(NC$NC_rel, NC_rel)
+
+})
+
+test_that("works with PETRA when there are multiple disturbed trajectories
+          in a different order than PETRA", {
+            edr_data <- EDR_data$EDR1$abundance
+            cols <- names(edr_data)[-c(1:2)]
+            predist <- edr_data[c(1, 6, 11), ][, (cols) := lapply(.SD, "+", 2), .SDcols = cols]
+            dist <- rbind(data.table::copy(predist)[1, sp1 := 0][1, ],
+                          data.table::copy(predist)[2, sp3 := 0][2, ],
+                          data.table::copy(predist)[3, sp1 := 0][3, ])
+            postdist <- rbind(data.table::copy(predist)[1, sp1 := 5][1, ],
+                              data.table::copy(predist)[2, sp3 := 8][2, ],
+                              data.table::copy(predist)[3, sp1 := 8][3, ])
+            disturbed <- rbind(predist, dist, postdist)[, state := rep(1:3, each = 3)]
+            disturbed$traj <- rep(31:33, 3)
+
+            abundance <- rbind(edr_data, disturbed)
+            d <- dist(abundance[, paste0('sp', 1:12)])
+
+            state_var <- data.frame(abundance[1:153, paste0("sp", 1:12)])
+            petra <- petra_edr(state_var = state_var,
+                               trajectories = abundance[1:153]$traj,
+                               states = as.integer(abundance[1:153]$state), targets = 31:33,
+                               k = 153L, minPts = 2L, eps = 20,
+                               d_function = "stats::dist", d_args = list(x = state_var),
+                               return_args = T)
+
+            state_var <- data.frame(abundance[, paste0("sp", 1:12)])
+            A1 <- amplitude(d = d, state_var = state_var,
+                            trajectories = abundance$traj, states = abundance$state,
+                            disturbed_trajectories = 31:33, disturbed_states = c(2L, 2L, 2L), reference = petra,
+                            method = 'projection')
+
+            Rc1 <- recovery(d = d, state_var = state_var,
+                            trajectories = abundance$traj, states = abundance$state,
+                            disturbed_trajectories = 31:33, disturbed_states = c(2L, 2L, 2L), reference = petra,
+                            method = 'projection')
+
+            NC1 <- net_change(d = d, state_var = state_var,
+                              trajectories = abundance$traj, states = abundance$state,
+                              disturbed_trajectories = 31:33, disturbed_states = c(2L, 2L, 2L), reference = petra,
+                              method = 'projection')
+
+            A2 <- amplitude(d = d, state_var = state_var,
+                            trajectories = abundance$traj, states = abundance$state,
+                            disturbed_trajectories = c(32, 33, 31), disturbed_states = c(2L, 2L, 2L), reference = petra,
+                            method = 'projection')
+
+            Rc2 <- recovery(d = d, state_var = state_var,
+                            trajectories = abundance$traj, states = abundance$state,
+                            disturbed_trajectories = c(32, 33, 31), disturbed_states = c(2L, 2L, 2L), reference = petra,
+                            method = 'projection')
+
+            NC2 <- net_change(d = d, state_var = state_var,
+                              trajectories = abundance$traj, states = abundance$state,
+                              disturbed_trajectories = c(32, 33, 31), disturbed_states = c(2L, 2L, 2L), reference = petra,
+                              method = 'projection')
+
+            expect_equal(A1, A2)
+            expect_equal(Rc1, Rc2)
+            expect_equal(NC1, NC2)
+
+          })
+
+test_that("returns same results when states are not in order and reference is PETRA", {
+  edr_data <- EDR_data$EDR1$abundance
+  cols <- names(edr_data)[-c(1:2)]
+  predist <- edr_data[c(1, 6, 11), ][, (cols) := lapply(.SD, "+", 2), .SDcols = cols]
+  dist <- rbind(data.table::copy(predist)[1, sp1 := 0][1, ],
+                data.table::copy(predist)[2, sp3 := 0][2, ],
+                data.table::copy(predist)[3, sp1 := 0][3, ])
+  postdist <- rbind(data.table::copy(predist)[1, sp1 := 5][1, ],
+                    data.table::copy(predist)[2, sp3 := 8][2, ],
+                    data.table::copy(predist)[3, sp1 := 8][3, ])
+  disturbed <- rbind(predist, dist, postdist)[, state := rep(1:3, each = 3)]
+  disturbed$traj <- rep(31:33, 3)
+
+  abundance <- rbind(edr_data, disturbed)
+  d <- dist(abundance[, paste0('sp', 1:12)])
+
+  state_var <- data.frame(abundance[1:153, paste0("sp", 1:12)])
+  petra <- petra_edr(state_var = state_var,
+                     trajectories = abundance[1:153]$traj,
+                     states = as.integer(abundance[1:153]$state), targets = 31:33,
+                     k = 153L, minPts = 2L, eps = 20,
+                     d_function = "stats::dist", d_args = list(x = state_var),
+                     return_args = T)
+
+  state_var <- data.frame(abundance[, paste0("sp", 1:12)])
+  A1 <- amplitude(d = d, state_var = state_var,
+                  trajectories = abundance$traj, states = abundance$state,
+                  disturbed_trajectories = 31:33, disturbed_states = c(2, 2, 2), reference = petra,
+                  method = 'projection')
+
+  Rc1 <- recovery(d = d, state_var = state_var,
+                  trajectories = abundance$traj, states = abundance$state,
+                  disturbed_trajectories = 31:33, disturbed_states = c(2, 2, 2), reference = petra,
+                  method = 'projection')
+
+  NC1 <- net_change(d = d, state_var = state_var,
+                    trajectories = abundance$traj, states = abundance$state,
+                    disturbed_trajectories = 31:33, disturbed_states = c(2, 2, 2), reference = petra,
+                    method = 'projection')
+
+  abundance2 <- abundance[sample(1:nrow(abundance)), ]
+  d2 <- dist(abundance2[, paste0('sp', 1:12)])
+
+  abun_undist <- abundance2[!(traj %in% 31:33 & state > 1), ]
+  state_var2 <- data.frame(abun_undist[, paste0("sp", 1:12)])
+  petra2 <- petra_edr(state_var = state_var2,
+                      trajectories = abun_undist$traj,
+                      states = as.integer(abun_undist$state), targets = 31:33,
+                      k = 153L, minPts = 2L, eps = 20,
+                      d_function = "stats::dist", d_args = list(x = state_var2),
+                      return_args = T)
+
+  state_var2 <- data.frame(abundance2[, paste0("sp", 1:12)])
+  A2 <- amplitude(d = d2, state_var = state_var2,
+                  trajectories = abundance2$traj, states = abundance2$state,
+                  disturbed_trajectories = 31:33, disturbed_states = c(2, 2, 2), reference = petra2,
+                  method = 'projection')
+
+  Rc2 <- recovery(d = d2, state_var = state_var2,
+                  trajectories = abundance2$traj, states = abundance2$state,
+                  disturbed_trajectories = 31:33, disturbed_states = c(2, 2, 2), reference = petra2,
+                  method = 'projection')
+
+  NC2 <- net_change(d = d2, state_var = state_var2,
+                    trajectories = abundance2$traj, states = abundance2$state,
+                    disturbed_trajectories = 31:33, disturbed_states = c(2, 2, 2), reference = petra2,
+                    method = 'projection')
+
+  expect_equal(A1, A2)
+  expect_equal(Rc1, Rc2)
+  expect_equal(NC1, NC2)
+})
+
+test_that("works when state_var is a list and reference is PETRA", {
+  skip_on_cran()
+  skip_if_not_installed("cba")
+
+  edr_data <- EDR_data$EDR1$abundance
+  cols <- names(edr_data)[-c(1:2)]
+  predist <- edr_data[c(1), ][, (cols) := lapply(.SD, "+", 2), .SDcols = cols]
+  dist <- data.table::copy(predist)[1, sp1 := 0][1, ]
+  postdist <- data.table::copy(predist)[1, sp1 := 5][1, ]
+  disturbed <- rbind(predist, dist, postdist)[, state := 1:3]
+  disturbed$traj <- 31
+
+  abundance <- rbind(edr_data, disturbed)
+  abun.ls <- lapply(1:nrow(abundance), function(i) {
+    abundance[i, paste0("sp", 1:12)]
+  })
+  d <- get("sdists", asNamespace("cba"))(abun.ls)
+
+  state_var <- data.frame(abundance[1:151, paste0("sp", 1:12)])
+  state_var <- lapply(1:nrow(state_var), function(i) {
+    state_var[i, ]
+  })
+  petra <- petra_edr(state_var = state_var,
+                     trajectories = abundance[1:151, ]$traj,
+                     states = abundance[1:151, ]$state,
+                     targets = 31, k = 5L, minPts = 2L,
+                     d_function = "cba::sdists", d_args = list(x = state_var),
+                     return_args = T)
+
+
+  abun_distpetra <- rbind(abundance[traj == 31, paste0("sp", 1:12)],
+                          data.table::rbindlist(petra$state_var))
+  statevar_distpetra <- split(abun_distpetra, 1:nrow(abun_distpetra))
+  d_distpetra <- as.matrix(get("sdists", asNamespace("cba"))(statevar_distpetra))
+  dist_to_petra <- state_to_trajectory(d_distpetra,
+                                       trajectories = c(rep("dist_31", 3),
+                                                        rep("pt_31", sum(petra$trajectories == 31))),
+                                       states = as.integer(c(1:3, 1:sum(petra$trajectories == 31))),
+                                       target_states = 2:3, reference = "pt_31", method = "projection")
+
+  A_abs <- dist_to_petra$distance[1]
+  A_rel <- A_abs / d_distpetra[1, 2]
+  Rc_abs <- -diff(dist_to_petra$distance)
+  Rc_rel <- Rc_abs / d_distpetra[2, 3]
+  NC_abs <- dist_to_petra$distance[2]
+  NC_rel <- NC_abs / d_distpetra[1, 3]
+
+
+  state_var <- data.frame(abundance[, paste0("sp", 1:12)])
+  state_var <- split(state_var, 1:nrow(state_var))
+  A <- amplitude(d = d, state_var = state_var,
+                 trajectories = abundance$traj, states = abundance$state,
+                 disturbed_trajectories = 31, disturbed_states = 2, reference = petra,
+                 method = 'projection')
+  Rc <- recovery(d = d, state_var = state_var,
+                 trajectories = abundance$traj, states = abundance$state,
+                 disturbed_trajectories = 31, disturbed_states = 2, reference = petra,
+                 method = 'projection')
+  NC <- net_change(d = d, state_var = state_var,
+                   trajectories = abundance$traj, states = abundance$state,
+                   disturbed_trajectories = 31, disturbed_states = 2, reference = petra,
+                   method = 'projection')
+
+  expect_equal(A$A_abs, A_abs)
+  expect_equal(A$A_rel, A_rel)
+  expect_equal(Rc$Rc_abs, Rc_abs)
+  expect_equal(Rc$Rc_rel, Rc_rel)
+  expect_equal(NC$NC_abs, NC_abs)
+  expect_equal(NC$NC_rel, NC_rel)
+
+})
+
+test_that("amplitude returns errors when reference is PETRA", {
+  edr_data <- EDR_data$EDR1$abundance
+  cols <- names(edr_data)[-c(1:2)]
+  predist <- edr_data[c(1, 6, 11), ][, (cols) := lapply(.SD, "+", 2), .SDcols = cols]
+  dist <- rbind(data.table::copy(predist)[1, sp1 := 0][1, ],
+                data.table::copy(predist)[2, sp3 := 0][2, ],
+                data.table::copy(predist)[3, sp1 := 0][3, ])
+  postdist <- rbind(data.table::copy(predist)[1, sp1 := 5][1, ],
+                    data.table::copy(predist)[2, sp3 := 8][2, ],
+                    data.table::copy(predist)[3, sp1 := 8][3, ])
+  disturbed <- rbind(predist, dist, postdist)[, state := rep(1:3, each = 3)]
+  disturbed$traj <- rep(31:33, 3)
+
+  abundance <- rbind(edr_data, disturbed)
+  d <- dist(abundance[, paste0('sp', 1:12)])
+
+  state_var <- data.frame(abundance[1:153, paste0("sp", 1:12)])
+  petra <- petra_edr(state_var = state_var,
+                     trajectories = abundance[1:153]$traj,
+                     states = as.integer(abundance[1:153]$state), targets = 31:33,
+                     k = 153L, minPts = 2L, eps = 20,
+                     d_function = "stats::dist", d_args = list(x = state_var),
+                     return_args = T)
+  petra2 <- petra_edr(state_var = state_var,
+                      trajectories = abundance[1:153]$traj,
+                      states = as.integer(abundance[1:153]$state), targets = 31:33,
+                      k = 153L, minPts = 2L, eps = 20,
+                      d_function = "stats::dist", d_args = list(x = state_var),
+                      return_args = F)
+
+  state_var <- data.frame(abundance[, paste0("sp", 1:12)])
+
+  expect_error(amplitude(d = d, state_var = NULL,
+                         trajectories = abundance$traj, states = abundance$state,
+                         disturbed_trajectories = 31:33, disturbed_states = c(2, 2, 2), reference = petra,
+                         method = 'projection'),
+               regexp = "'reference' is of class 'PETRA'. Provide")
+
+  expect_error(amplitude(d = d, state_var = state_var,
+                         trajectories = abundance$traj, states = abundance$state,
+                         disturbed_trajectories = 31:33, disturbed_states = c(2, 2, 2), reference = petra2,
+                         method = 'projection'),
+               regexp = "'reference' must contain 'arguments'.")
+  expect_error(amplitude(d = d, state_var = 1:nrow(state_var),
+                         trajectories = abundance$traj, states = abundance$state,
+                         disturbed_trajectories = 31:33, disturbed_states = c(2, 2, 2), reference = petra,
+                         method = 'projection'),
+               regexp = "'state_var' needs to be of any of these classes")
+  expect_error(amplitude(d = d, state_var = state_var[1:2, ],
+                         trajectories = abundance$traj, states = abundance$state,
+                         disturbed_trajectories = 31:33, disturbed_states = c(2, 2, 2), reference = petra,
+                         method = 'projection'),
+               regexp = "The number of rows of 'state_var'")
+  expect_error(amplitude(d = d, state_var = state_var,
+                         trajectories = abundance$traj, states = abundance$state,
+                         disturbed_trajectories = 30:33, disturbed_states = c(2, 2, 2), reference = petra,
+                         method = 'projection'),
+               regexp = "All 'disturbed_trajectories' must have an associated predicted")
+
+})
+
+test_that("recovery returns errors when reference is PETRA", {
+  edr_data <- EDR_data$EDR1$abundance
+  cols <- names(edr_data)[-c(1:2)]
+  predist <- edr_data[c(1, 6, 11), ][, (cols) := lapply(.SD, "+", 2), .SDcols = cols]
+  dist <- rbind(data.table::copy(predist)[1, sp1 := 0][1, ],
+                data.table::copy(predist)[2, sp3 := 0][2, ],
+                data.table::copy(predist)[3, sp1 := 0][3, ])
+  postdist <- rbind(data.table::copy(predist)[1, sp1 := 5][1, ],
+                    data.table::copy(predist)[2, sp3 := 8][2, ],
+                    data.table::copy(predist)[3, sp1 := 8][3, ])
+  disturbed <- rbind(predist, dist, postdist)[, state := rep(1:3, each = 3)]
+  disturbed$traj <- rep(31:33, 3)
+
+  abundance <- rbind(edr_data, disturbed)
+  d <- dist(abundance[, paste0('sp', 1:12)])
+
+  state_var <- data.frame(abundance[1:153, paste0("sp", 1:12)])
+  petra <- petra_edr(state_var = state_var,
+                     trajectories = abundance[1:153]$traj,
+                     states = as.integer(abundance[1:153]$state), targets = 31:33,
+                     k = 153L, minPts = 2L, eps = 20,
+                     d_function = "stats::dist", d_args = list(x = state_var),
+                     return_args = T)
+  petra2 <- petra_edr(state_var = state_var,
+                      trajectories = abundance[1:153]$traj,
+                      states = as.integer(abundance[1:153]$state), targets = 31:33,
+                      k = 153L, minPts = 2L, eps = 20,
+                      d_function = "stats::dist", d_args = list(x = state_var),
+                      return_args = F)
+
+  state_var <- data.frame(abundance[, paste0("sp", 1:12)])
+
+  expect_error(recovery(d = d, state_var = NULL,
+                        trajectories = abundance$traj, states = abundance$state,
+                        disturbed_trajectories = 31:33, disturbed_states = c(2, 2, 2), reference = petra,
+                        method = 'projection'),
+               regexp = "'reference' is of class 'PETRA'. Provide")
+
+  expect_error(recovery(d = d, state_var = state_var,
+                        trajectories = abundance$traj, states = abundance$state,
+                        disturbed_trajectories = 31:33, disturbed_states = c(2, 2, 2), reference = petra2,
+                        method = 'projection'),
+               regexp = "'reference' must contain 'arguments'.")
+  expect_error(recovery(d = d, state_var = 1:nrow(state_var),
+                        trajectories = abundance$traj, states = abundance$state,
+                        disturbed_trajectories = 31:33, disturbed_states = c(2, 2, 2), reference = petra,
+                        method = 'projection'),
+               regexp = "'state_var' needs to be of any of these classes")
+  expect_error(recovery(d = d, state_var = state_var[1:2, ],
+                        trajectories = abundance$traj, states = abundance$state,
+                        disturbed_trajectories = 31:33, disturbed_states = c(2, 2, 2), reference = petra,
+                        method = 'projection'),
+               regexp = "The number of rows of 'state_var'")
+  expect_error(recovery(d = d, state_var = state_var,
+                        trajectories = abundance$traj, states = abundance$state,
+                        disturbed_trajectories = 30:33, disturbed_states = c(2, 2, 2), reference = petra,
+                        method = 'projection'),
+               regexp = "All 'disturbed_trajectories' must have an associated predicted")
+})
+
+test_that("net_change returns errors when reference is PETRA", {
+  edr_data <- EDR_data$EDR1$abundance
+  cols <- names(edr_data)[-c(1:2)]
+  predist <- edr_data[c(1, 6, 11), ][, (cols) := lapply(.SD, "+", 2), .SDcols = cols]
+  dist <- rbind(data.table::copy(predist)[1, sp1 := 0][1, ],
+                data.table::copy(predist)[2, sp3 := 0][2, ],
+                data.table::copy(predist)[3, sp1 := 0][3, ])
+  postdist <- rbind(data.table::copy(predist)[1, sp1 := 5][1, ],
+                    data.table::copy(predist)[2, sp3 := 8][2, ],
+                    data.table::copy(predist)[3, sp1 := 8][3, ])
+  disturbed <- rbind(predist, dist, postdist)[, state := rep(1:3, each = 3)]
+  disturbed$traj <- rep(31:33, 3)
+
+  abundance <- rbind(edr_data, disturbed)
+  d <- dist(abundance[, paste0('sp', 1:12)])
+
+  state_var <- data.frame(abundance[1:153, paste0("sp", 1:12)])
+  petra <- petra_edr(state_var = state_var,
+                     trajectories = abundance[1:153]$traj,
+                     states = as.integer(abundance[1:153]$state), targets = 31:33,
+                     k = 153L, minPts = 2L, eps = 20,
+                     d_function = "stats::dist", d_args = list(x = state_var),
+                     return_args = T)
+  petra2 <- petra_edr(state_var = state_var,
+                      trajectories = abundance[1:153]$traj,
+                      states = as.integer(abundance[1:153]$state), targets = 31:33,
+                      k = 153L, minPts = 2L, eps = 20,
+                      d_function = "stats::dist", d_args = list(x = state_var),
+                      return_args = F)
+
+  state_var <- data.frame(abundance[, paste0("sp", 1:12)])
+
+  expect_error(net_change(d = d, state_var = NULL,
+                          trajectories = abundance$traj, states = abundance$state,
+                          disturbed_trajectories = 31:33, disturbed_states = c(2, 2, 2), reference = petra,
+                          method = 'projection'),
+               regexp = "'reference' is of class 'PETRA'. Provide")
+
+  expect_error(net_change(d = d, state_var = state_var,
+                          trajectories = abundance$traj, states = abundance$state,
+                          disturbed_trajectories = 31:33, disturbed_states = c(2, 2, 2), reference = petra2,
+                          method = 'projection'),
+               regexp = "'reference' must contain 'arguments'.")
+  expect_error(net_change(d = d, state_var = 1:nrow(state_var),
+                          trajectories = abundance$traj, states = abundance$state,
+                          disturbed_trajectories = 31:33, disturbed_states = c(2, 2, 2), reference = petra,
+                          method = 'projection'),
+               regexp = "'state_var' needs to be of any of these classes")
+  expect_error(net_change(d = d, state_var = state_var[1:2, ],
+                          trajectories = abundance$traj, states = abundance$state,
+                          disturbed_trajectories = 31:33, disturbed_states = c(2, 2, 2), reference = petra,
+                          method = 'projection'),
+               regexp = "The number of rows of 'state_var'")
+  expect_error(net_change(d = d, state_var = state_var,
+                          trajectories = abundance$traj, states = abundance$state,
+                          disturbed_trajectories = 30:33, disturbed_states = c(2, 2, 2), reference = petra,
+                          method = 'projection'),
+               regexp = "All 'disturbed_trajectories' must have an associated predicted")
+})
 

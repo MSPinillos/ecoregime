@@ -2,35 +2,39 @@
 #'
 #' @description
 #' Set of metrics to analyze the deviation of disturbed trajectories from an
-#' ecological dynamic regime (EDR) considering a representative trajectory as the
-#' reference. These metrics include the resistance to the disturbance, amplitude,
-#' recovery, and net change.
+#' ecological dynamic regime (EDR) considering a representative trajectory  or a
+#' predicted trajectory as the reference. These metrics include the resistance
+#' to the disturbance, amplitude, recovery, and net change. Altogether, these
+#' indices inform on the resilience of a system.
 #'
-#' @name deviation_metrics
+#' @name resilience_metrics
 #' @aliases resistance amplitude recovery net_change
 #'
 #' @param d Either a symmetric matrix or an object of class [`dist`] containing the
 #' dissimilarities between each pair of states.
 #' @param trajectories Vector indicating the trajectory or site to which each
-#' state in `d` belongs.
-#' @param states Vector of integers indicating the order of the states in `d` for
-#' each trajectory.
+#' state in `d` and `state_var` belongs.
+#' @param states Vector of integers indicating the order of the states in `d` and
+#' `state_var` for each trajectory.
 #' @param disturbed_trajectories Vector of the same class as `trajectories` indicating
 #' the identifier of the disturbed trajectories.
-#' @param disturbed_states Vector of integers included in `states`indicating the
+#' @param disturbed_states Vector of integers included in `states` indicating the
 #' first state after the release of the disturbance for each value in
 #' `disturbed_trajectories`.
 #' @param predisturbed_states Vector of integers included in `states` indicating
 #' the last undisturbed state of each `disturbed_trajectories`. The previous states
 #' to `disturbed_states` are considered by default.
-#' @param reference Object of class `RETRA` indicating the representative trajectory
-#' taken as the reference to compute the amplitude, recovery, and net_change of
-#' the disturbed trajectories (see Details).
+#' @param reference Object of class `RETRA` or `PETRA` indicating the trajectory
+#' taken as the reference to compute amplitude, recovery, and net_change of
+#' the disturbed trajectories (see Details). `PETRA` objects must include the
+#' arguments (`return_args = TRUE`).
+#' @param state_var Object containing the state variables for each trajectory
+#' state (required if `reference` is of class `PETRA`).
 #' @param index Method to calculate amplitude, recovery, or net change (`"absolute"`,
 #' `"relative"`; see Details).
 #' @param method Method to calculate the distance between the `disturbed_states`
 #' or `predisturbed_states` and the `reference` trajectory. One of `"nearest_state"`,
-#' `"projection"` or `"mixed"` (see Details).
+#' of `"projection"` (see Details).
 #'
 #' @return
 #' * `resistance()` returns a data frame of two columns indicating the resistance
@@ -61,11 +65,19 @@
 #'
 #' \strong{Amplitude (`amplitude()`)}
 #'
-#' *Amplitude* indicates the direction in which the system is displaced during the
-#' disturbance in relation to the `reference` (Sánchez-Pinillos et al., 2024).
-#' Positive values indicate that the disturbance displaces the system towards the
-#' boundaries of the dynamic regime. Negative values indicate that the disturbance
-#' displaces the system towards the representative trajectory.
+#' *Amplitude* indicates the direction in which the system is deviated during the
+#' disturbance in relation to the `reference` (Sánchez-Pinillos et al., 2024;
+#' Sánchez-Pinillos et al., 2026).
+#'
+#' If `reference` is of class `RETRA`: Positive values indicate that the disturbance
+#' deviates the system towards the boundaries of the dynamic regime. Negative
+#' values indicate that the disturbance deviates the system towards the representative
+#' trajectory.
+#'
+#' If `reference` is of class `PETRA`: Only values equal or greater than zero are
+#' possible. Positive values indicate that the system deviates from its predicted
+#' trajectory, whereas amplitude equal to zero indicates that the system remains
+#' on its predicted trajectory.
 #'
 #' Two indices can be calculated:
 #'
@@ -85,8 +97,9 @@
 #'
 #' *Recovery* quantifies the ability of the system to evolve towards the `reference`
 #' following the relief of the disturbance (if positive) or move in the direction
-#' of the boundaries of the dynamic regime (if negative) (Sánchez-Pinillos et al.,
-#' 2024).
+#' of the boundaries of the dynamic regime (if negative and `reference` is of class
+#' `RETRA`) or elsewhere (if negative and `reference` is of class `PETRA`)
+#' (Sánchez-Pinillos et al., 2024; Sánchez-Pinillos et al., 2026).
 #'
 #' Two indices can be calculated:
 #'
@@ -105,10 +118,17 @@
 #' \strong{Net change (`net_change()`)}
 #'
 #' *Net change* quantifies the proximity of the system to the `reference` relative to
-#' the pre-disturbed state (Sánchez-Pinillos et al., 2024). Positive values indicate
-#' that the system eventually evolves towards the boundaries of the dynamic regime.
-#' Negative values indicate that the system eventually evolves towards the
-#' `reference`.
+#' the pre-disturbed state after the disturbance (Sánchez-Pinillos et al., 2024;
+#' Sánchez-Pinillos et al., 2026).
+#'
+#' If reference is of class `RETRA`: Positive values indicate that the system
+#' eventually evolves towards the boundaries of the dynamic regime. Negative values
+#' indicate that the system eventually evolves towards the `reference`.
+#'
+#' If `reference` is of class `PETRA`: Only values equal or greater than zero are
+#' possible. Positive values indicate that the system eventually deviates from
+#' its predicted trajectory, whereas net change equal to zero indicates that the
+#' system reaches its predicted trajectory some time after the disturbance.
 #'
 #' Two indices can be calculated:
 #'
@@ -139,7 +159,7 @@
 #' `predisturbed_states` and the post-disturbed states.
 #'
 #' \eqn{d_{pre,RT}}, \eqn{d_{dist,RT}}, and \eqn{d_{post,RT}} are calculated using
-#' the function [`state_to_trajectory()`] by three different methods:
+#' the function [`state_to_trajectory()`] by two different methods:
 #'
 #' * If `method = "nearest_state"`, \eqn{d_{pre,RT}}, \eqn{d_{dist,RT}}, and
 #' \eqn{d_{post,RT}} are calculated as the dissimilarity between the pre-disturbance,
@@ -147,13 +167,8 @@
 #'
 #' * If `method = "projection"`, \eqn{d_{pre,RT}}, \eqn{d_{dist,RT}}, and
 #' \eqn{d_{post,RT}} are calculated as the dissimilarity between the pre-disturbance,
-#' disturbed, or post-disturbance states and their projection onto the `reference`.
-#'
-#' * If `method = "mixed"`, \eqn{d_{pre,RT}}, \eqn{d_{dist,RT}}, and \eqn{d_{post,RT}}
-#' are calculated in the same way than `method = "projection"` whenever the
-#' pre-disturbance, disturbed and post-disturbance states can be projected onto
-#' any segment of the `reference`. Otherwise, \eqn{d_{pre,RT}}, \eqn{d_{dist,RT}},
-#' and \eqn{d_{post,RT}} are calculated using the nearest state of the `reference`.
+#' disturbed, or post-disturbance states and their projection onto the `reference`
+#' or using the nearest state of the `reference` if the dissimilarity is smaller.
 #'
 #' @author Martina Sánchez-Pinillos
 #'
@@ -167,11 +182,20 @@
 #' A key concept for assessing ecological resilience. *Biological Conservation*
 #' 289, 110409 https://doi.org/10.1016/j.biocon.2023.110409
 #'
+#' Sánchez-Pinillos M., Fortin, M-J., Messier, C., Kneeshaw, D. 2026.
+#' Forecasting ecological trajectories from ecological dynamic regimes to improve
+#' resilience analysis. *Methods in Ecology and Evolution* (in press).
+#'
 #' @seealso
 #' [`retra_edr()`] to identify representative trajectories in an ecological dynamic
 #' regime.
 #'
 #' [`define_retra()`] to generate an object of class`RETRA`.
+#'
+#' [`petra_edr()`] to predict ecological trajectories in an ecological dynamic
+#' regime.
+#'
+#' [`MPD()`] for estimating the prediction accuracy of `petra-edr()` outputs.
 #'
 #' [`state_to_trajectory()`] to calculate the position of a state with respect to
 #' a trajectory.
@@ -180,11 +204,8 @@
 #'
 #' @examples
 #' if (requireNamespace("vegan", quietly = TRUE)) {
-#'   # Identify the representative trajectories of the EDR from undisturbed trajectories
-#'   RT <- retra_edr(d = EDR_data$EDR3$state_dissim,
-#'                   trajectories = EDR_data$EDR3$abundance$traj,
-#'                   states = as.integer(EDR_data$EDR3$abundance$state),
-#'                   minSegs = 5)
+#'   # Example 1 -----------------------------------------------------------------
+#'   # Calculate the resistance of disturbed systems
 #'
 #'   # Abundance matrix including disturbed and undisturbed trajectories
 #'   abundance <- rbind(EDR_data$EDR3$abundance,
@@ -197,6 +218,16 @@
 #'   Rt <- resistance(d = d, trajectories = abundance$traj, states = abundance$state,
 #'                    disturbed_trajectories = unique(abundance[!is.na(disturbed_states)]$traj),
 #'                    disturbed_states = abundance[disturbed_states == 1]$state)
+#'
+#'   # Example 2 -----------------------------------------------------------------
+#'   # Calculate the amplitude, recovery, and net change of disturbed systems taking
+#'   # a representative trajectory as the reference
+#'
+#'   # Identify the representative trajectories of the EDR from undisturbed trajectories
+#'   RT <- retra_edr(d = EDR_data$EDR3$state_dissim,
+#'                   trajectories = EDR_data$EDR3$abundance$traj,
+#'                   states = as.integer(EDR_data$EDR3$abundance$state),
+#'                   minSegs = 5)
 #'
 #'   # Amplitude
 #'   A <- amplitude(d = d, trajectories = abundance$traj, states = abundance$state,
@@ -212,6 +243,44 @@
 #'   NC <- net_change(d = d, trajectories = abundance$traj, states = abundance$state,
 #'                    disturbed_trajectories = unique(abundance[!is.na(disturbed_states)]$traj),
 #'                    disturbed_states = abundance[disturbed_states == 1]$state, reference = RT)
+#'
+#'   # Example 3 -----------------------------------------------------------------
+#'   # Calculate the amplitude, recovery, and net change of disturbed systems taking
+#'   # their predicted trajectories as the reference
+#'
+#'   # Abundance matrix including undisturbed trajectories (EDR and disturbed trajectory)
+#'   abundance_undist <- abundance[is.na(disturbed_states) | disturbed_states == 0]
+#'
+#'   # Define the state variables of the undisturbed states and calculate the predicted trajectories
+#'   state_var <- data.frame(abundance_undist[, paste0('sp', 1:12)])
+#'   petra <- petra_edr(state_var = state_var, trajectories = abundance_undist$traj,
+#'                      states = abundance_undist$state,
+#'                      targets = unique(abundance_undist[!is.na(disturbed_states)]$traj),
+#'                      k = 100L, eps = 0.1, minPts = 2L,
+#'                      d_function = 'vegan::vegdist', d_args = list(x = state_var, method = 'bray'),
+#'                      w_function = 'exponential', return_args = TRUE)
+#'
+#'   # Amplitude
+#'   A <- amplitude(d = d, state_var = data.frame(abundance[, paste0('sp', 1:12)]),
+#'                  trajectories = abundance$traj, states = abundance$state,
+#'                  disturbed_trajectories = unique(abundance[!is.na(disturbed_states)]$traj),
+#'                  disturbed_states = abundance[disturbed_states == 1]$state, reference = petra,
+#'                  method = 'nearest_state')
+#'
+#'   # Recovery
+#'   Rc <- recovery(d = d, state_var = data.frame(abundance[, paste0('sp', 1:12)]),
+#'                  trajectories = abundance$traj, states = abundance$state,
+#'                  disturbed_trajectories = unique(abundance[!is.na(disturbed_states)]$traj),
+#'                  disturbed_states = abundance[disturbed_states == 1]$state, reference = petra,
+#'                  method = 'nearest_state')
+#'
+#'   # Net change
+#'   NC <- net_change(d = d, state_var = data.frame(abundance[, paste0('sp', 1:12)]),
+#'                    trajectories = abundance$traj, states = abundance$state,
+#'                    disturbed_trajectories = unique(abundance[!is.na(disturbed_states)]$traj),
+#'                    disturbed_states = abundance[disturbed_states == 1]$state, reference = petra,
+#'                    method = 'nearest_state')
+#'
 #' }
 
 
@@ -291,13 +360,15 @@ resistance <- function (d, trajectories, states, disturbed_trajectories, disturb
 
 ################################################################################
 
-#' @rdname deviation_metrics
+#' @rdname resilience_metrics
 #' @export
 
 #### AMPLITUDE ####
 
-amplitude <- function (d, trajectories, states, disturbed_trajectories, disturbed_states,
-                       predisturbed_states = disturbed_states - 1, reference,
+amplitude <- function (d, trajectories, states,
+                       disturbed_trajectories, disturbed_states,
+                       predisturbed_states = disturbed_states - 1,
+                       reference, state_var = NULL,
                        index = c("absolute", "relative"), method = "nearest_state") {
 
   # due to NSE notes in R CMD check
@@ -350,8 +421,40 @@ amplitude <- function (d, trajectories, states, disturbed_trajectories, disturbe
   }
 
   # Check the format of reference
-  if (!inherits(reference, "RETRA")) {
-    stop("'reference' must be an object of class 'RETRA'.")
+  if (!any(inherits(reference, "RETRA"), inherits(reference, "PETRA"))) {
+    stop("'reference' must be an object of class 'RETRA' or PETRA.")
+  }
+  if (inherits(reference, 'PETRA')) {
+    # state_var is provided
+    if (is.null(state_var)) {
+      stop("'reference' is of class 'PETRA'. Provide the state variables in 'state_var'.")
+    }
+
+    # Check that PETRA arguments are provided
+    if (!"arguments" %in% names(reference)) {
+      stop("'reference' must contain 'arguments'. Set `return_arguments = TRUE` when computing 'petra_edr()' to get 'reference'.")
+    }
+
+    # Check the format of state_var
+    if (!any(inherits(state_var, "matrix"),
+             inherits(state_var, "data.frame"),
+             inherits(state_var, "list"))) {
+      stop("'state_var' needs to be of any of these classes: 'matrix', 'data.frame', 'list'")
+    }
+    if (inherits(state_var, "list")) {
+      if (length(state_var) != length(trajectories)) {
+        stop("The length of 'state_var' must be equal to the length of 'trajectories' and 'states'.")
+      }
+    } else {
+      if (nrow(state_var) != length(trajectories)) {
+        stop("The number of rows of 'state_var' must be equal to the length of 'trajectories' and 'states'.")
+      }
+    }
+
+    # Check that there is the same number of disturbed and predicted trajectories
+    if (!all(disturbed_trajectories %in% unique(reference$trajectories))) {
+      stop("All 'disturbed_trajectories' must have an associated predicted trajectory in 'reference'")
+    }
   }
 
   ## TRAJECTORY-STATE ----------------------------------------------------------
@@ -368,27 +471,95 @@ amplitude <- function (d, trajectories, states, disturbed_trajectories, disturbe
 
   ## REPRESENTATIVE TRAJECTORIES -----------------------------------------------
 
-  # Representative segments
-  RT_segments <- lapply(reference, "[", "Segments")
-  RT_states <- lapply(RT_segments, function(segs){
-    seg_components <- strsplit(gsub("\\]", "", gsub("\\[", "-", segs[[1]])), "-")
-    unlist(lapply(seg_components, function(iseg){
-      c(paste0(iseg[1], "_", iseg[2]), paste0(iseg[1], "_", iseg[3]))
-    }))
-  })
+  if (inherits(reference, 'RETRA')) {
 
-  # Check that the states of all RT are included in d
-  RT_in_d <- sapply(RT_states, function(rt){
-    all(rt %in% traj_st)
-  })
-  if (any(RT_in_d == F)) {
-    stop("All states in 'reference' must be included in 'd' and specified in 'trajectories' and 'states'.")
+    # Representative segments
+    RT_segments <- lapply(reference, "[", "Segments")
+    RT_states <- lapply(RT_segments, function(segs){
+      seg_components <- strsplit(gsub("\\]", "", gsub("\\[", "-", segs[[1]])), "-")
+      unlist(lapply(seg_components, function(iseg){
+        c(paste0(iseg[1], "_", iseg[2]), paste0(iseg[1], "_", iseg[3]))
+      }))
+    })
+
+    # Check that the states of all RT are included in d
+    RT_in_d <- sapply(RT_states, function(rt){
+      all(rt %in% traj_st)
+    })
+    if (any(RT_in_d == F)) {
+      stop("All states in 'reference' must be included in 'd' and specified in 'trajectories' and 'states'.")
+    }
+
+    # Indices of the states forming representative trajectories
+    ref_states <- lapply(RT_states, function(iRT){
+      match(iRT, traj_st)
+    })
+
   }
 
-  # Indices of the states forming representative trajectories
-  ref_states <- lapply(RT_states, function(iRT){
-    match(iRT, traj_st)
-  })
+  ## PREDICTED TRAJECTORIES ----------------------------------------------------
+
+  if (inherits(reference, 'PETRA')) {
+
+    # Predicted states
+    petra_trajst <- paste0(reference$trajectories, "_", reference$states)
+
+    # Identify the argument in d_function corresponding to state_var
+    istate_var <- reference$arguments$args_state_var
+
+    # Dissimilarity between the predicted states and each state of the EDR
+    d_predicted <- lapply(petra_trajst, function(ipredicted){
+      d_function <- reference$arguments$d_function
+      d_args <- reference$arguments$d_args
+
+      if (inherits(state_var, "list")) {
+        state_var_petra <- c(state_var, reference$state_var)
+        vapply(1:length(state_var_petra), function(istate){
+          d_args[[istate_var]] <- c(state_var_petra[istate], reference$state_var[petra_trajst == ipredicted])
+          class(d_args[[istate_var]]) <- class(state_var_petra)
+          do.call(eval(parse(text = d_function)), args = d_args)
+        }, numeric(1))
+      } else {
+        state_var_petra <- rbind(state_var, reference$state_var)
+        vapply(1:nrow(state_var_petra), function(istate){
+          d_args[[istate_var]] <- rbind(state_var_petra[istate, ], reference$state_var[petra_trajst == ipredicted, ])
+          do.call(eval(parse(text = d_function)), args = d_args)
+        }, numeric(1))
+      }
+    })
+
+    # Dissimilarity matrix including the states of the EDR, the disturbed trajectory, and the predicted trajectory
+    for (id in d_predicted) {
+      d_mat <- rbind(d_mat, id[1:ncol(d_mat)])
+    }
+    for (id in d_predicted) {
+      d_mat <- cbind(d_mat, id)
+    }
+
+    # Update trajectories, states, and traj_st to include the predicted states
+    traj_class <- class(trajectories)
+    petra_traj <- paste0('petra', reference$trajectories)
+    petra_st <- unlist(lapply(unique(reference$trajectories), function(ipetra){
+      seq_along(reference$trajectories[reference$trajectories == ipetra])
+    }))
+    trajectories <- c(trajectories, petra_traj)
+    states <- as.integer(c(states, petra_st))
+    traj_st <- paste0(trajectories, '_', states)
+    petra_trajst <- paste0(petra_traj, '_', petra_st)
+
+    # Indices of the states forming predicted trajectories
+    ref_states <- lapply(setNames(unique(petra_traj), unique(petra_traj)), function(ipetra){
+      match(petra_trajst[petra_traj == ipetra],
+            traj_st)
+    })
+
+    # Define PETRA as RETRA in the same order than disturbed trajectories
+    ref_asRETRA <- lapply(disturbed_trajectories, function(ipetra){
+      define_retra(data.frame(RT = petra_traj[petra_traj == paste0("petra", ipetra)],
+                              RT_traj = petra_traj[petra_traj == paste0("petra", ipetra)],
+                              RT_states = petra_st[petra_traj == paste0("petra", ipetra)]))
+    })
+  }
 
   ## DISTURBED TRAJECTORIES ----------------------------------------------------
 
@@ -396,7 +567,7 @@ amplitude <- function (d, trajectories, states, disturbed_trajectories, disturbe
   idist <- match(paste0(disturbed_trajectories, "_", disturbed_states), traj_st)
   ipre <- match(paste0(disturbed_trajectories, "_", predisturbed_states), traj_st)
 
-  ## STATE DISSIMILARITIES -----------------------------------------------------
+  ## TRIANGLE INEQUALITY -------------------------------------------------------
 
   # If method = "projection" and d does not fit triangle inequality, extract
   # state coordinates in MDS
@@ -410,6 +581,7 @@ amplitude <- function (d, trajectories, states, disturbed_trajectories, disturbe
         d_ref_st[iseg, iseg+1]
       }))
     })
+
     # Dissimilarities to check triangle inequality and calculate projections
     d_tar_ref <- lapply(setNames(all_target, all_target), function(itarget){
       lapply(setNames(names(ref_states), names(ref_states)), function(iRT){
@@ -427,42 +599,25 @@ amplitude <- function (d, trajectories, states, disturbed_trajectories, disturbe
     # Check if the triangle inequality is satisfied
     is_metric <- all(data.table::rbindlist(lapply(d_tar_ref, data.table::rbindlist))$is_metric == T)
 
-    if (is_metric == F) {
-      warning("The dissimilarity metric used in 'd' does not satisfy the triangle inequality. \nThe state space was transformed using metric multidimensional scaling.")
+    if (is_metric == FALSE) {
+      warning("The dissimilarity metric used in 'd' does not satisfy the triangle inequality. The state space was transformed using metric multidimensional scaling.")
       # Compute MDS and extract the state coordinates
       mds <- smacof::mds(d_mat, ndim = nrow(d_mat) - 1)
       coordStates <- mds$conf
-      d_euc <- as.matrix(dist(coordStates))
+      d_mat <- as.matrix(dist(coordStates))
     }
   }
 
-  # pre_dist, pre_RT, dist_RT
-  if (method %in% c("projection", "mixed") && is_metric == F) {
-    #pre_dis
-    pre_dist <- data.table::data.table(disturbed_trajectories = trajectories[ipre],
-                                       d_pre_dist = sapply(seq_along(ipre), function(idisttraj) {
-                                         d_euc[ipre[idisttraj], idist[idisttraj]]
-                                       }))
-    #pre_RT
-    pre_RT <- data.table::data.table(state_to_trajectory(d = d_euc, trajectories = trajectories, states = states,
-                                                         target_states = ipre, reference = reference,
-                                                         method = method))
-    pre_RT[, disturbed_trajectories := trajectories[target_state]]
-    pre_RT[, d_pre_RT := distance]
+  ## STATE DISSIMILARITY -------------------------------------------------------
 
-    # dist_RT
-    dist_RT <- data.table::data.table(state_to_trajectory(d = d_euc, trajectories = trajectories, states = states,
-                                                          target_states = idist, reference = reference,
-                                                          method = method))
-    dist_RT[, disturbed_trajectories := trajectories[target_state]]
-    dist_RT[, d_dist_RT := distance]
+  # pre_dis
+  pre_dist <- data.table::rbindlist(lapply(seq_along(ipre), function(idisttraj) {
+    data.table::data.table(disturbed_trajectories = disturbed_trajectories[idisttraj],
+                           d_pre_dist = d_mat[ipre[idisttraj], idist[idisttraj]])
+  }))
 
-  } else {
-    #pre_dist
-    pre_dist <- data.table::data.table(disturbed_trajectories = trajectories[ipre],
-                                       d_pre_dist = sapply(seq_along(ipre), function(idisttraj) {
-                                         d_mat[ipre[idisttraj], idist[idisttraj]]
-                                       }))
+  # pre_RT and dist_RT ('RETRA'): ALL representative trajectories for each disturbed trajectory
+  if (inherits(reference, 'RETRA')) {
     # pre_RT
     pre_RT <- data.table::data.table(state_to_trajectory(d = d_mat, trajectories = trajectories, states = states,
                                                          target_states = ipre, reference = reference,
@@ -477,6 +632,29 @@ amplitude <- function (d, trajectories, states, disturbed_trajectories, disturbe
     dist_RT[, disturbed_trajectories := trajectories[target_state]]
     dist_RT[, d_dist_RT := distance]
 
+  }
+
+  # pre_RT and dist_RT ('PETRA'): ONE predicted trajectory for each disturbed trajectory
+  if (inherits(reference, 'PETRA')) {
+    # pre_RT
+    pre_RT <- data.table::rbindlist(lapply(seq_along(ipre), function(ipetra){
+      data.table::data.table(state_to_trajectory(d = d_mat, trajectories = trajectories, states = states,
+                                                 target_states = ipre[ipetra], reference = ref_asRETRA[[ipetra]],
+                                                 method = method))
+    }))
+    pre_RT[, disturbed_trajectories := trajectories[target_state]]
+    class(pre_RT$disturbed_trajectories) <- traj_class
+    pre_RT[, d_pre_RT := distance]
+
+    # dist_RT
+    dist_RT <- data.table::rbindlist(lapply(seq_along(idist), function(ipetra){
+      data.table::data.table(state_to_trajectory(d = d_mat, trajectories = trajectories, states = states,
+                                                 target_states = idist[ipetra], reference = ref_asRETRA[[ipetra]],
+                                                 method = method))
+    }))
+    dist_RT[, disturbed_trajectories := trajectories[target_state]]
+    class(dist_RT$disturbed_trajectories) <- traj_class
+    dist_RT[, d_dist_RT := distance]
   }
 
   # data.table to include dissimilarity values
@@ -501,13 +679,15 @@ amplitude <- function (d, trajectories, states, disturbed_trajectories, disturbe
 
 ################################################################################
 
-#' @rdname deviation_metrics
+#' @rdname resilience_metrics
 #' @export
 
 #### RECOVERY ####
 
-recovery <- function (d, trajectories, states, disturbed_trajectories, disturbed_states,
-                      reference, index = c("absolute", "relative"), method = "nearest_state") {
+recovery <- function (d, trajectories, states,
+                      disturbed_trajectories, disturbed_states,
+                      reference, state_var = NULL,
+                      index = c("absolute", "relative"), method = "nearest_state") {
 
   # due to NSE notes in R CMD check
   d1 = d2 = d_dist_RT = d_post_RT = distance = dseg = target_state = NULL
@@ -551,9 +731,41 @@ recovery <- function (d, trajectories, states, disturbed_trajectories, disturbed
   }
 
   # Check the format of reference
-  if (!inherits(reference, "RETRA")) {
-    stop("'reference' must be an object of class 'RETRA'.")
+  if (!any(inherits(reference, "RETRA"), inherits(reference, "PETRA"))) {
+    stop("'reference' must be an object of class 'RETRA' or 'PETRA'.")
   }
+  if (inherits(reference, 'PETRA')) {
+    # state_var is provided
+    if (is.null(state_var)) {
+      stop("'reference' is of class 'PETRA'. Provide the state variables in 'state_var'.")
+    }
+
+    # Check that PETRA arguments are provided
+    if (!"arguments" %in% names(reference)) {
+      stop("'reference' must contain 'arguments'. Set `return_arguments = T` when computing 'petra_edr()' to get 'reference'.")
+    }
+    # Check the format of state_var
+    if (!any(inherits(state_var, "matrix"),
+             inherits(state_var, "data.frame"),
+             inherits(state_var, "list"))) {
+      stop("'state_var' needs to be of any of these classes: 'matrix', 'data.frame', 'list'")
+    }
+    if (inherits(state_var, "list")) {
+      if (length(state_var) != length(trajectories)) {
+        stop("The length of 'state_var' must be equal to the length of 'trajectories' and 'states'.")
+      }
+    } else {
+      if (nrow(state_var) != length(trajectories)) {
+        stop("The number of rows of 'state_var' must be equal to the length of 'trajectories' and 'states'.")
+      }
+    }
+
+    # Check that there is the same number of disturbed and predicted trajectories
+    if (!all(disturbed_trajectories %in% unique(reference$trajectories))) {
+      stop("All 'disturbed_trajectories' must have an associated predicted trajectory in 'reference'")
+    }
+  }
+
 
   ## TRAJECTORY-STATE ----------------------------------------------------------
 
@@ -569,27 +781,95 @@ recovery <- function (d, trajectories, states, disturbed_trajectories, disturbed
 
   ## REPRESENTATIVE TRAJECTORIES -----------------------------------------------
 
-  # Representative segments
-  RT_segments <- lapply(reference, "[", "Segments")
-  RT_states <- lapply(RT_segments, function(segs){
-    seg_components <- strsplit(gsub("\\]", "", gsub("\\[", "-", segs[[1]])), "-")
-    unlist(lapply(seg_components, function(iseg){
-      c(paste0(iseg[1], "_", iseg[2]), paste0(iseg[1], "_", iseg[3]))
-    }))
-  })
+  if (inherits(reference, 'RETRA')) {
 
-  # Check that the states of all RT are included in d
-  RT_in_d <- sapply(RT_states, function(rt){
-    all(rt %in% traj_st)
-  })
-  if (any(RT_in_d == F)) {
-    stop("All states in 'reference' must be included in 'd' and specified in 'trajectories' and 'states'.")
+    # Representative segments
+    RT_segments <- lapply(reference, "[", "Segments")
+    RT_states <- lapply(RT_segments, function(segs){
+      seg_components <- strsplit(gsub("\\]", "", gsub("\\[", "-", segs[[1]])), "-")
+      unlist(lapply(seg_components, function(iseg){
+        c(paste0(iseg[1], "_", iseg[2]), paste0(iseg[1], "_", iseg[3]))
+      }))
+    })
+
+    # Check that the states of all RT are included in d
+    RT_in_d <- sapply(RT_states, function(rt){
+      all(rt %in% traj_st)
+    })
+    if (any(RT_in_d == F)) {
+      stop("All states in 'reference' must be included in 'd' and specified in 'trajectories' and 'states'.")
+    }
+
+    # Indices of the states forming representative trajectories
+    ref_states <- lapply(RT_states, function(iRT){
+      match(iRT, traj_st)
+    })
+
   }
 
-  # Indices of the states forming representative trajectories
-  ref_states <- lapply(RT_states, function(iRT){
-    match(iRT, traj_st)
-  })
+  ## PREDICTED TRAJECTORIES ----------------------------------------------------
+
+  if (inherits(reference, 'PETRA')) {
+
+    # Predicted states
+    petra_trajst <- paste0(reference$trajectories, "_", reference$states)
+
+    # Identify the argument in d_function corresponding to state_var
+    istate_var <- reference$arguments$args_state_var
+
+    # Dissimilarity between the predicted states and each state of the EDR
+    d_predicted <- lapply(petra_trajst, function(ipredicted){
+      d_function <- reference$arguments$d_function
+      d_args <- reference$arguments$d_args
+
+      if (inherits(state_var, "list")) {
+        state_var_petra <- c(state_var, reference$state_var)
+        vapply(1:length(state_var_petra), function(istate){
+          d_args[[istate_var]] <- c(state_var_petra[istate], reference$state_var[petra_trajst == ipredicted])
+          class(d_args[[istate_var]]) <- class(state_var_petra)
+          do.call(eval(parse(text = d_function)), args = d_args)
+        }, numeric(1))
+      } else {
+        state_var_petra <- rbind(state_var, reference$state_var)
+        vapply(1:nrow(state_var_petra), function(istate){
+          d_args[[istate_var]] <- rbind(state_var_petra[istate, ], reference$state_var[petra_trajst == ipredicted, ])
+          do.call(eval(parse(text = d_function)), args = d_args)
+        }, numeric(1))
+      }
+    })
+
+    # Dissimilarity matrix including the states of the EDR, the disturbed trajectory, and the predicted trajectory
+    for (id in d_predicted) {
+      d_mat <- rbind(d_mat, id[1:ncol(d_mat)])
+    }
+    for (id in d_predicted) {
+      d_mat <- cbind(d_mat, id)
+    }
+
+    # Update trajectories, states, and traj_st to include the predicted states
+    traj_class <- class(trajectories)
+    petra_traj <- paste0('petra', reference$trajectories)
+    petra_st <- unlist(lapply(unique(reference$trajectories), function(ipetra){
+      seq_along(reference$trajectories[reference$trajectories == ipetra])
+    }))
+    trajectories <- c(trajectories, petra_traj)
+    states <- as.integer(c(states, petra_st))
+    traj_st <- paste0(trajectories, '_', states)
+    petra_trajst <- paste0(petra_traj, '_', petra_st)
+
+    # Indices of the states forming predicted trajectories
+    ref_states <- lapply(setNames(unique(petra_traj), unique(petra_traj)), function(ipetra){
+      match(petra_trajst[petra_traj == ipetra],
+            traj_st)
+    })
+
+    # Define PETRA as RETRA
+    ref_asRETRA <- lapply(disturbed_trajectories, function(ipetra){
+      define_retra(data.frame(RT = petra_traj[petra_traj == paste0("petra", ipetra)],
+                              RT_traj = petra_traj[petra_traj == paste0("petra", ipetra)],
+                              RT_states = petra_st[petra_traj == paste0("petra", ipetra)]))
+    })
+  }
 
   ## DISTURBED TRAJECTORIES ----------------------------------------------------
 
@@ -610,7 +890,7 @@ recovery <- function (d, trajectories, states, disturbed_trajectories, disturbed
     which(traj_st %in% traj_st_post)
   })
 
-  ## STATE DISSIMILARITIES -----------------------------------------------------
+  ## TRIANGLE INEQUALITY -------------------------------------------------------
 
   # If method = "projection" and d does not fit triangle inequality, extract
   # state coordinates in MDS
@@ -642,50 +922,26 @@ recovery <- function (d, trajectories, states, disturbed_trajectories, disturbed
     is_metric <- all(data.table::rbindlist(lapply(d_tar_ref, data.table::rbindlist))$is_metric == T)
 
     if (is_metric == F) {
-      warning("The dissimilarity metric used in 'd' does not satisfy the triangle inequality. \nThe state space was transformed using metric multidimensional scaling.")
+      warning("The dissimilarity metric used in 'd' does not satisfy the triangle inequality. The state space was transformed using metric multidimensional scaling.")
       # Compute MDS and extract the state coordinates
       mds <- smacof::mds(d_mat, ndim = nrow(d_mat) - 1)
       coordStates <- mds$conf
-      d_euc <- as.matrix(dist(coordStates))
+      d_mat <- as.matrix(dist(coordStates))
     }
 
   }
 
-  # dist_post, dist_RT, post_RT
-  if (method %in% c("projection", "mixed") && is_metric == F) {
+  ## STATE DISSIMILARITY -------------------------------------------------------
 
-    # dist_post
-    dist_post <- data.table::rbindlist(lapply(seq_along(idist), function(idisttraj) {
-      data.table::data.table(disturbed_trajectories = disturbed_trajectories[idisttraj],
-                             ipost = ipost[[idisttraj]],
-                             d_dist_post = d_euc[idist[[idisttraj]], ipost[[idisttraj]]])
-    }))
+  # dist_post
+  dist_post <- data.table::rbindlist(lapply(seq_along(idist), function(idisttraj) {
+    data.table::data.table(disturbed_trajectories = disturbed_trajectories[idisttraj],
+                           ipost = ipost[[idisttraj]],
+                           d_dist_post = d_mat[idist[[idisttraj]], ipost[[idisttraj]]])
+  }))
 
-    # dist_RT
-    dist_RT <- data.table::data.table(state_to_trajectory(d = d_euc, trajectories = trajectories, states = states,
-                                                          target_states = unlist(idist), reference = reference,
-                                                          method = method))
-    dist_RT[, disturbed_trajectories := trajectories[target_state]]
-    dist_RT[, d_dist_RT := distance]
-
-    # post_RT
-    post_RT <- data.table::data.table(state_to_trajectory(d = d_euc, trajectories = trajectories, states = states,
-                                                          target_states = unlist(ipost), reference = reference,
-                                                          method = method))
-    post_RT[, disturbed_trajectories := trajectories[target_state]]
-    post_RT[, d_post_RT := distance]
-    post_RT[, ipost := target_state]
-
-
-  } else {
-
-    # dist_post
-    dist_post <- data.table::rbindlist(lapply(seq_along(idist), function(idisttraj) {
-      data.table::data.table(disturbed_trajectories = disturbed_trajectories[idisttraj],
-                             ipost = ipost[[idisttraj]],
-                             d_dist_post = d_mat[idist[[idisttraj]], ipost[[idisttraj]]])
-    }))
-
+  # dist_RT and post_RT ('RETRA'): ALL representative trajectories for each disturbed trajectory
+  if (inherits(reference, 'RETRA')) {
     # dist_RT
     dist_RT <- data.table::data.table(state_to_trajectory(d = d_mat, trajectories = trajectories, states = states,
                                                           target_states = unlist(idist), reference = reference,
@@ -698,6 +954,31 @@ recovery <- function (d, trajectories, states, disturbed_trajectories, disturbed
                                                           target_states = unlist(ipost), reference = reference,
                                                           method = method))
     post_RT[, disturbed_trajectories := trajectories[target_state]]
+    post_RT[, d_post_RT := distance]
+    post_RT[, ipost := target_state]
+
+  }
+
+  # dist_RT and post_RT ('PETRA'): ONE predicted trajectory for each disturbed trajectory
+  if (inherits(reference, 'PETRA')) {
+    # dist_RT
+    dist_RT <- data.table::rbindlist(lapply(seq_along(idist), function(ipetra){
+      data.table::data.table(state_to_trajectory(d = d_mat, trajectories = trajectories, states = states,
+                                                 target_states = unlist(idist[ipetra]), reference = ref_asRETRA[[ipetra]],
+                                                 method = method))
+    }))
+    dist_RT[, disturbed_trajectories := trajectories[target_state]]
+    class(dist_RT$disturbed_trajectories) <- traj_class
+    dist_RT[, d_dist_RT := distance]
+
+    # post_RT
+    post_RT <- data.table::rbindlist(lapply(seq_along(ipost), function(ipetra){
+      data.table::data.table(state_to_trajectory(d = d_mat, trajectories = trajectories, states = states,
+                                                 target_states = unlist(ipost[ipetra]), reference = ref_asRETRA[[ipetra]],
+                                                 method = method))
+    }))
+    post_RT[, disturbed_trajectories := trajectories[target_state]]
+    class(post_RT$disturbed_trajectories) <- traj_class
     post_RT[, d_post_RT := distance]
     post_RT[, ipost := target_state]
 
@@ -727,13 +1008,15 @@ recovery <- function (d, trajectories, states, disturbed_trajectories, disturbed
 
 ################################################################################
 
-#' @rdname deviation_metrics
+#' @rdname resilience_metrics
 #' @export
 
 #### NET CHANGE ####
 
-net_change <- function (d, trajectories, states, disturbed_trajectories, disturbed_states,
-                        predisturbed_states = disturbed_states - 1, reference,
+net_change <- function (d, trajectories, states,
+                        disturbed_trajectories, disturbed_states,
+                        predisturbed_states = disturbed_states - 1,
+                        reference, state_var = NULL,
                         index = c("absolute", "relative"), method = "nearest_state") {
 
   # due to NSE notes in R CMD check
@@ -786,8 +1069,39 @@ net_change <- function (d, trajectories, states, disturbed_trajectories, disturb
   }
 
   # Check the format of reference
-  if (!inherits(reference, "RETRA")) {
-    stop("'reference' must be an object of class 'RETRA'.")
+  if (!any(inherits(reference, "RETRA"), inherits(reference, "PETRA"))) {
+    stop("'reference' must be an object of class 'RETRA' of 'PETRA'.")
+  }
+  if (inherits(reference, 'PETRA')) {
+    # state_var is provided
+    if (is.null(state_var)) {
+      stop("'reference' is of class 'PETRA'. Provide the state variables in 'state_var'.")
+    }
+
+    # Check that PETRA arguments are provided
+    if (!"arguments" %in% names(reference)) {
+      stop("'reference' must contain 'arguments'. Set `return_arguments = T` when computing 'petra_edr()' to get 'reference'.")
+    }
+    # Check the format of state_var
+    if (!any(inherits(state_var, "matrix"),
+             inherits(state_var, "data.frame"),
+             inherits(state_var, "list"))) {
+      stop("'state_var' needs to be of any of these classes: 'matrix', 'data.frame', 'list'")
+    }
+    if (inherits(state_var, "list")) {
+      if (length(state_var) != length(trajectories)) {
+        stop("The length of 'state_var' must be equal to the length of 'trajectories' and 'states'.")
+      }
+    } else {
+      if (nrow(state_var) != length(trajectories)) {
+        stop("The number of rows of 'state_var' must be equal to the length of 'trajectories' and 'states'.")
+      }
+    }
+
+    # Check that there is the same number of disturbed and predicted trajectories
+    if (!all(disturbed_trajectories %in% unique(reference$trajectories))) {
+      stop("All 'disturbed_trajectories' must have an associated predicted trajectory in 'reference'")
+    }
   }
 
   ## TRAJECTORY-STATE ----------------------------------------------------------
@@ -804,27 +1118,96 @@ net_change <- function (d, trajectories, states, disturbed_trajectories, disturb
 
   ## REPRESENTATIVE TRAJECTORIES -----------------------------------------------
 
-  # Representative segments
-  RT_segments <- lapply(reference, "[", "Segments")
-  RT_states <- lapply(RT_segments, function(segs){
-    seg_components <- strsplit(gsub("\\]", "", gsub("\\[", "-", segs[[1]])), "-")
-    unlist(lapply(seg_components, function(iseg){
-      c(paste0(iseg[1], "_", iseg[2]), paste0(iseg[1], "_", iseg[3]))
-    }))
-  })
+  if (inherits(reference, 'RETRA')) {
 
-  # Check that the states of all RT are included in d
-  RT_in_d <- sapply(RT_states, function(rt){
-    all(rt %in% traj_st)
-  })
-  if (any(RT_in_d == F)) {
-    stop("All states in 'reference' must be included in 'd' and specified in 'trajectories' and 'states'.")
+    # Representative segments
+    RT_segments <- lapply(reference, "[", "Segments")
+    RT_states <- lapply(RT_segments, function(segs){
+      seg_components <- strsplit(gsub("\\]", "", gsub("\\[", "-", segs[[1]])), "-")
+      unlist(lapply(seg_components, function(iseg){
+        c(paste0(iseg[1], "_", iseg[2]), paste0(iseg[1], "_", iseg[3]))
+      }))
+    })
+
+    # Check that the states of all RT are included in d
+    RT_in_d <- sapply(RT_states, function(rt){
+      all(rt %in% traj_st)
+    })
+    if (any(RT_in_d == F)) {
+      stop("All states in 'reference' must be included in 'd' and specified in 'trajectories' and 'states'.")
+    }
+
+    # Indices of the states forming representative trajectories
+    ref_states <- lapply(RT_states, function(iRT){
+      match(iRT, traj_st)
+    })
+
   }
 
-  # Indices of the states forming representative trajectories
-  ref_states <- lapply(RT_states, function(iRT){
-    match(iRT, traj_st)
-  })
+  ## PREDICTED TRAJECTORIES ----------------------------------------------------
+
+  if (inherits(reference, 'PETRA')) {
+
+    # Predicted states
+    petra_trajst <- paste0(reference$trajectories, "_", reference$states)
+
+    # Identify the argument in d_function corresponding to state_var
+    istate_var <- reference$arguments$args_state_var
+
+    # Dissimilarity between the predicted states and each state of the EDR
+    d_predicted <- lapply(petra_trajst, function(ipredicted){
+      d_function <- reference$arguments$d_function
+      d_args <- reference$arguments$d_args
+
+      if (inherits(state_var, "list")) {
+        state_var_petra <- c(state_var, reference$state_var)
+        vapply(1:length(state_var_petra), function(istate){
+          d_args[[istate_var]] <- c(state_var_petra[istate], reference$state_var[petra_trajst == ipredicted])
+          class(d_args[[istate_var]]) <- class(state_var_petra)
+          do.call(eval(parse(text = d_function)), args = d_args)
+        }, numeric(1))
+      } else {
+        state_var_petra <- rbind(state_var, reference$state_var)
+        vapply(1:nrow(state_var_petra), function(istate){
+          d_args[[istate_var]] <- rbind(state_var_petra[istate, ], reference$state_var[petra_trajst == ipredicted, ])
+          do.call(eval(parse(text = d_function)), args = d_args)
+        }, numeric(1))
+      }
+    })
+
+    # Dissimilarity matrix including the states of the EDR, the disturbed trajectory, and the predicted trajectory
+    for (id in d_predicted) {
+      d_mat <- rbind(d_mat, id[1:ncol(d_mat)])
+    }
+    for (id in d_predicted) {
+      d_mat <- cbind(d_mat, id)
+    }
+
+    # Update trajectories, states, and traj_st to include the predicted states
+    traj_class <- class(trajectories)
+    petra_traj <- paste0('petra', reference$trajectories)
+    petra_st <- unlist(lapply(unique(reference$trajectories), function(ipetra){
+      seq_along(reference$trajectories[reference$trajectories == ipetra])
+    }))
+    trajectories <- c(trajectories, petra_traj)
+    states <- as.integer(c(states, petra_st))
+    traj_st <- paste0(trajectories, '_', states)
+    petra_trajst <- paste0(petra_traj, '_', petra_st)
+
+    # Indices of the states forming predicted trajectories
+    ref_states <- lapply(setNames(unique(petra_traj), unique(petra_traj)), function(ipetra){
+      match(petra_trajst[petra_traj == ipetra],
+            traj_st)
+    })
+
+    # Define PETRA as RETRA
+    ref_asRETRA <- lapply(disturbed_trajectories, function(ipetra){
+      define_retra(data.frame(RT = petra_traj[petra_traj == paste0("petra", ipetra)],
+                              RT_traj = petra_traj[petra_traj == paste0("petra", ipetra)],
+                              RT_states = petra_st[petra_traj == paste0("petra", ipetra)]))
+    })
+
+  }
 
   ## DISTURBED TRAJECTORIES ----------------------------------------------------
 
@@ -844,11 +1227,12 @@ net_change <- function (d, trajectories, states, disturbed_trajectories, disturb
     which(traj_st %in% paste0(disturbed_trajectories, "_", predisturbed_states)[iRT])
   })
 
-  ## STATE DISSIMILARITIES -----------------------------------------------------
+  ## TRIANGLE INEQUALITY -------------------------------------------------------
 
   # If method = "projection" and d does not fit triangle inequality, extract
   # state coordinates in MDS
   if (method %in% c("projection", "mixed")) {
+
     # Check triangle dissimilarity
     all_target <- unique(c(ipre, unlist(ipost)))
     d_ref <- lapply(ref_states, function(iRT){
@@ -876,59 +1260,63 @@ net_change <- function (d, trajectories, states, disturbed_trajectories, disturb
     is_metric <- all(data.table::rbindlist(lapply(d_tar_ref, data.table::rbindlist))$is_metric == T)
 
     if (is_metric == F) {
-      warning("The dissimilarity metric used in 'd' does not satisfy the triangle inequality. \nThe state space was transformed using metric multidimensional scaling.")
+      warning("The dissimilarity metric used in 'd' does not satisfy the triangle inequality. The state space was transformed using metric multidimensional scaling.")
       # Compute MDS and extract the state coordinates
       mds <- smacof::mds(d_mat, ndim = nrow(d_mat) - 1)
       coordStates <- mds$conf
-      d_euc <- as.matrix(dist(coordStates))
+      d_mat <- as.matrix(dist(coordStates))
     }
 
   }
 
-  # pre_post, pre_RT, post_RT
-  if (method %in% c("projection", "mixed") && is_metric == F) {
-    # pre_post, d is not metric
-    pre_post <- data.table::rbindlist(lapply(seq_along(ipre), function(idisttraj) {
-      data.table::data.table(disturbed_trajectories = disturbed_trajectories[idisttraj],
-                             ipost = ipost[[idisttraj]],
-                             d_pre_post = d_euc[ipre[[idisttraj]], ipost[[idisttraj]]])
-    }))
+  ## STATE DISSIMILARITY -------------------------------------------------------
 
-    # pre_RT, d is not metric
-    pre_RT <- data.table::data.table(state_to_trajectory(d = d_euc, trajectories = trajectories, states = states,
-                                                         target_states = unlist(ipre), reference = reference,
-                                                         method = method))
-    pre_RT[, disturbed_trajectories := trajectories[target_state]]
-    pre_RT[, d_pre_RT := distance]
+  # pre_post
+  pre_post <- data.table::rbindlist(lapply(seq_along(ipre), function(idisttraj) {
+    data.table::data.table(disturbed_trajectories = disturbed_trajectories[idisttraj],
+                           ipost = ipost[[idisttraj]],
+                           d_pre_post = d_mat[ipre[[idisttraj]], ipost[[idisttraj]]])
+  }))
 
-    # post_RT, d is not metric
-    post_RT <- data.table::data.table(state_to_trajectory(d = d_euc, trajectories = trajectories, states = states,
-                                                          target_states = unlist(ipost), reference = reference,
-                                                          method = method))
-    post_RT[, disturbed_trajectories := trajectories[target_state]]
-    post_RT[, d_post_RT := distance]
-    post_RT[, ipost := target_state]
-
-  } else {
-    # pre_post, d is metric
-    pre_post <- data.table::rbindlist(lapply(seq_along(ipre), function(idisttraj) {
-      data.table::data.table(disturbed_trajectories = disturbed_trajectories[idisttraj],
-                             ipost = ipost[[idisttraj]],
-                             d_pre_post = d_mat[ipre[[idisttraj]], ipost[[idisttraj]]])
-    }))
-
-    # pre_RT, d is metric
+  # pre_RT and post_RT ('RETRA'): ALL representative trajectories for each disturbed trajectory
+  if(inherits(reference, 'RETRA')) {
+    # pre_RT
     pre_RT <- data.table::data.table(state_to_trajectory(d = d_mat, trajectories = trajectories, states = states,
                                                          target_states = unlist(ipre), reference = reference,
                                                          method = method))
     pre_RT[, disturbed_trajectories := trajectories[target_state]]
     pre_RT[, d_pre_RT := distance]
 
-    # post_RT, d is metric
+    # post_RT
     post_RT <- data.table::data.table(state_to_trajectory(d = d_mat, trajectories = trajectories, states = states,
                                                           target_states = unlist(ipost), reference = reference,
                                                           method = method))
     post_RT[, disturbed_trajectories := trajectories[target_state]]
+    post_RT[, d_post_RT := distance]
+    post_RT[, ipost := target_state]
+
+  }
+
+  # pre_RT and post_RT ('PETRA'): ONE predicted trajectory for each disturbed trajectory
+  if (inherits(reference, 'PETRA')) {
+    # pre_RT
+    pre_RT <- data.table::rbindlist(lapply(seq_along(ipre), function(ipetra){
+      data.table::data.table(state_to_trajectory(d = d_mat, trajectories = trajectories, states = states,
+                                                 target_states = unlist(ipre[ipetra]), reference = ref_asRETRA[[ipetra]],
+                                                 method = method))
+    }))
+    pre_RT[, disturbed_trajectories := trajectories[target_state]]
+    class(pre_RT$disturbed_trajectories) <- traj_class
+    pre_RT[, d_pre_RT := distance]
+
+    # post_RT
+    post_RT <- data.table::rbindlist(lapply(seq_along(ipost), function(ipetra){
+      data.table::data.table(state_to_trajectory(d = d_mat, trajectories = trajectories, states = states,
+                                                 target_states = unlist(ipost[ipetra]), reference = ref_asRETRA[[ipetra]],
+                                                 method = method))
+    }))
+    post_RT[, disturbed_trajectories := trajectories[target_state]]
+    class(post_RT$disturbed_trajectories) <- traj_class
     post_RT[, d_post_RT := distance]
     post_RT[, ipost := target_state]
   }
