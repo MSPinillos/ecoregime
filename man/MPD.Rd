@@ -40,27 +40,30 @@ is the number of states of the trajectory predicted from the target (\eqn{\hat{Z
 \code{pc_predicted} values lower than 1 may reduce the computation time.
 }
 \examples{
-# Define state_var including the state variables for the states in the EDR and
-# the target
-EDR_var <- EDR_data$EDR1$abundance
-target_var <- data.frame(sp1 = 30, sp2 = 10, sp3 = 13, sp4 = 12, sp5 = 5, sp6 = 2,
-                         sp7 = 6, sp8 = 3, sp9 = 7, sp10 = 8, sp11 = 2, sp12 = 3)
-state_var <- data.frame(rbind(EDR_var[, -c("EDR", "traj", "state")], target_var))
+if (requireNamespace("vegan", quietly = TRUE)) {
+  # Define state_var including the state variables for the states in the EDR and
+  # the target
+  EDR_var <- EDR_data$EDR1$abundance
+  target_var <- data.frame(sp1 = 30, sp2 = 10, sp3 = 13, sp4 = 12, sp5 = 5, sp6 = 2,
+                           sp7 = 6, sp8 = 3, sp9 = 7, sp10 = 8, sp11 = 2, sp12 = 3)
+  state_var <- data.frame(rbind(EDR_var[, -c("EDR", "traj", "state")], target_var))
 
-# Compute PETRA-EDR
-petra <- petra_edr(state_var = state_var,
-                   trajectories = c(EDR_var$traj, "target"),
-                   states = as.integer(c(EDR_var$state, 0)),
-                   targets = "target",
-                   k = 5L,
-                   minPts = 2L,
-                   d_function = "vegan::vegdist",
-                   d_args = list(x = state_var, method = "bray"),
-                   return_args = TRUE,
-                   direction = 2)
+  # Compute PETRA-EDR
+  petra <- petra_edr(state_var = state_var,
+                     trajectories = c(EDR_var$traj, "target"),
+                     states = as.integer(c(EDR_var$state, 0)),
+                     targets = "target",
+                     k = 5L,
+                     minPts = 2L,
+                     d_function = "vegan::vegdist",
+                     d_args = list(x = state_var, method = "bray"),
+                     return_args = TRUE,
+                     direction = 2)
 
-# Calculate MPD
-MPD(x = petra)
+  # Calculate MPD
+  MPD(x = petra)
+}
+
 
 }
 \references{
