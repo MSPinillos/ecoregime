@@ -59,87 +59,87 @@
 #' @examples
 #' if (requireNamespace("vegan", quietly = TRUE)) {
 #'
-#' # Compute PETRA-EDR ---------------------------------------------------------
+#'   # Compute PETRA-EDR ---------------------------------------------------------
 #'
-#' # State variables of the states in the EDR and the target
-#' EDR_var <- EDR_data$EDR3$abundance
-#' target_var <- EDR_data$EDR3_disturbed$abundance[disturbed_states == 0]
+#'   # State variables of the states in the EDR and the target
+#'   EDR_var <- EDR_data$EDR3$abundance
+#'   target_var <- EDR_data$EDR3_disturbed$abundance[disturbed_states == 0]
 #'
-#' # Define state_var including the state variables for the states in the EDR and
-#' # the targets
-#' state_var <- data.frame(rbind(EDR_var[, paste0("sp", 1:12)],
-#'                               target_var[, paste0("sp", 1:12)]))
+#'   # Define state_var including the state variables for the states in the EDR and
+#'   # the targets
+#'   state_var <- data.frame(rbind(EDR_var[, paste0("sp", 1:12)],
+#'                                 target_var[, paste0("sp", 1:12)]))
 #'
-#' # Compute PETRA-EDR for each target. Set return_args = TRUE
-#' petra <- petra_edr(state_var = state_var,
-#'                    trajectories = c(EDR_var$traj, target_var$traj),
-#'                    states = c(EDR_var$state, target_var$state),
-#'                    targets = unique(target_var$traj),
-#'                    k = 5L, minPts = 2L,
-#'                    d_function = "vegan::vegdist",
-#'                    d_args = list(x = state_var, method = "bray"),
-#'                    return_args = TRUE)
+#'   # Compute PETRA-EDR for each target. Set return_args = TRUE
+#'   petra <- petra_edr(state_var = state_var,
+#'                      trajectories = c(EDR_var$traj, target_var$traj),
+#'                      states = c(EDR_var$state, target_var$state),
+#'                      targets = unique(target_var$traj),
+#'                      k = 5L, minPts = 2L,
+#'                      d_function = "vegan::vegdist",
+#'                      d_args = list(x = state_var, method = "bray"),
+#'                      return_args = TRUE)
 #'
-#' # Recalculate state_var and d, including the data for the predicted trajectories
-#' state_var <- rbind(EDR_var[, paste0("sp", 1:12)],
-#'                    petra$state_var)
+#'   # Recalculate state_var and d, including the data for the predicted trajectories
+#'   state_var <- rbind(EDR_var[, paste0("sp", 1:12)],
+#'                      petra$state_var)
 #'
-#' d <- vegan::vegdist(state_var, method = "bray")
+#'   d <- vegan::vegdist(state_var, method = "bray")
 #'
-#' # Compute PCoA (optional)
-#' pcoa <- cmdscale(d = d)#'
+#'   # Compute PCoA (optional)
+#'   pcoa <- cmdscale(d = d)#'
 #'
-#' # Example 1 -----------------------------------------------------------------
+#'   # Example 1 -----------------------------------------------------------------
 #'
-#' # Display each predicted trajectories with different colors
-#' plot(x = petra,
-#'      petra.colors = c("red", "royalblue", "seagreen"),
-#'      traj.colors = "grey",
-#'      coord = pcoa,
-#'      trajectories = c(EDR_var$traj, petra$trajectories),
-#'      states = as.integer(c(EDR_var$state, petra$states)),
-#'      xlab = "MDS D1", ylab = "MDS D2",
-#'      main = "Predicted trajectories in EDR")
-#' legend("bottomleft", legend = unique(target_var$traj),
-#'        lwd = 2,
-#'        col = c("red", "royalblue", "seagreen"),
-#'        title = "Target")
+#'   # Display each predicted trajectories with different colors
+#'   plot(x = petra,
+#'        petra.colors = c("red", "royalblue", "seagreen"),
+#'        traj.colors = "grey",
+#'        coord = pcoa,
+#'        trajectories = c(EDR_var$traj, petra$trajectories),
+#'        states = as.integer(c(EDR_var$state, petra$states)),
+#'        xlab = "MDS D1", ylab = "MDS D2",
+#'        main = "Predicted trajectories in EDR")
+#'   legend("bottomleft", legend = unique(target_var$traj),
+#'          lwd = 2,
+#'          col = c("red", "royalblue", "seagreen"),
+#'          title = "Target")
 #'
-#' # Example 2 -----------------------------------------------------------------
+#'   # Example 2 -----------------------------------------------------------------
 #'
-#' # Identify the observed states with a different color
-#' plot(x = petra,
-#'      petra.colors = "black",
-#'      target.colors = c("red", "royalblue", "seagreen"),
-#'      traj.colors = "grey",
-#'      coord = pcoa,
-#'      trajectories = c(EDR_var$traj, petra$trajectories),
-#'      states = as.integer(c(EDR_var$state, petra$states)),
-#'      xlab = "MDS D1", ylab = "MDS D2",
-#'      main = "Observed and predicted states")
-#' legend("bottomleft",
-#'        legend = c(paste0("Target ", unique(target_var$traj)), "Predicted states"),
-#'        lwd = 2,
-#'        col = c("red", "royalblue", "seagreen", "black"))
+#'   # Identify the observed states with a different color
+#'   plot(x = petra,
+#'        petra.colors = "black",
+#'        target.colors = c("red", "royalblue", "seagreen"),
+#'        traj.colors = "grey",
+#'        coord = pcoa,
+#'        trajectories = c(EDR_var$traj, petra$trajectories),
+#'        states = as.integer(c(EDR_var$state, petra$states)),
+#'        xlab = "MDS D1", ylab = "MDS D2",
+#'        main = "Observed and predicted states")
+#'   legend("bottomleft",
+#'          legend = c(paste0("Target ", unique(target_var$traj)), "Predicted states"),
+#'          lwd = 2,
+#'          col = c("red", "royalblue", "seagreen", "black"))
 #'
-#' # Example 3 -----------------------------------------------------------------
+#'   # Example 3 -----------------------------------------------------------------
 #'
-#' # Display predicted states based on an uncertainty metric
-#' plot(x = petra,
-#'      petra.colors = "black",
-#'      target.colors = "black",
-#'      traj.colors = "grey",
-#'      uncert.metric = "N",
-#'      uncert.colors = hcl.colors(4, rev = TRUE),
-#'      coord = pcoa,
-#'      trajectories = c(EDR_var$traj, petra$trajectories),
-#'      states = as.integer(c(EDR_var$state, petra$states)),
-#'      xlab = "MDS D1", ylab = "MDS D2",
-#'      main = "Uncertainty of the predicted states")
-#' legend("bottomleft", legend = c(paste0("N = ", min(petra$predicted_dist$N)),
-#'                                 rep(NA, 18),
-#'                                 paste0("N = ", max(petra$predicted_dist$N))),
-#'        fill = hcl.colors(20, rev = TRUE), border = NA, y.intersp = 0.2)
+#'   # Display predicted states based on an uncertainty metric
+#'   plot(x = petra,
+#'        petra.colors = "black",
+#'        target.colors = "black",
+#'        traj.colors = "grey",
+#'        uncert.metric = "N",
+#'        uncert.colors = hcl.colors(4, rev = TRUE),
+#'        coord = pcoa,
+#'        trajectories = c(EDR_var$traj, petra$trajectories),
+#'        states = as.integer(c(EDR_var$state, petra$states)),
+#'        xlab = "MDS D1", ylab = "MDS D2",
+#'        main = "Uncertainty of the predicted states")
+#'   legend("bottomleft", legend = c(paste0("N = ", min(petra$predicted_dist$N)),
+#'                                   rep(NA, 18),
+#'                                   paste0("N = ", max(petra$predicted_dist$N))),
+#'          fill = hcl.colors(20, rev = TRUE), border = NA, y.intersp = 0.2)
 #' }
 #'
 #'
