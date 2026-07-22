@@ -66,10 +66,11 @@ devtools::install_github("MSPinillos/ecoregime",
 # Load the package after the installation
 library(ecoregime)
 
-# Access the documentation and vignette
+# Access the documentation and vignettes
 ?ecoregime
 vignette("EDR_framework", package = "ecoregime")
 vignette("Resilience", package = "ecoregime")
+vignette("Predicting_trajectories", package = "ecoregime")
 ```
 
 ## Usage
@@ -229,7 +230,7 @@ petra <- petra_edr(state_var = state_var,
                    d_args = d_args,
                    return_args = T)
 
-# Accuracy of the predicted trajectory
+# Mean predicted deviation
 MPD(petra)
 #>     target 
 #> 0.03885392
@@ -274,4 +275,6 @@ Regimes*. <https://doi.org/10.5281/zenodo.7584943>.
 
 This project has received funding from the European Union’s Horizon 2020
 research and innovation program under the Marie Sklodowska-Curie grant
-agreement No 891477 (RESET project).
+agreement No 891477 (RESET project) and the Natural Sciences and
+Engineering Research Council of Canada (NSERC) \[DIVERSE project;
+funding reference ALLRP 583409-23\].
