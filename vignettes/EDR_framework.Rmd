@@ -34,15 +34,15 @@ The **EDR framework** is a set of algorithms and metrics aiming to (1) character
 
 You can find more information in the following publication, including the formal definition of the EDR concept, the methodological details of the framework, and some illustrative examples with artificial and real data sets:
 
-- Sánchez-Pinillos M., Kéfi, S., De Cáceres, M., Dakos, V. 2023. Ecological Dynamic Regimes: Identification, characterization, and comparison. *Ecological Monographs*. https://doi.org/10.1002/ecm.1589
+- Sánchez-Pinillos M., Kéfi, S., De Cáceres, M., Dakos, V. 2023. Ecological Dynamic Regimes: Identification, characterization, and comparison. *Ecological Monographs*. <https://doi.org/10.1002/ecm.1589>
 
 For more details on the evaluation of ecological resilience using ecological dynamic regimes, you can check `vignette("Resilience")` and this publication:
 
-- Sánchez-Pinillos M., Dakos, V., Kéfi, S. 2024. Ecological dynamic regimes: A key concept for assessing ecological resilience. *Biological Conservation*. https://doi.org/10.1016/j.biocon.2023.110409
+- Sánchez-Pinillos M., Dakos, V., Kéfi, S. 2024. Ecological dynamic regimes: A key concept for assessing ecological resilience. *Biological Conservation*. <https://doi.org/10.1016/j.biocon.2023.110409>
 
 Finally, the EDR framework, can be used to predict ecological trajectories using a reference EDR (`vignette("Predicting_trajectories")`). Then, the predicted trajectories can be very useful to improve resilience analyses and detect regime shifts:
 
-- Sánchez-Pinillos M., Fortin, M-J., Messier, C., Kneeshaw, D. 2026. Forecasting ecological trajectories from ecological dynamic regimes to improve resilience analysis. *Methods in Ecology and Evolution*. <doi:10.1111/2041-210x.70372>
+- Sánchez-Pinillos M., Fortin, M-J., Messier, C., Kneeshaw, D. 2026. Forecasting ecological trajectories from ecological dynamic regimes to improve resilience analysis. *Methods in Ecology and Evolution*. <https://doi.org/10.1111/2041-210x.70372>
 
 ### 1.2. About this vignette
 

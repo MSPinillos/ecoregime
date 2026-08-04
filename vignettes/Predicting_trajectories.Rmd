@@ -28,7 +28,7 @@ message('This vignette requires the "vegan" package. Please, install it: install
 
 **Ecological dynamic regimes (EDRs)** are defined as a group of trajectories reflecting the temporal changes in a set of state variables under certain external conditions and in the absence of perturbations. As such, EDRs provide valuable information to infer the dynamics of analogous systems (i.e., defined by the same state variables) for which we lack long temporal series.
 
-**PETRA-EDR (_Predicted Ecological TRAjectories in Ecological Dynamic Regimes_**; Sánchez-Pinillos et al. (2026)) is an algorithm implemented in `ecoregime` that leverages ecological dynamic regimes defined in a multidimensional state space to forecast the unknown trajectory of any ecosystem state. PETRA-EDR is based on the rationale that the successional changes in the state variables of ecological systems under comparable and relatively stable external conditions follow similar patterns. PETRA-EDR does not aim to outperform other data-driven and process-based models to forecast ecological dynamics, but to provide the EDR framework with predictive capacity, improving ecological resilience analyses, and enabling the detection of dynamic regime shifts when long time series are unavailable.
+**PETRA-EDR (_Predicted Ecological TRAjectories in Ecological Dynamic Regimes_**; [Sánchez-Pinillos et al., 2026](https://doi.org/10.1111/2041-210x.70372)) is an algorithm implemented in `ecoregime` that leverages ecological dynamic regimes defined in a multidimensional state space to forecast the unknown trajectory of any ecosystem state. PETRA-EDR is based on the rationale that the successional changes in the state variables of ecological systems under comparable and relatively stable external conditions follow similar patterns. PETRA-EDR does not aim to outperform other data-driven and process-based models to forecast ecological dynamics, but to provide the EDR framework with predictive capacity, improving ecological resilience analyses, and enabling the detection of dynamic regime shifts when long time series are unavailable.
 
 In particular, PETRA-EDR can be used to predict the dynamics of a disturbed system if that disturbance had not occurred. That expected undisturbed trajectory can then be used as the reference to quantify the deviation of the disturbed trajectory through amplitude, recovery, and net change indicators and assess the system's ecological resilience (see `vignette("Resilience")`).
 
@@ -38,7 +38,7 @@ PETRA-EDR is complemented by the metric **MPD (*Mean Predicted Deviation*)**, wh
 
 To learn more about the technical details of PETRA-EDR and MPD, see this publication:
 
-- Sánchez-Pinillos M., Fortin, M-J., Messier, C., Kneeshaw, D. 2026. Forecasting ecological trajectories from ecological dynamic regimes to improve resilience analysis. *Methods in Ecology and Evolution*. <doi:10.1111/2041-210x.70372>
+- Sánchez-Pinillos M., Fortin, M-J., Messier, C., Kneeshaw, D. 2026. Forecasting ecological trajectories from ecological dynamic regimes to improve resilience analysis. *Methods in Ecology and Evolution*. <https://doi.org/10.1111/2041-210x.70372>
 
 Additional information about the analysis of ecological dynamic regimes can be found in `vignette("EDR_framework")` and this publication:
 
@@ -50,7 +50,7 @@ To assess ecological resilience using EDRs, you can check `vignette("Resilience"
 
 ### 1.2. About this vignette
 
-This vignette focuses on the PETRA-EDR algorithm proposed in Sánchez-Pinillos et al. (2026) to predict the ecological trajectories from ecological dynamic regimes. This algorithm was implemented in the function `petra_edr()` of the R package `ecoregime`. In particular, this vignette introduces the arguments and outputs of the function `petra_edr()`, summarizes the workflow to predict trajectories, quantifies the prediction accuracy through the metric MPD implemented in `MPD()`, and represents predicted trajectories in a state space using the function `plot()`.
+This vignette focuses on the PETRA-EDR algorithm proposed in [Sánchez-Pinillos et al., (2026)](https://doi.org/10.1111/2041-210x.70372) to predict the ecological trajectories from ecological dynamic regimes. This algorithm was implemented in the function `petra_edr()` of the R package `ecoregime`. In particular, this vignette introduces the arguments and outputs of the function `petra_edr()`, summarizes the workflow to predict trajectories, quantifies the prediction accuracy through the metric MPD implemented in `MPD()`, and represents predicted trajectories in a state space using the function `plot()`.
 
 You can install `ecoregime` directly from CRAN or from my GitHub account (development version):
 
@@ -73,7 +73,7 @@ citation("ecoregime")
 
 First, we will generate three hypothetical targets from the EDR data included in `ecoregime`. We will use them along the vignette to predict their trajectories using EDR1 as the reference.
 
-Although the data included in `ecoregime` refer to ecological communities and species abundances, it is important to note that other ecological units (e.g., individuals, populations) and state variables (e.g., number of individuals, functional traits) can be used. Some examples are detailed in the Supporting Information (Appendix S1) of the associated paper (Sánchez-Pinillos et al. 2026)
+Although the data included in `ecoregime` refer to ecological communities and species abundances, it is important to note that other ecological units (e.g., individuals, populations) and state variables (e.g., number of individuals, functional traits) can be used. Some examples are detailed in the Supporting Information (Appendix S1) of the associated paper ([Sánchez-Pinillos et al., 2026](https://doi.org/10.1111/2041-210x.70372))
 
 ```{r data}
 # Matrix including the state variables (sp1-sp12) of the EDR trajectories
@@ -160,7 +160,7 @@ head(states1)
 dStates1 <- vegan::vegdist(x = state_var1, method = "bray")
 ```
 
-- **Parameters of PETRA-EDR**: These parameters are specific of the PETRA-EDR algorithm. You can find useful information in Sánchez-Pinillos et al. (2026) and its Supporting Information (Appendix S1).
+- **Parameters of PETRA-EDR**: These parameters are specific of the PETRA-EDR algorithm. You can find useful information in [Sánchez-Pinillos et al., (2026)](https://doi.org/10.1111/2041-210x.70372) and its Supporting Information (Appendix S1).
 
   - `k`: number of the nearest states to the target. Small values of `k` returns forecasts highly dependent on the nearest trajectories, whereas large values consider the trends of many trajectories in the EDR. Let's see the differences of applying `petra_edr()` in our example when `k = 2L` and `k = 20L`:
     
@@ -360,7 +360,7 @@ petra_minPts1$predicted_dist[, c("target", "predicted_state", "N")]
 petra_minPts2$predicted_dist[, c("target", "predicted_state", "N")]
 ```
 
-- `w_function`: instead of using the argument `eps`, we can assign different weights as a function of the dissimilarity of the target to the EDR states to improve the results. `petra_edr()` permits using six different weighting functions: `"linear"`, `"power"`, `"exponential"`, `"Gaussian"`, `"hyperbolic"`, or `"spherical"`. You can see the relevance of this argument in Sánchez-Pinillos et al. (2026).
+- `w_function`: instead of using the argument `eps`, we can assign different weights as a function of the dissimilarity of the target to the EDR states to improve the results. `petra_edr()` permits using six different weighting functions: `"linear"`, `"power"`, `"exponential"`, `"Gaussian"`, `"hyperbolic"`, or `"spherical"`. You can see the relevance of this argument in [Sánchez-Pinillos et al., (2026)](https://doi.org/10.1111/2041-210x.70372).
 - `alpha`: when `w_function` is one of `"power"`, `"exponential"`, or `"hyperbolic"`, `alpha` is the parameter modulating the shape of these functions.
 - `w`: it is possible to assign different weights using some values pre-defined by the user. For example, one could be interested in defining `w` depending on some external variables.
 - `method`: it indicates how the predicted states are calculated.
@@ -760,7 +760,7 @@ In contrast to the predicted trajectories for target1 and target2, the large MPD
 MPD(x = petra)
 ```
 
-Besides informing about the prediction accuracy, it is important to note that MPD can be used in optimization techniques to improve our results by adjusting the values of `k`, `eps`, `minPt`, and `alpha` (if necessary). You can see more details in Sánchez-Pinillos et al. (2026).
+Besides informing about the prediction accuracy, it is important to note that MPD can be used in optimization techniques to improve our results by adjusting the values of `k`, `eps`, `minPt`, and `alpha` (if necessary). You can see more details in [Sánchez-Pinillos et al., (2026)](https://doi.org/10.1111/2041-210x.70372).
 
 ## 6. Representing predicted trajectories
 

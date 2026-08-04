@@ -20,7 +20,8 @@ ecosystem state variables. The EDR framework was introduced in:
 
 - Sánchez-Pinillos, M., Kéfi, S., De Cáceres, M., Dakos, V. 2023.
   Ecological Dynamic Regimes: Identification, characterization, and
-  comparison. *Ecological Monographs*. <doi:10.1002/ecm.1589>
+  comparison. *Ecological Monographs*.
+  <https://doi.org/10.1002/ecm.1589>
 
 `ecoregime` can be used to assess ecological resilience using ecological
 dynamic regimes as the system’s reference. This approach was introduced
@@ -28,7 +29,8 @@ in:
 
 - Sánchez-Pinillos M., Dakos, V., Kéfi, S. 2024. Ecological dynamic
   regimes: A key concept for assessing ecological resilience.
-  *Biological Conservation*. <doi:10.1016/j.biocon.2023.110409>
+  *Biological Conservation*.
+  <https://doi.org/10.1016/j.biocon.2023.110409>
 
 `ecoregime` includes functions to forecast ecological trajectories from
 ecological dynamic regimes and assess the accuracy of the predictions.
@@ -37,7 +39,7 @@ This method was introduced in:
 - Sánchez-Pinillos M., Fortin, M-J., Messier, C., Kneeshaw, D. 2026.
   Forecasting ecological trajectories from ecological dynamic regimes to
   improve resilience analysis. *Methods in Ecology and Evolution*.
-  <doi:10.1111/2041-210x.70372>
+  <https://doi.org/10.1111/2041-210x.70372>
 
 ## Installation
 
@@ -267,6 +269,7 @@ Conservation*, 110409. <https://doi.org/10.1016/j.biocon.2023.110409>.
 Sánchez-Pinillos M, Fortin M, Messier C, Kneeshaw D (2026). “Forecasting
 ecological trajectories from ecological dynamic regimes to improve
 resilience analysis.” *Methods in Ecology and Evolution*.
+<https://doi.org/10.1111/2041-210x.70372>.
 
 Sánchez-Pinillos M (2023). *ecoregime: Analysis of Ecological Dynamic
 Regimes*. <https://doi.org/10.5281/zenodo.7584943>.

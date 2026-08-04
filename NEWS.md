@@ -2,7 +2,7 @@
 
 ## New features
 
-* `petra_edr()`predicts longer trajectories in ecological dynamic regimes from a target.
+* `petra_edr()`predicts longer trajectories of a target in ecological dynamic regimes.
 
 * `MPD()` quantifies the accuracy of predicted trajectories returned by `petra_edr()`.
 
