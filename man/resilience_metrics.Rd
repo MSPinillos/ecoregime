@@ -237,7 +237,6 @@ or using the nearest state of the \code{reference} if the dissimilarity is small
 }
 \examples{
 if (requireNamespace("vegan", quietly = TRUE)) {
-  # Example 1 -----------------------------------------------------------------
   # Calculate the resistance of disturbed systems
 
   # Abundance matrix including disturbed and undisturbed trajectories
@@ -252,9 +251,9 @@ if (requireNamespace("vegan", quietly = TRUE)) {
                    disturbed_trajectories = unique(abundance[!is.na(disturbed_states)]$traj),
                    disturbed_states = abundance[disturbed_states == 1]$state)
 
-  # Example 2 -----------------------------------------------------------------
   # Calculate the amplitude, recovery, and net change of disturbed systems taking
-  # a representative trajectory as the reference
+  # a representative trajectory as the reference. Analogous metrics can be
+  # calculated using a PETRA object as the reference.
 
   # Identify the representative trajectories of the EDR from undisturbed trajectories
   RT <- retra_edr(d = EDR_data$EDR3$state_dissim,
@@ -276,43 +275,6 @@ if (requireNamespace("vegan", quietly = TRUE)) {
   NC <- net_change(d = d, trajectories = abundance$traj, states = abundance$state,
                    disturbed_trajectories = unique(abundance[!is.na(disturbed_states)]$traj),
                    disturbed_states = abundance[disturbed_states == 1]$state, reference = RT)
-
-  # Example 3 -----------------------------------------------------------------
-  # Calculate the amplitude, recovery, and net change of disturbed systems taking
-  # their predicted trajectories as the reference
-
-  # Abundance matrix including undisturbed trajectories (EDR and disturbed trajectory)
-  abundance_undist <- abundance[is.na(disturbed_states) | disturbed_states == 0]
-
-  # Define the state variables of the undisturbed states and calculate the predicted trajectories
-  state_var <- data.frame(abundance_undist[, paste0('sp', 1:12)])
-  petra <- petra_edr(state_var = state_var, trajectories = abundance_undist$traj,
-                     states = abundance_undist$state,
-                     targets = unique(abundance_undist[!is.na(disturbed_states)]$traj),
-                     k = 100L, eps = 0.1, minPts = 2L,
-                     d_function = 'vegan::vegdist', d_args = list(x = state_var, method = 'bray'),
-                     w_function = 'exponential', return_args = TRUE)
-
-  # Amplitude
-  A <- amplitude(d = d, state_var = data.frame(abundance[, paste0('sp', 1:12)]),
-                 trajectories = abundance$traj, states = abundance$state,
-                 disturbed_trajectories = unique(abundance[!is.na(disturbed_states)]$traj),
-                 disturbed_states = abundance[disturbed_states == 1]$state, reference = petra,
-                 method = 'nearest_state')
-
-  # Recovery
-  Rc <- recovery(d = d, state_var = data.frame(abundance[, paste0('sp', 1:12)]),
-                 trajectories = abundance$traj, states = abundance$state,
-                 disturbed_trajectories = unique(abundance[!is.na(disturbed_states)]$traj),
-                 disturbed_states = abundance[disturbed_states == 1]$state, reference = petra,
-                 method = 'nearest_state')
-
-  # Net change
-  NC <- net_change(d = d, state_var = data.frame(abundance[, paste0('sp', 1:12)]),
-                   trajectories = abundance$traj, states = abundance$state,
-                   disturbed_trajectories = unique(abundance[!is.na(disturbed_states)]$traj),
-                   disturbed_states = abundance[disturbed_states == 1]$state, reference = petra,
-                   method = 'nearest_state')
 
 }
 }
