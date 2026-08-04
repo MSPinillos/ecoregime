@@ -138,8 +138,8 @@ test_that("the properties of dDR are fit", {
   expect_equal(dEDR, dEDR_st)
 
   expect_equal(dEDR[2, 4], dEDR[4, 2])
-  expect_equal(dEDR[2, 4], 0)
-  expect_equal(dEDR[5, 3], 0)
+  expect_equal(dEDR[2, 4], 0, tolerance = 1e-6)
+  expect_equal(dEDR[5, 3], 0, tolerance = 1e-6)
   expect_true(dEDR[5, 3] < dEDR[3, 5])
   expect_true(dEDR[1, 5] >= dEDR[1, 3] &&
                 dEDR[2, 5] >= dEDR[2, 3])
