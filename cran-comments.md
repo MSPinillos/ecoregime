@@ -9,7 +9,7 @@
 * mac-builder (https://mac.r-project.org/macbuilder/submit.html):
   - macOS Tahoe 26.6, R 4.6.1 Patched (aarch64-apple-darwin23)
 * GitHub Actions:
-  - macOS Tahoe 26.4, R 4.6.1 (aarch64-apple-darwin23)
+  - macOS Tahoe 26.5.2, R 4.6.1 (aarch64-apple-darwin23)
   - Windows Server 2022 x64, R 4.6.1 (x86_64-w64-mingw32)
   - Ubuntu 24.04.4 LTS, R Under development (2026-06-21 r90185) (x86_64-pc-linux-gnu)
   - Ubuntu 24.04.4 LTS, R 4.6.1 (x86_64-pc-linux-gnu)
