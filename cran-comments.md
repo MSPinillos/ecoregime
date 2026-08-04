@@ -1,4 +1,4 @@
-# Version 0.4.0
+# Version 0.4.1
 
 ## Test environments
 
@@ -17,15 +17,7 @@
 
 ## R CMD check results
 
-0 errors | 0 warnings | 1 notes
-
-* checking examples ... [54s] NOTE
-Examples with CPU (user + system) or elapsed time > 10s
-                    user system elapsed
-resilience_metrics 20.41   0.72   21.18
-dist_edr            9.40   0.64   10.06
-
-resilience_metrics includes examples for four functions.
+0 errors | 0 warnings | 0 notes
 
 ## Reverse dependencies
 

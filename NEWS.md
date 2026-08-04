@@ -1,3 +1,9 @@
+# ecoregime 0.4.1
+
+## Minor changes and bug fixes
+
+* Reduced computing time for examples.
+
 # ecoregime 0.4.0
 
 ## New features
