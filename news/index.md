@@ -1,5 +1,46 @@
 # Changelog
 
+## ecoregime 0.4.1
+
+CRAN release: 2026-08-04
+
+### Minor changes and bug fixes
+
+- Reduced computing time for examples.
+
+## ecoregime 0.4.0
+
+### New features
+
+- [`petra_edr()`](https://mspinillos.github.io/ecoregime/reference/petra_edr.md)predicts
+  longer trajectories of a target in ecological dynamic regimes.
+
+- [`MPD()`](https://mspinillos.github.io/ecoregime/reference/MPD.md)
+  quantifies the accuracy of predicted trajectories returned by
+  [`petra_edr()`](https://mspinillos.github.io/ecoregime/reference/petra_edr.md).
+
+- [`plot.PETRA()`](https://mspinillos.github.io/ecoregime/reference/plot.PETRA.md)
+  represents predicted trajectories returned by
+  [`petra_edr()`](https://mspinillos.github.io/ecoregime/reference/petra_edr.md)
+  and the trajectories of the reference EDR in a state space.
+
+- `vignette("Predicted_trajectories")`: describes how to predict
+  ecological trajectories from EDRs.
+
+### Improvements
+
+- [`amplitude()`](https://mspinillos.github.io/ecoregime/reference/resilience_metrics.md)
+  calculates the amplitude of disturbed trajectories from `RETRA` and
+  `PETRA` objects.
+
+- [`recovery()`](https://mspinillos.github.io/ecoregime/reference/resilience_metrics.md)
+  calculates the recovery towards reference trajectories from `RETRA`
+  and `PETRA` objects.
+
+- [`net_change()`](https://mspinillos.github.io/ecoregime/reference/resilience_metrics.md)
+  calculates the net change of disturbed trajectories from `RETRA` and
+  `PETRA` objects.
+
 ## ecoregime 0.3.1
 
 CRAN release: 2026-06-07
@@ -64,16 +105,16 @@ CRAN release: 2024-04-17
 
 ### New features
 
-- [`resistance()`](https://mspinillos.github.io/ecoregime/reference/deviation_metrics.md)
+- [`resistance()`](https://mspinillos.github.io/ecoregime/reference/resilience_metrics.md)
   calculates resistance to disturbances.
 
-- [`amplitude()`](https://mspinillos.github.io/ecoregime/reference/deviation_metrics.md)
+- [`amplitude()`](https://mspinillos.github.io/ecoregime/reference/resilience_metrics.md)
   calculates the amplitude of disturbed trajectories.
 
-- [`recovery()`](https://mspinillos.github.io/ecoregime/reference/deviation_metrics.md)
+- [`recovery()`](https://mspinillos.github.io/ecoregime/reference/resilience_metrics.md)
   calculates the recovery towards reference trajectories.
 
-- [`net_change()`](https://mspinillos.github.io/ecoregime/reference/deviation_metrics.md)
+- [`net_change()`](https://mspinillos.github.io/ecoregime/reference/resilience_metrics.md)
   calculates the net change of disturbed trajectories.
 
 - [`state_to_trajectory()`](https://mspinillos.github.io/ecoregime/reference/state_to_trajectory.md)

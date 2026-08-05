@@ -154,7 +154,8 @@ summary(RT)
 # dotted line.
 plot(x = RT, d = d, trajectories = trajectories, states = states, select_RT = "T2",
      traj.colors = "lightblue", RT.colors = "orange", sel.color = "darkgreen",
-     link.lty = 3, main = "Representative trajectories in EDR1")
+     link.lty = 3, xlab = "MDS D1", ylab = "MDS D2",
+     main = "Representative trajectories in EDR1")
 
 
 # Example 2 -----------------------------------------------------------------

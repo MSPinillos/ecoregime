@@ -1,4 +1,4 @@
-# Metrics of Ecological Dynamic Regimes
+# Metrics of trajectory distribution in Ecological Dynamic Regimes
 
 Set of metrics to analyze the distribution and variability of
 trajectories in Ecological Dynamic Regimes (EDR), including dynamic

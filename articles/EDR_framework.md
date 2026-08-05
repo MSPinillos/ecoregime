@@ -8,7 +8,8 @@ An **Ecological Dynamic Regime (EDR)** is defined as the *“fluctuations
 of ecosystem states around some trend or average resulting from an
 intricate mix of internal processes and external forces that, in the
 absence of perturbations, keep the system within specific domains of
-attraction”* (Sánchez-Pinillos et al., 2023).
+attraction”* ([Sánchez-Pinillos et al.,
+2023](https://doi.org/10.1002/ecm.1589)).
 
 EDRs are composed of multiple ecological trajectories showing similar
 processes in the development, interaction, and reorganization of some
@@ -19,17 +20,42 @@ ecological trajectories are defined based on multiple state variables
 (e.g., species, functional traits, land uses) that make challenging the
 characterization and comparison of EDRs.
 
-The **EDR framework** is a set of algorithms and metrics aiming to
-characterize and compare EDRs composed of ecological trajectories in
-multidimensional state spaces. You can find more information in the
-following publication, including the formal definition of the EDR
-concept, the methodological details of the framework, and some
-illustrative examples with artificial and real data sets:
+The **EDR framework** is a set of algorithms and metrics aiming to (1)
+characterize and compare EDRs composed of ecological trajectories and
+(2) evaluate ecological resilience using EDRs as the reference to assess
+the deviation of disturbed ecosystems. For that, the EDR framework uses
+multivariate analyses defining multidimensional state spaces.
+
+You can find more information in the following publication, including
+the formal definition of the EDR concept, the methodological details of
+the framework, and some illustrative examples with artificial and real
+data sets:
 
 - Sánchez-Pinillos M., Kéfi, S., De Cáceres, M., Dakos, V. 2023.
   Ecological Dynamic Regimes: Identification, characterization, and
   comparison. *Ecological Monographs*.
   <https://doi.org/10.1002/ecm.1589>
+
+For more details on the evaluation of ecological resilience using
+ecological dynamic regimes, you can check
+[`vignette("Resilience")`](https://mspinillos.github.io/ecoregime/articles/Resilience.md)
+and this publication:
+
+- Sánchez-Pinillos M., Dakos, V., Kéfi, S. 2024. Ecological dynamic
+  regimes: A key concept for assessing ecological resilience.
+  *Biological Conservation*.
+  <https://doi.org/10.1016/j.biocon.2023.110409>
+
+Finally, the EDR framework, can be used to predict ecological
+trajectories using a reference EDR
+([`vignette("Predicting_trajectories")`](https://mspinillos.github.io/ecoregime/articles/Predicting_trajectories.md)).
+Then, the predicted trajectories can be very useful to improve
+resilience analyses and detect regime shifts:
+
+- Sánchez-Pinillos M., Fortin, M-J., Messier, C., Kneeshaw, D. 2026.
+  Forecasting ecological trajectories from ecological dynamic regimes to
+  improve resilience analysis. *Methods in Ecology and Evolution*.
+  <https://doi.org/10.1111/2041-210x.70372>
 
 ### 1.2. About this vignette
 
@@ -65,6 +91,11 @@ citation("ecoregime")
 #>   regimes: A key concept for assessing ecological resilience."
 #>   _Biological Conservation_, 110409.
 #>   <https://doi.org/10.1016/j.biocon.2023.110409>.
+#> 
+#>   Sánchez-Pinillos M, Fortin M, Messier C, Kneeshaw D (2026).
+#>   "Forecasting ecological trajectories from ecological dynamic regimes
+#>   to improve resilience analysis." _Methods in Ecology and Evolution_.
+#>   <https://doi.org/10.1111/2041-210x.70372>.
 #> 
 #>   Sánchez-Pinillos M (2023). _ecoregime: Analysis of Ecological Dynamic
 #>   Regimes_. <https://doi.org/10.5281/zenodo.7584943>.
@@ -142,11 +173,11 @@ Next, we need to define the **state space** in which ecological
 trajectories live. The state space is a multidimensional resemblance
 space defined by the dissimilarities between every pair of states (the
 observations) in terms of some state variables (the species). That is,
-we need to generate a matrix (**$`D_O`$**) representing the state space
+we need to generate a matrix (**\\D_O\\**) representing the state space
 and containing the dissimilarities between the observations of all
 sampling units.
 
-The choice of the dissimilarity metric used to generate **$`D_O`$**
+The choice of the dissimilarity metric used to generate **\\D_O\\**
 depends on the characteristics of your data and the nature of the
 variables. Your decision should be made carefully since it will affect
 the analyses in the EDR framework. In our example, we are using species
@@ -156,7 +187,7 @@ presence/absence data, you could prefer the Jaccard’s distance, and if
 your state variables are categorical (e.g., functional traits), you
 should use a multi-trait dissimilarity (e.g., the Gower distance). These
 and other ecologically relevant dissimilarity coefficients can be
-applied using the function \``vegdist()` in `vegan`.
+applied using the function `vegdist()` in `vegan`.
 
 ``` r
 
@@ -174,7 +205,7 @@ as.matrix(state_dissim)[1:6, 1:6]
 
 We can visualize the state space using ordination methods. Here, I apply
 multidimensional scaling (mMDS; `smacof`) to the dissimilarity matrix
-**$`D_O`$** and plot the distribution of the ecological states in an
+**\\D_O\\** and plot the distribution of the ecological states in an
 ordination space. We will use different colors and the code of the
 sampling unit to represent the observations of each sampling unit:
 
@@ -217,14 +248,21 @@ legend("bottomright", unique(abundance$sampling_unit),
 
 The **trajectory space** is a multidimensional space defined by the
 dissimilarities between trajectories (i.e., the whole sequence of states
-for each sampling unit). Analogously to the state space, you need to
-generate a dissimilarity matrix (**$`D_T`$**) and the metric that you
-use will affect the subsequent analyses. Although there are multiple
-metrics, there are no formal analyses evaluating their performance in
-ecological applications. Here, I suggest the directed segment path
-dissimilarity (De Cáceres et al., 2019, *Ecol. Monogr.*,
-<https://doi.org/10.1002/ecm.1350>), but you could use any other
-dissimilarity metric.
+for each sampling unit). Depending on the analyses in which you are
+interested, you will not need to compute the trajectory space. I
+recommend you to check in advance whether you will need it, since
+computing times can be long in big databases. For that, you can check
+whether the functions that you eventually want to apply include the
+argument `d.type`. If so, it will be useful to have a trajectory
+dissimilarity matrix previously calculated.
+
+Analogously to the state space, you need to generate a dissimilarity
+matrix (**\\D_T\\**) and the metric that you use will affect the
+subsequent analyses. Although there are multiple metrics, there are no
+formal analyses evaluating their performance in ecological applications.
+Here, I suggest the directed segment path dissimilarity (De Cáceres et
+al., 2019, *Ecol. Monogr.*, <https://doi.org/10.1002/ecm.1350>), but you
+could use any other dissimilarity metric.
 
 ``` r
 
@@ -272,7 +310,7 @@ plot(traj_mds$D1, traj_mds$D2,
 Identifying EDRs involves finding groups of ecological trajectories
 showing dynamic patterns more similar between each other than with any
 other ecological trajectory in the trajectory space. In this sense, it
-is possible to use the trajectory dissimilarity matrix (**$`D_T`$**) to
+is possible to use the trajectory dissimilarity matrix (**\\D_T\\**) to
 identify EDRs through clustering. However, applying clustering analyses
 to trajectory data is not always straightforward. Depending on the
 characteristics of your data, your goals, and the system that you are
@@ -280,8 +318,8 @@ evaluating, the choice of the clustering algorithm may have important
 consequences.
 
 Currently, this is out of the scope of `ecoregime` but you can find more
-details in the paper introducing the EDR framework (Sánchez-Pinillos et
-al., 2023)
+details in the paper introducing the EDR framework [Sánchez-Pinillos et
+al., 2023](https://doi.org/10.1002/ecm.1589)
 
 ### 3.2. Defining EDRs based on ecological properties
 
@@ -350,19 +388,22 @@ spaces. That is precisely what RETRA-EDR pursues.
 **RETRA-EDR (REpresentative TRAjectories in Ecological Dynamic
 Regimes)** is an algorithm that aims to identify representative
 trajectories in EDRs based on the distribution and density of their
-ecological trajectories (Sánchez-Pinillos et al., 2023). Whereas many
-algorithms with similar goals where developed for moving objects in
-low-dimensional spaces, RETRA-EDR can be applied to high-dimensional
-spaces, capturing the complexity of empirical data.
+ecological trajectories ([Sánchez-Pinillos et al.,
+2023](https://doi.org/10.1002/ecm.1589)). Whereas many algorithms with
+similar goals where developed for moving objects in low-dimensional
+spaces, RETRA-EDR can be applied to high-dimensional spaces, capturing
+the complexity of empirical data.
 
 I will not explain the details of RETRA-EDR in this vignette (you can
-find them in Sánchez-Pinillos et al., 2023), but it is important that
-you know its main steps to understand the output returned by
+find them in [Sánchez-Pinillos et al.,
+2023](https://doi.org/10.1002/ecm.1589)), but it is important that you
+know its main steps to understand the output returned by
 [`retra_edr()`](https://mspinillos.github.io/ecoregime/reference/retra_edr.md):
 
 1.  The ecological trajectories forming the EDR are split into segments.
     Then, a **segment space** analogous to the trajectory space is
     generated from a matrix containing segment dissimilarities.
+
 2.  The segment space is divided into regions with a minimum number of
     trajectory segments (`minSegs`). For that, RETRA-EDR recursively
     divides the space into halves following the axes of the segment
@@ -371,11 +412,23 @@ you know its main steps to understand the output returned by
     partitions required until obtaining regions with `minSegs` segments.
     The number of partitions is known as the *depth* of the *k*d-tree
     (`kdTree_depth`) and the number of segments in the final region is
-    the `Density`.
+    the `Density`. As such, these indices (`kdTree_depth` and `Density`)
+    inform on the how much representative is each observed segment of
+    the representative trajectory. Yet, since `Density` is ultimately
+    constrained by `minSegs`, `kdTree_depth` is, in general, a better
+    indicator.
+
 3.  For each region with at least `minSegs` segments, RETRA-EDR extracts
     the medoid as the **representative segment**.
+
 4.  All representative segments are joined forming a network of
-    **representative trajectories**.
+    **representative trajectories**, even if they are not realistic. The
+    function
+    [`define_retra()`](https://mspinillos.github.io/ecoregime/reference/define_retra.md)
+    is useful to redefine representative trajectories and avoid long
+    unrealistic links between representative segments or unlikely
+    directional changes.
+
 5.  RETRA-EDR returns a set of **attributes characterizing the
     representative trajectories** identified in the EDR, including the
     value of `minSegs`; the sequence of representative segments
@@ -390,8 +443,8 @@ you know its main steps to understand the output returned by
 
 Let’s apply
 [`retra_edr()`](https://mspinillos.github.io/ecoregime/reference/retra_edr.md)
-to our data. As the EDR only contains 10 trajectories, we will assign a
-value of `minSegs` relatively low.
+to our data. As the EDR only contains 10 trajectories, we will consider
+a low value of `minSegs`.
 
 ``` r
 
@@ -727,7 +780,8 @@ additional metrics to understand the internal structure of the EDR.
 
 **Dynamic dispersion (dDis)** is calculated as the average dissimilarity
 between the trajectories in an EDR and another trajectory taken as a
-reference (Sánchez-Pinillos et al., 2023).
+reference ([Sánchez-Pinillos et al.,
+2023](https://doi.org/10.1002/ecm.1589)).
 
 If the trajectory taken as the reference is one of the representative
 trajectories (e.g. *T1*), *dDis* can be used as an indicator of its
@@ -876,9 +930,9 @@ dBD(d = state_dissim, d.type = "dStates",
 ### 5.3. Dynamic evenness (dEve)
 
 **Dynamic evenness (dEve)** quantifies the regularity with which an EDR
-is filled by ecological trajectories (Sánchez-Pinillos et al., 2023).
-This metric informs about the existence of groups of trajectories within
-the EDR.
+is filled by ecological trajectories ([Sánchez-Pinillos et al.,
+2023](https://doi.org/10.1002/ecm.1589)). This metric informs about the
+existence of groups of trajectories within the EDR.
 
 You can compute *dEve* with the function
 [`dEve()`](https://mspinillos.github.io/ecoregime/reference/EDR_metrics.md):

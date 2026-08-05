@@ -8,7 +8,7 @@
 ## Citation
 
 Source:
-[`inst/CITATION`](https://github.com/MSPinillos/ecoregime/blob/v0.3.1/inst/CITATION)
+[`inst/CITATION`](https://github.com/MSPinillos/ecoregime/blob/master/inst/CITATION)
 
 Sánchez-Pinillos M, Kéfi S, De Cáceres M, Dakos V (2023). “Ecological
 dynamic regimes: Identification, characterization, and comparison.”
@@ -36,6 +36,19 @@ Conservation*, 110409. <https://doi.org/10.1016/j.biocon.2023.110409>.
       number = {289},
       pages = {110409},
       url = {https://doi.org/10.1016/j.biocon.2023.110409},
+    }
+
+Sánchez-Pinillos M, Fortin M, Messier C, Kneeshaw D (2026). “Forecasting
+ecological trajectories from ecological dynamic regimes to improve
+resilience analysis.” *Methods in Ecology and Evolution*.
+<https://doi.org/10.1111/2041-210x.70372>.
+
+    @Article{,
+      title = {Forecasting ecological trajectories from ecological dynamic regimes to improve resilience analysis},
+      author = {Martina Sánchez-Pinillos and Marie-Josée Fortin and Christian Messier and Daniel Kneeshaw},
+      year = {2026},
+      journal = {Methods in Ecology and Evolution},
+      url = {https://doi.org/10.1111/2041-210x.70372},
     }
 
 Sánchez-Pinillos M (2023). *ecoregime: Analysis of Ecological Dynamic

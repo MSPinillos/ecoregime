@@ -16,7 +16,7 @@ plot_edr(
   variable = NULL,
   type = "trajectories",
   axes = c(1, 2),
-  initial = F,
+  initial = FALSE,
   ...
 )
 ```

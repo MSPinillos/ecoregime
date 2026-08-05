@@ -156,31 +156,20 @@ if (requireNamespace("vegan", quietly = TRUE)) {
       paste0(x[1], "_", x[2])
     }, character(1))
     id_state <- vapply(strsplit(labels(dStates), "_"), function(x){
-    as.integer(x[3])
+      as.integer(x[3])
     }, integer(1))
     id_edr <- vapply(strsplit(labels(dStates), "_"), function(x){
-    paste0("EDR", x[1])
+      paste0("EDR", x[1])
     }, character(1))
 
-    # Calculate dissimilarities between every pair of trajectories
-    dTraj <- ecotraj::trajectoryDistances(ecotraj::defineTrajectories(d = dStates, sites = id_traj,
-                                                                      surveys = id_state),
-                                          distance.type = "DSPD")
-
-    # Use labels in dTraj to identify EDRs
-    id_edr_traj <- vapply(strsplit(labels(dTraj), "_"), function(x){
-    paste0("EDR", x[1])
-    }, character(1))
-
-    # Compute dissimilarities between EDRs:
-    # 1) without symmetrizing the matrix and using state dissimilarities
+    # Compute dissimilarities between EDRs without symmetrizing the matrix
+    # and using state dissimilarities
     dEDR <- dist_edr(d = dStates, d.type = "dStates",
-                     trajectories = id_traj, states = id_state, edr = id_edr,
-                     metric = "dDR", symmetrize = NULL)
+                     trajectories = id_traj,
+                     states = id_state,
+                     edr = id_edr,
+                     metric = "dDR",
+                     symmetrize = NULL)
 
-    # 2) symmetrizing by averaging elements on and below the diagonal and using
-    # trajectory dissimilarities
-    dEDR <- dist_edr(d = dTraj, d.type = "dTraj", edr = id_edr_traj,
-                     metric = "dDR", symmetrize = "mean")
 }
 ```

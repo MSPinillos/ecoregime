@@ -11,7 +11,13 @@
 <link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
 <link rel="icon" sizes="any" href="../favicon.ico">
 <link rel="manifest" href="../site.webmanifest">
-<script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<!-- mathjax math --><script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js" integrity="sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI=" crossorigin="anonymous"></script><script>
+  window.MathJax = {
+    chtml: {
+      fontURL: "https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/output/chtml/fonts/woff-v2"
+    }
+  };
+</script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
@@ -25,7 +31,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">ecoregime</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -39,6 +45,7 @@
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><a class="dropdown-item" href="../articles/EDR_framework.html">Ecological Dynamic Regime framework</a></li>
+    <li><a class="dropdown-item" href="../articles/Predicting_trajectories.html">Predicting ecological trajectories from ecological dynamic regimes</a></li>
     <li><a class="dropdown-item" href="../articles/Resilience.html">Ecological resilience to pulse disturbances</a></li>
   </ul>
 </li>
@@ -66,7 +73,7 @@
 Sánchez-Pinillos</h4>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/MSPinillos/ecoregime/blob/v0.3.1/vignettes/EDR_framework.Rmd" class="external-link"><code>vignettes/EDR_framework.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/MSPinillos/ecoregime/blob/master/vignettes/EDR_framework.Rmd" class="external-link"><code>vignettes/EDR_framework.Rmd</code></a></small>
       <div class="d-none name"><code>EDR_framework.Rmd</code></div>
     </div>
 
@@ -82,8 +89,8 @@ Sánchez-Pinillos</h4>
 <em>“fluctuations of ecosystem states around some trend or average
 resulting from an intricate mix of internal processes and external
 forces that, in the absence of perturbations, keep the system within
-specific domains of attraction”</em> (Sánchez-Pinillos et al.,
-2023).</p>
+specific domains of attraction”</em> (<a href="https://doi.org/10.1002/ecm.1589" class="external-link">Sánchez-Pinillos et al.,
+2023</a>).</p>
 <p>EDRs are composed of multiple ecological trajectories showing similar
 processes in the development, interaction, and reorganization of some
 state variables over time. Thus, <strong>ecological
@@ -93,16 +100,40 @@ state variables. Usually, ecological trajectories are defined based on
 multiple state variables (e.g., species, functional traits, land uses)
 that make challenging the characterization and comparison of EDRs.</p>
 <p>The <strong>EDR framework</strong> is a set of algorithms and metrics
-aiming to characterize and compare EDRs composed of ecological
-trajectories in multidimensional state spaces. You can find more
-information in the following publication, including the formal
-definition of the EDR concept, the methodological details of the
-framework, and some illustrative examples with artificial and real data
-sets:</p>
+aiming to (1) characterize and compare EDRs composed of ecological
+trajectories and (2) evaluate ecological resilience using EDRs as the
+reference to assess the deviation of disturbed ecosystems. For that, the
+EDR framework uses multivariate analyses defining multidimensional state
+spaces.</p>
+<p>You can find more information in the following publication, including
+the formal definition of the EDR concept, the methodological details of
+the framework, and some illustrative examples with artificial and real
+data sets:</p>
 <ul>
 <li>Sánchez-Pinillos M., Kéfi, S., De Cáceres, M., Dakos, V. 2023.
 Ecological Dynamic Regimes: Identification, characterization, and
 comparison. <em>Ecological Monographs</em>. <a href="https://doi.org/10.1002/ecm.1589" class="external-link uri">https://doi.org/10.1002/ecm.1589</a>
+</li>
+</ul>
+<p>For more details on the evaluation of ecological resilience using
+ecological dynamic regimes, you can check
+<code><a href="../articles/Resilience.html">vignette("Resilience")</a></code> and this publication:</p>
+<ul>
+<li>Sánchez-Pinillos M., Dakos, V., Kéfi, S. 2024. Ecological dynamic
+regimes: A key concept for assessing ecological resilience.
+<em>Biological Conservation</em>. <a href="https://doi.org/10.1016/j.biocon.2023.110409" class="external-link uri">https://doi.org/10.1016/j.biocon.2023.110409</a>
+</li>
+</ul>
+<p>Finally, the EDR framework, can be used to predict ecological
+trajectories using a reference EDR
+(<code><a href="../articles/Predicting_trajectories.html">vignette("Predicting_trajectories")</a></code>). Then, the predicted
+trajectories can be very useful to improve resilience analyses and
+detect regime shifts:</p>
+<ul>
+<li>Sánchez-Pinillos M., Fortin, M-J., Messier, C., Kneeshaw, D. 2026.
+Forecasting ecological trajectories from ecological dynamic regimes to
+improve resilience analysis. <em>Methods in Ecology and Evolution</em>.
+<a href="https://doi.org/10.1111/2041-210x.70372" class="external-link uri">https://doi.org/10.1111/2041-210x.70372</a>
 </li>
 </ul>
 </div>
@@ -133,6 +164,11 @@ it:</p>
 <span><span class="co">#&gt;   regimes: A key concept for assessing ecological resilience."</span></span>
 <span><span class="co">#&gt;   _Biological Conservation_, 110409.</span></span>
 <span><span class="co">#&gt;   &lt;https://doi.org/10.1016/j.biocon.2023.110409&gt;.</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;   Sánchez-Pinillos M, Fortin M, Messier C, Kneeshaw D (2026).</span></span>
+<span><span class="co">#&gt;   "Forecasting ecological trajectories from ecological dynamic regimes</span></span>
+<span><span class="co">#&gt;   to improve resilience analysis." _Methods in Ecology and Evolution_.</span></span>
+<span><span class="co">#&gt;   &lt;https://doi.org/10.1111/2041-210x.70372&gt;.</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;   Sánchez-Pinillos M (2023). _ecoregime: Analysis of Ecological Dynamic</span></span>
 <span><span class="co">#&gt;   Regimes_. &lt;https://doi.org/10.5281/zenodo.7584943&gt;.</span></span>
@@ -203,22 +239,20 @@ species (<code>sp1</code> and <code>sp2</code>).</p>
 ecological trajectories live. The state space is a multidimensional
 resemblance space defined by the dissimilarities between every pair of
 states (the observations) in terms of some state variables (the
-species). That is, we need to generate a matrix
-(<strong><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>D</mi><mi>O</mi></msub><annotation encoding="application/x-tex">D_O</annotation></semantics></math></strong>)
-representing the state space and containing the dissimilarities between
-the observations of all sampling units.</p>
-<p>The choice of the dissimilarity metric used to generate
-<strong><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>D</mi><mi>O</mi></msub><annotation encoding="application/x-tex">D_O</annotation></semantics></math></strong>
-depends on the characteristics of your data and the nature of the
-variables. Your decision should be made carefully since it will affect
-the analyses in the EDR framework. In our example, we are using species
-abundances. A common dissimilarity metric adequate for that is the
-percentage difference (a.k.a. Bray-Curtis index). However, if you have
+species). That is, we need to generate a matrix (<strong><span class="math inline">\(D_O\)</span></strong>) representing the state
+space and containing the dissimilarities between the observations of all
+sampling units.</p>
+<p>The choice of the dissimilarity metric used to generate <strong><span class="math inline">\(D_O\)</span></strong> depends on the
+characteristics of your data and the nature of the variables. Your
+decision should be made carefully since it will affect the analyses in
+the EDR framework. In our example, we are using species abundances. A
+common dissimilarity metric adequate for that is the percentage
+difference (a.k.a. Bray-Curtis index). However, if you have
 presence/absence data, you could prefer the Jaccard’s distance, and if
 your state variables are categorical (e.g., functional traits), you
 should use a multi-trait dissimilarity (e.g., the Gower distance). These
 and other ecologically relevant dissimilarity coefficients can be
-applied using the function `<code>vegdist()</code> in
+applied using the function <code>vegdist()</code> in
 <code>vegan</code>.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Generate a matrix containing dissimilarities between states</span></span>
@@ -233,11 +267,10 @@ applied using the function `<code>vegdist()</code> in
 <span><span class="co">#&gt; 6 0.1976060 0.41299176 0.48212098 0.3454633 0.2015336 0.0000000</span></span></code></pre></div>
 <p>We can visualize the state space using ordination methods. Here, I
 apply multidimensional scaling (mMDS; <code>smacof</code>) to the
-dissimilarity matrix
-<strong><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>D</mi><mi>O</mi></msub><annotation encoding="application/x-tex">D_O</annotation></semantics></math></strong>
-and plot the distribution of the ecological states in an ordination
-space. We will use different colors and the code of the sampling unit to
-represent the observations of each sampling unit:</p>
+dissimilarity matrix <strong><span class="math inline">\(D_O\)</span></strong> and plot the distribution of
+the ecological states in an ordination space. We will use different
+colors and the code of the sampling unit to represent the observations
+of each sampling unit:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Multidimensional scaling</span></span>
 <span><span class="va">state_mds</span> <span class="op">&lt;-</span> <span class="fu">smacof</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/smacof/man/smacofSym.html" class="external-link">smacofSym</a></span><span class="op">(</span><span class="va">state_dissim</span>, ndim <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
@@ -268,14 +301,20 @@ chronological order.</p>
 <p><img src="EDR_framework_files/figure-html/traj_state_mds-1.png" class="r-plt" alt="" width="480" style="display: block; margin: auto;"></p>
 <p>The <strong>trajectory space</strong> is a multidimensional space
 defined by the dissimilarities between trajectories (i.e., the whole
-sequence of states for each sampling unit). Analogously to the state
-space, you need to generate a dissimilarity matrix
-(<strong><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>D</mi><mi>T</mi></msub><annotation encoding="application/x-tex">D_T</annotation></semantics></math></strong>)
-and the metric that you use will affect the subsequent analyses.
-Although there are multiple metrics, there are no formal analyses
-evaluating their performance in ecological applications. Here, I suggest
-the directed segment path dissimilarity (De Cáceres et al., 2019,
-<em>Ecol. Monogr.</em>, <a href="https://doi.org/10.1002/ecm.1350" class="external-link uri">https://doi.org/10.1002/ecm.1350</a>), but you could use any
+sequence of states for each sampling unit). Depending on the analyses in
+which you are interested, you will not need to compute the trajectory
+space. I recommend you to check in advance whether you will need it,
+since computing times can be long in big databases. For that, you can
+check whether the functions that you eventually want to apply include
+the argument <code>d.type</code>. If so, it will be useful to have a
+trajectory dissimilarity matrix previously calculated.</p>
+<p>Analogously to the state space, you need to generate a dissimilarity
+matrix (<strong><span class="math inline">\(D_T\)</span></strong>) and
+the metric that you use will affect the subsequent analyses. Although
+there are multiple metrics, there are no formal analyses evaluating
+their performance in ecological applications. Here, I suggest the
+directed segment path dissimilarity (De Cáceres et al., 2019, <em>Ecol.
+Monogr.</em>, <a href="https://doi.org/10.1002/ecm.1350" class="external-link uri">https://doi.org/10.1002/ecm.1350</a>), but you could use any
 other dissimilarity metric.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Generate a matrix containing dissimilarities between trajectories</span></span>
@@ -318,16 +357,14 @@ trajectory is represented by one point:</p>
 <p>Identifying EDRs involves finding groups of ecological trajectories
 showing dynamic patterns more similar between each other than with any
 other ecological trajectory in the trajectory space. In this sense, it
-is possible to use the trajectory dissimilarity matrix
-(<strong><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>D</mi><mi>T</mi></msub><annotation encoding="application/x-tex">D_T</annotation></semantics></math></strong>)
-to identify EDRs through clustering. However, applying clustering
-analyses to trajectory data is not always straightforward. Depending on
-the characteristics of your data, your goals, and the system that you
-are evaluating, the choice of the clustering algorithm may have
-important consequences.</p>
+is possible to use the trajectory dissimilarity matrix (<strong><span class="math inline">\(D_T\)</span></strong>) to identify EDRs through
+clustering. However, applying clustering analyses to trajectory data is
+not always straightforward. Depending on the characteristics of your
+data, your goals, and the system that you are evaluating, the choice of
+the clustering algorithm may have important consequences.</p>
 <p>Currently, this is out of the scope of <code>ecoregime</code> but you
-can find more details in the paper introducing the EDR framework
-(Sánchez-Pinillos et al., 2023)</p>
+can find more details in the paper introducing the EDR framework <a href="https://doi.org/10.1002/ecm.1589" class="external-link">Sánchez-Pinillos et al.,
+2023</a></p>
 </div>
 <div class="section level3">
 <h3 id="defining-edrs-based-on-ecological-properties">3.2. Defining EDRs based on ecological properties<a class="anchor" aria-label="anchor" href="#defining-edrs-based-on-ecological-properties"></a>
@@ -394,34 +431,44 @@ spaces. That is precisely what RETRA-EDR pursues.</p>
 <p><strong>RETRA-EDR (REpresentative TRAjectories in Ecological Dynamic
 Regimes)</strong> is an algorithm that aims to identify representative
 trajectories in EDRs based on the distribution and density of their
-ecological trajectories (Sánchez-Pinillos et al., 2023). Whereas many
-algorithms with similar goals where developed for moving objects in
-low-dimensional spaces, RETRA-EDR can be applied to high-dimensional
-spaces, capturing the complexity of empirical data.</p>
+ecological trajectories (<a href="https://doi.org/10.1002/ecm.1589" class="external-link">Sánchez-Pinillos et al.,
+2023</a>). Whereas many algorithms with similar goals where developed
+for moving objects in low-dimensional spaces, RETRA-EDR can be applied
+to high-dimensional spaces, capturing the complexity of empirical
+data.</p>
 <p>I will not explain the details of RETRA-EDR in this vignette (you can
-find them in Sánchez-Pinillos et al., 2023), but it is important that
-you know its main steps to understand the output returned by
-<code><a href="../reference/retra_edr.html">retra_edr()</a></code>:</p>
+find them in <a href="https://doi.org/10.1002/ecm.1589" class="external-link">Sánchez-Pinillos
+et al., 2023</a>), but it is important that you know its main steps to
+understand the output returned by <code><a href="../reference/retra_edr.html">retra_edr()</a></code>:</p>
 <ol style="list-style-type: decimal">
-<li>The ecological trajectories forming the EDR are split into segments.
-Then, a <strong>segment space</strong> analogous to the trajectory space
-is generated from a matrix containing segment dissimilarities.</li>
-<li>The segment space is divided into regions with a minimum number of
-trajectory segments (<code>minSegs</code>). For that, RETRA-EDR
+<li><p>The ecological trajectories forming the EDR are split into
+segments. Then, a <strong>segment space</strong> analogous to the
+trajectory space is generated from a matrix containing segment
+dissimilarities.</p></li>
+<li><p>The segment space is divided into regions with a minimum number
+of trajectory segments (<code>minSegs</code>). For that, RETRA-EDR
 recursively divides the space into halves following the axes of the
 segment space and generating a <strong>kd-tree structure</strong>. The
 greater the density of segments in a particular region, the larger the
 number of partitions required until obtaining regions with
 <code>minSegs</code> segments. The number of partitions is known as the
 <em>depth</em> of the <em>k</em>d-tree (<code>kdTree_depth</code>) and
-the number of segments in the final region is the
-<code>Density</code>.</li>
-<li>For each region with at least <code>minSegs</code> segments,
+the number of segments in the final region is the <code>Density</code>.
+As such, these indices (<code>kdTree_depth</code> and
+<code>Density</code>) inform on the how much representative is each
+observed segment of the representative trajectory. Yet, since
+<code>Density</code> is ultimately constrained by <code>minSegs</code>,
+<code>kdTree_depth</code> is, in general, a better indicator.</p></li>
+<li><p>For each region with at least <code>minSegs</code> segments,
 RETRA-EDR extracts the medoid as the <strong>representative
-segment</strong>.</li>
-<li>All representative segments are joined forming a network of
-<strong>representative trajectories</strong>.</li>
-<li>RETRA-EDR returns a set of <strong>attributes characterizing the
+segment</strong>.</p></li>
+<li><p>All representative segments are joined forming a network of
+<strong>representative trajectories</strong>, even if they are not
+realistic. The function <code><a href="../reference/define_retra.html">define_retra()</a></code> is useful to
+redefine representative trajectories and avoid long unrealistic links
+between representative segments or unlikely directional
+changes.</p></li>
+<li><p>RETRA-EDR returns a set of <strong>attributes characterizing the
 representative trajectories</strong> identified in the EDR, including
 the value of <code>minSegs</code>; the sequence of representative
 segments (<code>Segments</code>) and the number of states
@@ -432,11 +479,11 @@ dissimilarity between the connected states (<code>Distance</code>); the
 number of segments in each region represented by each representative
 segment (<code>Density</code>), and the number of partitions of the
 segment space until obtaining a region with <code>minSegs</code>
-segments or less (<code>kdTree_depth</code>).</li>
+segments or less (<code>kdTree_depth</code>).</p></li>
 </ol>
 <p>Let’s apply <code><a href="../reference/retra_edr.html">retra_edr()</a></code> to our data. As the EDR only
-contains 10 trajectories, we will assign a value of <code>minSegs</code>
-relatively low.</p>
+contains 10 trajectories, we will consider a low value of
+<code>minSegs</code>.</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Use set.seed to obtain reproducible results of the segment space in RETRA-EDR</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">123</span><span class="op">)</span></span>
@@ -733,7 +780,8 @@ EDR.</p>
 </h3>
 <p><strong>Dynamic dispersion (dDis)</strong> is calculated as the
 average dissimilarity between the trajectories in an EDR and another
-trajectory taken as a reference (Sánchez-Pinillos et al., 2023).</p>
+trajectory taken as a reference (<a href="https://doi.org/10.1002/ecm.1589" class="external-link">Sánchez-Pinillos et al.,
+2023</a>).</p>
 <p>If the trajectory taken as the reference is one of the representative
 trajectories (e.g. <em>T1</em>), <em>dDis</em> can be used as an
 indicator of its fitness to the data and as an overall metric of the
@@ -859,8 +907,8 @@ dynamical patterns of all trajectories are very similar.</p>
 <h3 id="dynamic-evenness-deve">5.3. Dynamic evenness (dEve)<a class="anchor" aria-label="anchor" href="#dynamic-evenness-deve"></a>
 </h3>
 <p><strong>Dynamic evenness (dEve)</strong> quantifies the regularity
-with which an EDR is filled by ecological trajectories (Sánchez-Pinillos
-et al., 2023). This metric informs about the existence of groups of
+with which an EDR is filled by ecological trajectories (<a href="https://doi.org/10.1002/ecm.1589" class="external-link">Sánchez-Pinillos et al.,
+2023</a>). This metric informs about the existence of groups of
 trajectories within the EDR.</p>
 <p>You can compute <em>dEve</em> with the function
 <code><a href="../reference/EDR_metrics.html">dEve()</a></code>:</p>
@@ -1045,7 +1093,7 @@ grant agreement No 891477 (RESET project).</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer>

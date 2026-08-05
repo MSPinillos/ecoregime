@@ -6,26 +6,29 @@
 
 **Ecological resilience** is defined as the ability of ecological
 systems to tolerate disturbances and still maintain the same
-relationships between state variables (Holling, 1973; *Annu. Rev. Ecol.
-Evol. Syst.*, <https://doi.org/10.1146/annurev.es.04.110173.000245>).
-Measuring ecological resilience requires considering two important
-components: the dynamic trends of the system, including its cyclic
-behaviors, and the random forces representing positive and negative
-feedback relationships between the components of the system (Holling,
-1973). As such, assessing ecological resilience must account for the
-system dynamic regimes.
+relationships between state variables ([Holling,
+1973](https://doi.org/10.1146/annurev.es.04.110173.000245)). Measuring
+ecological resilience requires considering two important components: the
+dynamic trends of the system, including its cyclic behaviors, and the
+random forces representing positive and negative feedback relationships
+between the components of the system ([Holling,
+1973](https://doi.org/10.1146/annurev.es.04.110173.000245)). As such,
+assessing ecological resilience must account for the system dynamic
+regimes.
 
 An **ecological dynamic regime (EDR)** is defined as the *“fluctuations
 of an ecological system around some trend or average resulting from the
 interaction between internal processes and external forces that, in the
 absence of perturbations, keep the system within the basin of
-attraction”* (Sánchez-Pinillos et al., 2023). The main dynamic trends
+attraction”* ([Sánchez-Pinillos et al.,
+2023](https://doi.org/10.1002/ecm.1589)). The main dynamic trends
 characterizing an EDR are useful to identify cyclic behaviors and other
 more complex dynamics, such as transient dynamics. Additionally, the
 fluctuations and variability of ecological dynamics resulting from the
 interaction of multiple factors define the shape, size, and
 characteristics of dynamic regimes and potential domains of attraction
-(Sánchez-Pinillos et al., 2024).
+([Sánchez-Pinillos et al.,
+2024](https://doi.org/10.1016/j.biocon.2023.110409)).
 
 The **EDR framework** is a set of algorithms and metrics to characterize
 and compare ecological dynamic regimes from empirical data so they can
@@ -54,9 +57,10 @@ publication:
 This vignette aims to illustrate how ecological resilience can be
 assessed using the EDR framework implemented in `ecoregime`. In
 particular, this vignette focuses on the quantitative indices proposed
-in Sánchez-Pinillos et al. (2024) and their geometric rationale, taking
-ecological dynamic regimes as the reference to evaluate ecological
-resilience.
+in [Sánchez-Pinillos et al.,
+2024](https://doi.org/10.1016/j.biocon.2023.110409) and their geometric
+rationale, taking ecological dynamic regimes as the reference to
+evaluate ecological resilience.
 
 You can install `ecoregime` directly from CRAN or from my GitHub account
 (development version):
@@ -88,6 +92,11 @@ citation("ecoregime")
 #>   _Biological Conservation_, 110409.
 #>   <https://doi.org/10.1016/j.biocon.2023.110409>.
 #> 
+#>   Sánchez-Pinillos M, Fortin M, Messier C, Kneeshaw D (2026).
+#>   "Forecasting ecological trajectories from ecological dynamic regimes
+#>   to improve resilience analysis." _Methods in Ecology and Evolution_.
+#>   <https://doi.org/10.1111/2041-210x.70372>.
+#> 
 #>   Sánchez-Pinillos M (2023). _ecoregime: Analysis of Ecological Dynamic
 #>   Regimes_. <https://doi.org/10.5281/zenodo.7584943>.
 #> 
@@ -98,12 +107,12 @@ citation("ecoregime")
 
 Like other analyses and metrics of the EDR framework, the assessment of
 ecological resilience relies on a **state space** constructed from a
-dissimilarity matrix ($`D_O`$) including pairwise comparisons of all
+dissimilarity matrix (\\D_O\\) including pairwise comparisons of all
 states (or observations) in the ecological trajectories being evaluated
 (see
 [`vignette("EDR_framework")`](https://mspinillos.github.io/ecoregime/articles/EDR_framework.md)
 for further details). The choice of the coefficient used to generate
-$`D_O`$ is, therefore, a key step that you should make carefully. As we
+\\D_O\\ is, therefore, a key step that you should make carefully. As we
 will use species abundance data as example, we will apply the percentage
 difference (or Bray-Curtis dissimilarity). The percentage difference and
 other ecologically relevant dissimilarity coefficients can be applied
@@ -429,22 +438,21 @@ resistance (*Rt*), amplitude (*A*), recovery (*Rc*), and net change
 The resistance index (*Rt*) quantifies the impact of the disturbance on
 the system based on the immediate changes in the state variables. That
 is, it is a measure of how similar the disturbed (1) and the
-pre-disturbance (0) states are (Sánchez-Pinillos et al., 2019). As such,
-the resistance index does not depend on the position of the system
-within the EDR.
+pre-disturbance (0) states are ([Sánchez-Pinillos et al.,
+2019](https://doi.org/10.1007/s10021-019-00378-6)). As such, the
+resistance index does not depend on the position of the system within
+the EDR.
 
-``` math
-Rt = 1 - d_{pre, dist}
-```
+\\Rt = 1 - d\_{pre, dist}\\
 
-where $`d_{pre,dist}`$ is the dissimilarity between the pre-disturbance
+where \\d\_{pre,dist}\\ is the dissimilarity between the pre-disturbance
 (0) and the disturbed (1) states.
 
 ![](Resilience_files/figure-html/graphical_resistance-1.png)
 
 Given the three disturbed trajectories in EDR3 (i.e., `EDR3_disturbed`),
 we can compute the resistance index using the function
-[`resistance()`](https://mspinillos.github.io/ecoregime/reference/deviation_metrics.md):
+[`resistance()`](https://mspinillos.github.io/ecoregime/reference/resilience_metrics.md):
 
 ``` r
 
@@ -479,23 +487,19 @@ representative trajectory taken as the reference.
 
 The amplitude can be calculated in absolute terms as the difference of
 the dissimilarity between the disturbed state (1) and the representative
-trajectory ($`d_{dist,RT}`$) and the dissimilarity between the
+trajectory (\\d\_{dist,RT}\\) and the dissimilarity between the
 pre-disturbance state (0) and the representative trajectory
-($`d_{pre,RT}`$):
+(\\d\_{pre,RT}\\):
 
-``` math
-A_{abs} = d_{dist,RT} - d_{pre,RT}
-```
+\\A\_{abs} = d\_{dist,RT} - d\_{pre,RT}\\
 
 Alternatively, the amplitude can be calculated in relation to the impact
-of the disturbance ($`d_{pre,dist}`$). In this case, the amplitude
+of the disturbance (\\d\_{pre,dist}\\). In this case, the amplitude
 quantifies the ability of the system to remain close to the
 representative trajectory in relation to the changes in the state
 variables provoked by the disturbance.
 
-``` math
-A_{rel} = \frac{d_{dist,RT} - d_{pre,RT}}{d_{pre,dist}}
-```
+\\A\_{rel} = \frac{d\_{dist,RT} - d\_{pre,RT}}{d\_{pre,dist}}\\
 
 In any case, positive amplitude values indicate that the system is
 deviated towards the boundaries of the EDR, whereas negative values
@@ -505,7 +509,7 @@ the reference.
 ![](Resilience_files/figure-html/graphical_amplitude-1.png)
 
 Amplitude can be calculated using the function
-[`amplitude()`](https://mspinillos.github.io/ecoregime/reference/deviation_metrics.md):
+[`amplitude()`](https://mspinillos.github.io/ecoregime/reference/resilience_metrics.md):
 
 ``` r
 
@@ -525,10 +529,10 @@ A <- amplitude(d = d,
 
 The three considered systems show positive amplitude values, indicating
 that the disturbance lead them towards the boundaries of the EDR.
-Whereas the absolute amplitude of trajectory 31
-($`A_{abs}(31) = 0.027`$) is smaller than the absolute amplitude of
-trajectory 32 ($`A_{rel}(32) = 0.119`$), both have similar relative
-values ($`A_{rel}(31) = 0.653`$; $`A_{rel}(32) = 0.631`$). This result
+Whereas the absolute amplitude of trajectory 31 (\\A\_{abs}(31) =
+0.027\\) is smaller than the absolute amplitude of trajectory 32
+(\\A\_{rel}(32) = 0.119\\), both have similar relative values
+(\\A\_{rel}(31) = 0.653\\; \\A\_{rel}(32) = 0.631\\). This result
 indicates that despite the small deviation of trajectory 31 from the
 representative trajectory during the disturbance, such deviation is
 disproportionately high in relation to the impact of the disturbance on
@@ -548,26 +552,22 @@ representative trajectory representing its dominant dynamic trends.
 
 The recovery can be calculated in absolute terms as the difference of
 the dissimilarity between the disturbed state (1) and the representative
-trajectory ($`d_{dist,RT}`$) and the dissimilarity between one of the
+trajectory (\\d\_{dist,RT}\\) and the dissimilarity between one of the
 post-disturbance states (\> 1) and the representative trajectory
-($`d_{post,RT}`$):
+(\\d\_{post,RT}\\):
 
-``` math
-Rc_{abs} = d_{dist,RT} - d_{post,RT}
-```
+\\Rc\_{abs} = d\_{dist,RT} - d\_{post,RT}\\
 
 Alternatively, the recovery can be calculated in relation to the changes
 in the state variables that the system must perform to return towards
-the representative trajectory from the disturbed state
-($`d_{dist, post}`$). In this case, the index penalizes the systems that
-require major restructuring of the state variables to return towards the
+the representative trajectory from the disturbed state (\\d\_{dist,
+post}\\). In this case, the index penalizes the systems that require
+major restructuring of the state variables to return towards the
 representative trajectory (positive recovery) and gives less negative
 values to the systems minimizing the escape from the dynamic regime
 through major changes in its state variables.
 
-``` math
-Rc_{rel} = \frac{d_{dist,RT} - d_{post,RT}}{d_{dist, post}}
-```
+\\Rc\_{rel} = \frac{d\_{dist,RT} - d\_{post,RT}}{d\_{dist, post}}\\
 
 Both absolute and relative recovery indices are positive when the system
 evolves towards the representative trajectory. Otherwise, negative
@@ -579,7 +579,7 @@ EDR.
 ![](Resilience_files/figure-html/graphical_recovery2-1.png)
 
 Recovery can be calculated using the function
-[`recovery()`](https://mspinillos.github.io/ecoregime/reference/deviation_metrics.md)
+[`recovery()`](https://mspinillos.github.io/ecoregime/reference/resilience_metrics.md)
 considering all states after the disturbed state (\> 1):
 
 ``` r
@@ -638,23 +638,19 @@ representative trajectory taken as the reference.
 Like amplitude and recovery, net change can be calculated in absolute or
 relative terms. The absolute net change is expressed as the difference
 of the dissimilarity between one of the post-disturbance states (\> 1)
-and the representative trajectory ($`d_{post,RT}`$) and the
+and the representative trajectory (\\d\_{post,RT}\\) and the
 dissimilarity between the pre-disturbance state (0) and the
-representative trajectory ($`d_{pre,RT}`$):
+representative trajectory (\\d\_{pre,RT}\\):
 
-``` math
-NC_{abs} = d_{post,RT} - d_{pre,RT}
-```
+\\NC\_{abs} = d\_{post,RT} - d\_{pre,RT}\\
 
 The relative net change is calculated in relation to the changes
 produced in the state variables between the pre-disturbance and the
-post-disturbance states ($`d_{pre,post}`$). In this way, the index
+post-disturbance states (\\d\_{pre,post}\\). In this way, the index
 penalizes the systems that deviated from the expected trajectory despite
 being very similar to the pre-disturbance state.
 
-``` math
-NC_{rel} = \frac{d_{post,RT} - d_{pre,RT}}{d_{pre,post}}
-```
+\\NC\_{rel} = \frac{d\_{post,RT} - d\_{pre,RT}}{d\_{pre,post}}\\
 
 As in the amplitude index, positive values indicate that the system is
 deviated towards the boundaries of the EDR and negative values indicate
@@ -664,7 +660,7 @@ reference.
 ![](Resilience_files/figure-html/graphical_NetChange-1.png)
 
 The function
-[`net_change()`](https://mspinillos.github.io/ecoregime/reference/deviation_metrics.md)
+[`net_change()`](https://mspinillos.github.io/ecoregime/reference/resilience_metrics.md)
 included in `ecoregime` can be used to calculate the net change of all
 post-disturbance states in relation to the pre-disturbance state:
 
@@ -746,10 +742,10 @@ results <- results[which(results$ID_post == 14),
 Based on the values of the indices, we can figure out the shape of the
 disturbed trajectories. For example, *Trajectory 31* was very resistant
 to the immediate impact of the disturbance (in terms of changes in the
-state variables) ($`Rt = 0.958`$) and the amplitude provoked by the
-disturbance was very small ($`A = 0.027`$). However, unlike *Trajectory
-32* and *Trajectory 33*, the recovery was negative ($`Rc = -0.474`$) and
-the net change positive and relatively high ($`NC = 0.502`$). Thus,
+state variables) (\\Rt = 0.958\\) and the amplitude provoked by the
+disturbance was very small (\\A = 0.027\\). However, unlike *Trajectory
+32* and *Trajectory 33*, the recovery was negative (\\Rc = -0.474\\) and
+the net change positive and relatively high (\\NC = 0.502\\). Thus,
 despite the relatively low impact of the disturbance, the values of
 recovery and net change indicate that *Trajectory 31* goes away from the
 reference EDR and the system potentially changes to an alternative
@@ -757,17 +753,17 @@ dynamic regime.
 
 Both *Trajectory 32* and *Trajectory 33* showed positive values of
 recovery and net change values close to zero. In both cases, amplitude
-and recovery have similar values, respectively (*Trajectory 32:*
-$`A = 0.119`$, $`Rc = 0.099`$; *Trajectory 33:* $`A = 0.268`$,
-$`Rc = 0.283`$), indicating that these systems are able to reorganize
-and remain within the EDR.
+and recovery have similar values, respectively (*Trajectory 32:* \\A =
+0.119\\, \\Rc = 0.099\\; *Trajectory 33:* \\A = 0.268\\, \\Rc =
+0.283\\), indicating that these systems are able to reorganize and
+remain within the EDR.
 
 *Trajectory 32* was relatively resistant to the impact of the
-disturbance ($`Rt = 0.812`$) and showed a relatively low deviation from
-the representative trajectory ($`A = 0.119`$). In contrast, *Trajectory
-33* was more severely impacted by the disturbance ($`Rt = 0.693`$;
-$`A = 0.268`$) but showed a high recovery capacity ($`Rc = 0.283`$).
-Thus, while both communities could be considered resilient, they showed
+disturbance (\\Rt = 0.812\\) and showed a relatively low deviation from
+the representative trajectory (\\A = 0.119\\). In contrast, *Trajectory
+33* was more severely impacted by the disturbance (\\Rt = 0.693\\; \\A =
+0.268\\) but showed a high recovery capacity (\\Rc = 0.283\\). Thus,
+while both communities could be considered resilient, they showed
 different strategies. Whereas *Trajectory 32* represents a resistant
 dynamic within the EDR, *Trajectory 33* represents a more variable
 system whose dynamics visit the borders of the EDR to eventually return
