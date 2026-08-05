@@ -8,7 +8,7 @@
 ## Citation
 
 Source:
-[`inst/CITATION`](https://github.com/MSPinillos/ecoregime/blob/master/inst/CITATION)
+[`inst/CITATION`](https://github.com/MSPinillos/ecoregime/blob/v0.4.1/inst/CITATION)
 
 Sánchez-Pinillos M, Kéfi S, De Cáceres M, Dakos V (2023). “Ecological
 dynamic regimes: Identification, characterization, and comparison.”
